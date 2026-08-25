@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+/* ─── Design Tokens — derived from logo palette ─── */
+/*
+  Logo colors:
+    teal    #1AB5AD   → primary
+    orange  #E8870C   → secondary
+    blue    #3A8FC7   → accent
+    bg      #0e0c0a   warm dark
+*/
+
+@theme inline {
+  --color-bg: #f5f2ee;
+  --color-surface: #ffffff;
+  --color-surface-2: #ece8e2;
+
+  --color-primary: #0e9a93;
+  --color-primary-dim: rgba(14,154,147,0.12);
+
+  --color-secondary: #d6780a;
+  --color-secondary-dim: rgba(214,120,10,0.12);
+
+  --color-accent: #2878b0;
+  --color-accent-dim: rgba(40,120,176,0.12);
+
+  --color-fg: #1a1714;
+  --color-fg-muted: #6b6358;
+
+  --font-display: 'JetBrains Mono', monospace;
+  --font-body: 'Outfit', sans-serif;
+}
+
+:root {
+  --bg: #f5f2ee;
+  --surface: #ffffff;
+  --surface-2: #ece8e2;
+
+  --primary: #0e9a93;
+  --primary-dim: rgba(14,154,147,0.12);
+
+  --secondary: #d6780a;
+  --secondary-dim: rgba(214,120,10,0.12);
+
+  --accent: #2878b0;
+  --accent-dim: rgba(40,120,176,0.12);
+
+  --fg: #1a1714;
+  --fg-muted: #6b6358;
+}
+
+* {
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-2) transparent;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 2px; }
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.font-display { font-family: 'JetBrains Mono', monospace; }
+.font-body    { font-family: 'Outfit', sans-serif; }
+
+/* Subtle grid — teal tinted (light mode) */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(14,154,147,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14,154,147,0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Glow utilities */
+.glow-primary   { box-shadow: 0 0 20px rgba(14,154,147,0.25); }
+.glow-secondary { box-shadow: 0 0 20px rgba(214,120,10,0.25); }
+.glow-accent    { box-shadow: 0 0 20px rgba(40,120,176,0.25); }
+
+.text-glow-primary   { text-shadow: 0 0 16px rgba(14,154,147,0.35); }
+.text-glow-secondary { text-shadow: 0 0 16px rgba(214,120,10,0.35); }
+
+/* Page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.4s ease;
+}

@@ -1,0 +1,11 @@
+{
+  "title": "MediaLab",
+  "description": "Engage users with an interactive web platform featuring events, research, and services, enhanced by animations, graphics, and gamification elements.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

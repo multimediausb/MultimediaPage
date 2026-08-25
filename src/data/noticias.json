@@ -1,0 +1,47 @@
+[
+  {
+    "id": "1",
+    "categoria": "INVESTIGACIÓN",
+    "titulo": "Nuevo laboratorio de realidad extendida abre sus puertas",
+    "resumen": "El Programa de Ingeniería Multimedia inaugura un espacio de 200 m² equipado con visores XR de última generación para proyectos de investigación en interfaces inmersivas.",
+    "fecha": "2025-07-18",
+    "imagen": "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=800&h=450&fit=crop&auto=format",
+    "tag": "NUEVO"
+  },
+  {
+    "id": "2",
+    "categoria": "EVENTO",
+    "titulo": "Estudiantes ganan primer lugar en hackathon regional de IA",
+    "resumen": "Un equipo de cinco estudiantes de último semestre desarrolló en 48 horas un sistema de detección temprana de enfermedades pulmonares usando visión por computadora.",
+    "fecha": "2025-07-10",
+    "imagen": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&h=450&fit=crop&auto=format",
+    "tag": "LOGRO"
+  },
+  {
+    "id": "3",
+    "categoria": "PUBLICACIÓN",
+    "titulo": "Artículo del grupo NGC indexado en Nature Digital Medicine",
+    "resumen": "La investigación sobre algoritmos generativos aplicados al diseño de prótesis biónicas fue aceptada en una de las revistas de mayor impacto en biomedicina computacional.",
+    "fecha": "2025-06-28",
+    "imagen": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&h=450&fit=crop&auto=format",
+    "tag": "PUBLICACIÓN"
+  },
+  {
+    "id": "4",
+    "categoria": "CONVOCATORIA",
+    "titulo": "Abierta convocatoria para semillero de investigación 2025-II",
+    "resumen": "Estudiantes de segundo año en adelante pueden postular a los cuatro grupos activos. Cierre de inscripciones: 15 de agosto. Incluye beca de sostenimiento.",
+    "fecha": "2025-07-01",
+    "imagen": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&h=450&fit=crop&auto=format",
+    "tag": "ABIERTO"
+  },
+  {
+    "id": "5",
+    "categoria": "ALIANZA",
+    "titulo": "Convenio marco con el Media Lab del MIT renovado por 5 años",
+    "resumen": "El acuerdo permite el intercambio de investigadores, acceso a infraestructura de cómputo de alto rendimiento y co-publicaciones en proyectos conjuntos.",
+    "fecha": "2025-06-15",
+    "imagen": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=450&fit=crop&auto=format",
+    "tag": "ALIANZA"
+  }
+]
