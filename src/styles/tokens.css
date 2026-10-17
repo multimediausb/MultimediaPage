@@ -1,0 +1,189 @@
+/**
+ * Sistema de diseño — Laboratorio de Medios
+ * Tokens globales (tokens.css)
+ * Fuente de verdad para colores, espaciados, radios, grosores, sombras y tipografías.
+ */
+
+:root {
+  /* ==========================================================================
+     Tipografía — Variables
+     ========================================================================== */
+  /* Familias */
+  --font-family-heading: 'Zen Dots', sans-serif;
+  --font-family-body: 'JetBrains Mono', monospace;
+
+  /* Pesos */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+
+  /* Tamaños de fuente */
+  --font-size-0: 8px;
+  --font-size-1: 14px;
+  --font-size-2: 16px;
+  --font-size-3: 18px;
+  --font-size-4: 22px;
+  --font-size-5: 26px;
+  --font-size-6: 32px;
+  --font-size-7: 38px;
+  --font-size-8: 46px;
+  --font-size-9: 56px;
+
+  /* Alturas de línea */
+  --line-height-0: 69px;
+  --line-height-1: 69px;
+  --line-height-2: 57px;
+  --line-height-3: 48px;
+  --line-height-4: 39px;
+  --line-height-5: 33px;
+  --line-height-6: 27px;
+  --line-height-7: 24px;
+  --line-height-8: 21px;
+  --line-height-9: 12px;
+
+  /* Interletraje y párrafos */
+  --letter-spacing-0: 0;
+  --paragraph-spacing-0: 0;
+  --paragraph-indent-0: 0px;
+
+  /* ==========================================================================
+     Paleta de colores
+     ========================================================================== */
+  /* Primary */
+  --color-primary-100: #d6f4f4;
+  --color-primary-200: #ade9ea;
+  --color-primary-300: #84dee0;
+  --color-primary-400: #5bd3d6;
+  --color-primary-500: #32c9cc;
+  --color-primary-600: #28a0a3;
+  --color-primary-700: #1e787a;
+  --color-primary-800: #145051;
+  --color-primary-900: #0a2828;
+  --color-primary-alpha-10: #2db3b61a;
+  --color-primary-alpha-50: #2db3b680;
+
+  /* Secondary */
+  --color-secondary-100: #fce7ce;
+  --color-secondary-200: #facf9d;
+  --color-secondary-300: #f8b76c;
+  --color-secondary-400: #f5a03c;
+  --color-secondary-500: #f3880b;
+  --color-secondary-600: #c26d09;
+  --color-secondary-700: #925106;
+  --color-secondary-800: #613604;
+  --color-secondary-900: #301b02;
+  --color-secondary-alpha-10: #d6780a1a;
+  --color-secondary-alpha-50: #d6780a80;
+
+  /* Tertiary */
+  --color-tertiary-100: #d5e8f5;
+  --color-tertiary-200: #abd1ec;
+  --color-tertiary-300: #82bbe2;
+  --color-tertiary-400: #58a4d9;
+  --color-tertiary-500: #2f8dcf;
+  --color-tertiary-600: #2571a6;
+  --color-tertiary-700: #1c557c;
+  --color-tertiary-800: #123853;
+  --color-tertiary-900: #091c29;
+  --color-tertiary-alpha-10: #2878b01a;
+  --color-tertiary-alpha-50: #2878b080;
+
+  /* Neutral */
+  --color-neutral-100: #eaeaea;
+  --color-neutral-200: #cdcdcd;
+  --color-neutral-300: #b1b1b1;
+  --color-neutral-400: #949494;
+  --color-neutral-500: #787878;
+  --color-neutral-600: #5b5b5b;
+  --color-neutral-700: #3f3f3f;
+  --color-neutral-800: #222222;
+  --color-neutral-900: #060606;
+  --color-neutral-alpha-10: #0606061a;
+
+  /* Green */
+  --color-green-100: #79ff74;
+  --color-green-200: #04ab04;
+  --color-green-alpha-10: #79ff741a;
+
+  /* Red */
+  --color-red-100: #ff7474;
+  --color-red-200: #ab0413;
+  --color-red-alpha-10: #ff74741a;
+
+  /* Yellow */
+  --color-yellow-100: #fff374;
+  --color-yellow-200: #bab21f;
+  --color-yellow-alpha-10: #fff3741a;
+
+  /* ==========================================================================
+     Espaciados
+     ========================================================================== */
+  --spacing-3xs: 2px;
+  --spacing-2xs: 4px;
+  --spacing-xs: 8px;
+  --spacing-s: 12px;
+  --spacing-m: 16px;
+  --spacing-l: 20px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  --spacing-3xl: 40px;
+  --spacing-4xl: 48px;
+  --spacing-5xl: 56px;
+  --spacing-6xl: 64px;
+  --spacing-7xl: 72px;
+  --spacing-8xl: 80px;
+  --spacing-9xl: 96px;
+
+  /* ==========================================================================
+     Radios de borde
+     ========================================================================== */
+  --radius-none: 0px;
+  --radius-2xs: 2px;
+  --radius-xs: 4px;
+  --radius-s: 6px;
+  --radius-m: 8px;
+  --radius-l: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+  --radius-4xl: 24px;
+  --radius-5xl: 28px;
+  --radius-6xl: 32px;
+  --radius-7xl: 36px;
+  --radius-8xl: 40px;
+  --radius-full: 999px;
+
+  /* ==========================================================================
+     Grosores de trazo y borde
+     ========================================================================== */
+  --stroke-s: 1px;
+  --stroke-m: 2px;
+  --stroke-l: 4px;
+  --stroke-xl: 6px;
+  --stroke-2xl: 8px;
+  --stroke-3xl: 10px;
+
+  /* ==========================================================================
+     Sombras
+     ========================================================================== */
+  --shadow-card-normal: 0 1px 4.300000190734863px 0 #042e2c36;
+  --shadow-card-hover: 0 2px 2.4000000953674316px 0 #042e2c;
+
+  --shadow-blue-normal: 0 1px 4.300000190734863px 0 #12385336;
+  --shadow-blue-hover: 0 2.4000000953674316px 2px 0 #123853;
+
+  --shadow-orange-normal: 0 1px 4.300000190734863px 0 #301b0236;
+  --shadow-orange-hover: 0 2px 2.4000000953674316px 0 #301b02;
+
+  --shadow-turquoise-normal-light: 0 1px 4.300000190734863px 0 #44eee536;
+  --shadow-turquoise-hover-light: 0 2px 2.4000000953674316px 0 #44eee5;
+
+  --shadow-orange-normal-light: 0 1px 4.300000190734863px 0 #f5a03c36;
+  --shadow-orange-hover-light: 0 2px 2.4000000953674316px 0 #f5a03c;
+
+  --shadow-blue-normal-light: 0 1px 4.300000190734863px 0 #2878b036;
+  --shadow-blue-hover-light: 0 2.4000000953674316px 2px 0 #2878b0;
+
+  /* Aliases exactos para tokens definidos con nomenclatura en español */
+  --shadow-turquesa-normal-light: var(--shadow-turquoise-normal-light);
+  --shadow-turquesa-hover-light: var(--shadow-turquoise-hover-light);
+}

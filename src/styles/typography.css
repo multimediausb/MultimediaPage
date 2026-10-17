@@ -1,0 +1,100 @@
+/**
+ * Sistema de diseño — Laboratorio de Medios
+ * Tipografía oficial (typography.css)
+ * Fuentes: Zen Dots (H-1 a H-6) y JetBrains Mono (B-1 a B-4)
+ * (La importación @import url(...) se realiza al inicio del archivo CSS global según la especificación CSS)
+ */
+
+/* ==========================================================================
+   Encabezados oficiales (H-1 a H-6)
+   Familia: Zen Dots | Peso: Regular (400) | Interletraje: 0
+   ========================================================================== */
+.text-h1,
+.text-h2,
+.text-h3,
+.text-h4,
+.text-h5,
+.text-h6 {
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-regular);
+  letter-spacing: var(--letter-spacing-0);
+  text-transform: none;
+  text-decoration: none;
+}
+
+.text-h1 {
+  font-size: var(--font-size-9);
+  line-height: var(--line-height-0);
+}
+
+.text-h2 {
+  font-size: var(--font-size-8);
+  line-height: var(--line-height-1);
+}
+
+.text-h3 {
+  font-size: var(--font-size-7);
+  line-height: var(--line-height-2);
+}
+
+.text-h4 {
+  font-size: var(--font-size-6);
+  line-height: var(--line-height-3);
+}
+
+.text-h5 {
+  font-size: var(--font-size-5);
+  line-height: var(--line-height-4);
+}
+
+.text-h6 {
+  font-size: var(--font-size-4);
+  line-height: var(--line-height-5);
+}
+
+/* ==========================================================================
+   Textos de cuerpo oficiales (B-1 a B-4)
+   Familia: JetBrains Mono | Pesos: Regular (400) / Medium (500) | Interletraje: 0
+   ========================================================================== */
+.text-b1,
+.text-b2,
+.text-b3,
+.text-b4 {
+  font-family: var(--font-family-body);
+  letter-spacing: var(--letter-spacing-0);
+  text-transform: none;
+  text-decoration: none;
+}
+
+.text-b1 {
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-6);
+  font-weight: var(--font-weight-medium);
+}
+
+.text-b2 {
+  font-size: var(--font-size-2);
+  line-height: var(--line-height-7);
+  font-weight: var(--font-weight-regular);
+}
+
+.text-b3 {
+  font-size: var(--font-size-1);
+  line-height: var(--line-height-8);
+  font-weight: var(--font-weight-regular);
+}
+
+.text-b4 {
+  font-size: var(--font-size-0);
+  line-height: var(--line-height-9);
+  font-weight: var(--font-weight-regular);
+}
+
+/* Clases utilitarias de familia tipográfica */
+.font-heading {
+  font-family: var(--font-family-heading);
+}
+
+.font-body-mono {
+  font-family: var(--font-family-body);
+}

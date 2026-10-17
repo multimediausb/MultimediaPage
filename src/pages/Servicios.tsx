@@ -1,17 +1,76 @@
-import { motion } from 'framer-motion'
-import SectionHeader from '../components/SectionHeader'
-import ServiceCard from '../components/ServiceCard'
-import PageBanner from '../components/PageBanner'
+import { motion } from "framer-motion"
+
+import SectionHeader from "../components/SectionHeader"
+
+import ServiceCard from "../components/ServiceCard"
+
+import PageBanner from "../components/PageBanner"
+import Button from "../components/ui/Button"
 
 const services = [
-  { icon: '🔬', title: 'Laboratorios Especializados', description: 'Acceso a laboratorios de última generación equipados con tecnología de vanguardia para proyectos de investigación avanzada.', accent: 'primary' as const },
-  { icon: '📊', title: 'Análisis de Datos', description: 'Consultoría estadística y de ciencia de datos para proyectos académicos, institucionales y del sector privado.', accent: 'secondary' as const },
-  { icon: '📚', title: 'Biblioteca Digital', description: 'Acceso a más de 50,000 publicaciones científicas internacionales, bases de datos Scopus, Web of Science y Springer.', accent: 'accent' as const },
-  { icon: '🧩', title: 'Mentoría Científica', description: 'Programa de acompañamiento para tesistas, investigadores jóvenes y profesionales que buscan transición hacia la investigación.', accent: 'primary' as const },
-  { icon: '🌐', title: 'Vinculación Internacional', description: 'Red de colaboración con 40+ universidades y centros de investigación de Latinoamérica, Europa y Asia.', accent: 'secondary' as const },
-  { icon: '💡', title: 'Transferencia Tecnológica', description: 'Gestión de propiedad intelectual, patentes y vinculación con el sector productivo para comercializar innovaciones.', accent: 'accent' as const },
-  { icon: '🎓', title: 'Formación Continua', description: 'Cursos, diplomados y talleres en metodología de investigación, escritura científica y herramientas computacionales.', accent: 'primary' as const },
-  { icon: '📡', title: 'Publicación y Difusión', description: 'Apoyo editorial para publicar en revistas indexadas y difusión de resultados en medios especializados y de divulgación.', accent: 'secondary' as const },
+  {
+    icon: "🔬",
+    title: "Laboratorios Especializados",
+    description:
+      "Acceso a laboratorios de última generación equipados con tecnología de vanguardia para proyectos de investigación avanzada.",
+    accent: "primary" as const,
+  },
+
+  {
+    icon: "📊",
+    title: "Análisis de Datos",
+    description:
+      "Consultoría estadística y de ciencia de datos para proyectos académicos, institucionales y del sector privado.",
+    accent: "secondary" as const,
+  },
+
+  {
+    icon: "📚",
+    title: "Biblioteca Digital",
+    description:
+      "Acceso a más de 50,000 publicaciones científicas internacionales, bases de datos Scopus, Web of Science y Springer.",
+    accent: "accent" as const,
+  },
+
+  {
+    icon: "🧩",
+    title: "Mentoría Científica",
+    description:
+      "Programa de acompañamiento para tesistas, investigadores jóvenes y profesionales que buscan transición hacia la investigación.",
+    accent: "primary" as const,
+  },
+
+  {
+    icon: "🌐",
+    title: "Vinculación Internacional",
+    description:
+      "Red de colaboración con 40+ universidades y centros de investigación de Latinoamérica, Europa y Asia.",
+    accent: "secondary" as const,
+  },
+
+  {
+    icon: "💡",
+    title: "Transferencia Tecnológica",
+    description:
+      "Gestión de propiedad intelectual, patentes y vinculación con el sector productivo para comercializar innovaciones.",
+    accent: "accent" as const,
+  },
+
+  {
+    icon: "🎓",
+    title: "Formación Continua",
+    description:
+      "Cursos, diplomados y talleres en metodología de investigación, escritura científica y herramientas computacionales.",
+    accent: "primary" as const,
+  },
+
+  {
+    icon: "📡",
+    title: "Publicación y Difusión",
+    description:
+      "Apoyo editorial para publicar en revistas indexadas y difusión de resultados en medios especializados y de divulgación.",
+    accent: "secondary" as const,
+  },
 ]
 
 export default function Servicios() {
@@ -51,22 +110,32 @@ export default function Servicios() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
           className="mt-16 rounded-lg p-8 text-center"
-          style={{ background: 'var(--surface)', border: '1px solid rgba(40,120,176,0.2)' }}
+          style={{
+            background: "var(--surface)",
+            border: "1px solid rgba(40,120,176,0.2)",
+          }}
         >
-          <h2 className="font-display font-bold text-xl mb-3" style={{ color: 'var(--fg)' }}>
+          <h2
+            className="font-display font-bold text-xl mb-3"
+            style={{ color: "var(--fg)" }}
+          >
             ¿Necesitas un servicio específico?
           </h2>
-          <p className="font-body text-sm mb-6" style={{ color: 'var(--fg-muted)' }}>
-            Contáctanos para explorar cómo podemos apoyar tu proyecto de investigación.
+          <p
+            className="font-body text-sm mb-6"
+            style={{ color: "var(--fg-muted)" }}
+          >
+            Contáctanos para explorar cómo podemos apoyar tu proyecto de
+            investigación.
           </p>
-          <motion.button
-            whileHover={{ scale: 1.04, boxShadow: '0 0 24px rgba(40,120,176,0.3)' }}
-            whileTap={{ scale: 0.96 }}
-            className="font-display text-xs tracking-widest px-8 py-3 rounded"
-            style={{ background: '#a855f7', color: '#fff' }}
+          <Button
+            variant="primary"
+            size="lg"
+            asLink
+            href="mailto:medialab@usbbog.edu.co"
           >
             CONTACTAR AL EQUIPO
-          </motion.button>
+          </Button>
         </motion.div>
       </div>
     </div>

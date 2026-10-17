@@ -1,21 +1,15 @@
-import { motion } from 'framer-motion'
-import HeroScene from '../components/HeroScene'
-import ParticleField from '../components/ParticleField'
-import AnimatedCounter from '../components/AnimatedCounter'
-import StatsChart from '../components/StatsChart'
-import SectionHeader from '../components/SectionHeader'
-import GamificationBadge from '../components/GamificationBadge'
-import NewsCarousel from '../components/NewsCarousel'
-import VideoReel from '../components/VideoReel'
-import logoSrc from '@/imports/MediaShow.png'
+import { motion } from "framer-motion"
 
-const badges = [
-  { icon: '🔬', label: 'Investigador', description: '10 publicaciones indexadas', unlocked: true, xp: 500, rarity: 'rare' as const },
-  { icon: '🏆', label: 'Premio', description: 'Premio nacional de ciencia', unlocked: true, xp: 1000, rarity: 'epic' as const },
-  { icon: '🌐', label: 'Global', description: 'Colaboración internacional', unlocked: true, xp: 750, rarity: 'rare' as const },
-  { icon: '⚡', label: 'Innovador', description: 'Patente registrada', unlocked: false, xp: 2000, rarity: 'legendary' as const },
-  { icon: '📡', label: 'Difusor', description: '100k impresiones en medios', unlocked: false, xp: 600, rarity: 'epic' as const },
-]
+import HeroScene from "../components/HeroScene"
+import ParticleField from "../components/ParticleField"
+import StatsChart from "../components/StatsChart"
+
+import SectionHeader from "../components/SectionHeader"
+import NewsCarousel from "../components/NewsCarousel"
+import VideoReel from "../components/VideoReel"
+import ScrollStatsSection from "../components/sections/common/ScrollStatsSection"
+import Button from "../components/ui/Button"
+import logoSrc from "@/imports/MediaShow.png"
 
 export default function Home() {
   return (
@@ -37,54 +31,74 @@ export default function Home() {
                   src={logoSrc}
                   alt="MediaShow"
                   className="h-12 w-auto object-contain"
-                  style={{ filter: 'drop-shadow(0 0 10px rgba(14,154,147,0.4))' }}
+                  style={{
+                    filter: "drop-shadow(0 0 10px rgba(14,154,147,0.4))",
+                  }}
                 />
                 <div
                   className="h-px flex-1 max-w-24"
-                  style={{ background: 'linear-gradient(90deg, rgba(14,154,147,0.6), transparent)' }}
+                  style={{
+                    background:
+                      "linear-gradient(90deg, rgba(14,154,147,0.6), transparent)",
+                  }}
                 />
-                <span className="font-display text-xs tracking-widest" style={{ color: 'var(--primary)' }}>
+                <span
+                  className="font-display text-xs tracking-widest"
+                  style={{ color: "var(--primary)" }}
+                >
                   MEDIASHOW
                 </span>
               </div>
 
               <h1
                 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl leading-[1.05] mb-6"
-                style={{ color: 'var(--fg)' }}
+                style={{ color: "var(--fg)" }}
               >
-                CIENCIA QUE<br />
-                <span style={{ color: 'var(--primary)', textShadow: '0 0 32px rgba(14,154,147,0.35)' }}>
+                CIENCIA QUE
+                <br />
+                <span
+                  style={{
+                    color: "var(--primary)",
+                    textShadow: "0 0 32px rgba(14,154,147,0.35)",
+                  }}
+                >
                   TRANSFORMA
                 </span>
-                <br />EL FUTURO
+                <br />
+                EL FUTURO
               </h1>
 
-              <p className="font-body text-sm leading-relaxed mb-8 max-w-md" style={{ color: 'var(--fg-muted)' }}>
-                Explora el ecosistema académico del Programa de Ingeniería Multimedia. Descubre proyectos,
-                investigación y experiencias interactivas desarrolladas con{' '}
-                <strong style={{ color: 'var(--fg)' }}>
+              <p
+                className="font-body text-sm leading-relaxed mb-8 max-w-md"
+                style={{ color: "var(--fg-muted)" }}
+              >
+                Explora el ecosistema académico del Programa de Ingeniería
+                Multimedia. Descubre proyectos, investigación y experiencias
+                interactivas desarrolladas con{" "}
+                <strong style={{ color: "var(--fg)" }}>
                   nuevas tecnologías y gráficos mediante computadora
                 </strong>
-                , donde la creatividad y la innovación convergen para transformar ideas en soluciones digitales.
+                , donde la creatividad y la innovación convergen para
+                transformar ideas en soluciones digitales.
               </p>
 
-              <div className="flex flex-wrap gap-3">
-                <motion.button
-                  whileHover={{ scale: 1.03, boxShadow: '0 0 24px rgba(14,154,147,0.3)' }}
-                  whileTap={{ scale: 0.97 }}
-                  className="font-display text-xs tracking-widest px-6 py-3 rounded"
-                  style={{ background: 'var(--primary)', color: 'var(--bg)' }}
+              <div className="flex flex-wrap gap-4">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  asLink
+                  href="/investigacion"
                 >
                   EXPLORAR INVESTIGACIÓN
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="font-display text-xs tracking-widest px-6 py-3 rounded"
-                  style={{ border: '1px solid rgba(14,154,147,0.4)', color: 'var(--primary)', background: 'transparent' }}
+                </Button>
+                <Button
+                  variant="outline-primary"
+                  size="lg"
+                  asLink
+                  href="/about"
                 >
                   ÚNETE AL EQUIPO
-                </motion.button>
+                </Button>
               </div>
             </motion.div>
           </div>
@@ -105,25 +119,31 @@ export default function Home() {
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <div className="h-6 w-px" style={{ background: 'linear-gradient(180deg, transparent, var(--primary))' }} />
-          <div className="w-1 h-1 rounded-full" style={{ background: 'var(--primary)' }} />
+          <div
+            className="h-6 w-px"
+            style={{
+              background:
+                "linear-gradient(180deg, transparent, var(--primary))",
+            }}
+          />
+          <div
+            className="w-1 h-1 rounded-full"
+            style={{ background: "var(--primary)" }}
+          />
         </motion.div>
       </section>
 
-      {/* ── Stats ──────────────────────────────────────── */}
-      <section className="py-20" style={{ borderTop: '1px solid rgba(14,154,147,0.12)' }}>
-        <div className="max-w-screen-xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <AnimatedCounter value={0} label="Publicaciones" accent="primary" />
-            <AnimatedCounter value={8} label="Docentes" accent="secondary" />
-            <AnimatedCounter value={250} label="estudiantes" accent="accent" suffix="+" />
-            <AnimatedCounter value={10} label="Años" accent="primary" />
-          </div>
-        </div>
-      </section>
+      {/* ── Stats con efecto de scroll interactivo ──────── */}
+      <ScrollStatsSection
+        title="NUESTRO IMPACTO EN CIFRAS"
+        tag="MÉTRICAS DEL PROGRAMA"
+      />
 
       {/* ── Noticias + Carrusel ────────────────────────── */}
-      <section className="py-16" style={{ borderTop: '1px solid rgba(14,154,147,0.08)' }}>
+      <section
+        className="py-16"
+        style={{ borderTop: "1px solid rgba(14,154,147,0.08)" }}
+      >
         <div className="max-w-screen-xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-10 items-start">
             {/* Left — header + descripción */}
@@ -137,22 +157,51 @@ export default function Home() {
               <div className="mt-8 space-y-3">
                 {/* Mini list of categories */}
                 {[
-                  { icon: '', label: 'Convocatorias abiertas', value: '2 activas', color: '#2e9e6a' },
-                  { icon: '', label: 'Logros recientes', value: '3 este semestre', color: '#d6780a' },
-                  { icon: '', label: 'Publicaciones indexadas', value: '8 en 2025', color: '#2878b0' },
+                  {
+                    icon: "",
+                    label: "Convocatorias abiertas",
+                    value: "2 activas",
+                    color: "#2e9e6a",
+                  },
+
+                  {
+                    icon: "",
+                    label: "Logros recientes",
+                    value: "3 este semestre",
+                    color: "#d6780a",
+                  },
+
+                  {
+                    icon: "",
+                    label: "Publicaciones indexadas",
+                    value: "8 en 2025",
+                    color: "#2878b0",
+                  },
                 ].map((item) => (
                   <div
                     key={item.label}
                     className="flex items-center justify-between px-4 py-3 rounded-xl"
-                    style={{ background: 'var(--surface)', border: '1px solid var(--surface-2)' }}
+                    style={{
+                      background: "var(--surface)",
+                      border: "1px solid var(--surface-2)",
+                    }}
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-lg">{item.icon}</span>
-                      <span className="font-body text-sm" style={{ color: 'var(--fg)' }}>{item.label}</span>
+                      <span
+                        className="font-body text-sm"
+                        style={{ color: "var(--fg)" }}
+                      >
+                        {item.label}
+                      </span>
                     </div>
                     <span
                       className="font-display text-xs px-2 py-0.5 rounded-full"
-                      style={{ background: `${item.color}15`, color: item.color, border: `1px solid ${item.color}30` }}
+                      style={{
+                        background: `${item.color}15`,
+                        color: item.color,
+                        border: `1px solid ${item.color}30`,
+                      }}
                     >
                       {item.value}
                     </span>
@@ -165,7 +214,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
+              viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.5 }}
             >
               <NewsCarousel />
@@ -174,9 +223,11 @@ export default function Home() {
         </div>
       </section>
 
-
       {/* ── Produccion investigaccion ──────────────────────────────────────── */}
-      <section className="py-16" style={{ borderTop: '1px solid rgba(14,154,147,0.08)' }}>
+      <section
+        className="py-16"
+        style={{ borderTop: "1px solid rgba(14,154,147,0.08)" }}
+      >
         <div className="max-w-screen-xl mx-auto px-6">
           <SectionHeader
             label="Métricas"
@@ -190,8 +241,11 @@ export default function Home() {
         </div>
       </section>
 
-        {/* ── Video Reel ─────────────────────────────────── */}
-      <section className="py-16" style={{ borderTop: '1px solid rgba(14,154,147,0.08)' }}>
+      {/* ── Video Reel ─────────────────────────────────── */}
+      <section
+        className="py-16"
+        style={{ borderTop: "1px solid rgba(14,154,147,0.08)" }}
+      >
         <div className="max-w-screen-xl mx-auto px-6">
           <VideoReel
             videoId="0gQwwXwgSUs"
@@ -200,7 +254,6 @@ export default function Home() {
           />
         </div>
       </section>
-
 
       {/* ── insignias ───────────────────────────────── */}
       {/*<section className="py-16" style={{ borderTop: '1px solid rgba(14,154,147,0.08)' }}>
@@ -218,7 +271,6 @@ export default function Home() {
           </div>
         </div>
       </section>*/}
-      
     </div>
   )
 }

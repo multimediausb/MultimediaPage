@@ -1,20 +1,26 @@
 import { useState } from "react"
+
 import { motion } from "framer-motion"
 
 interface Props {
   videoId?: string
+
   title?: string
+
   description?: string
 }
 
 export default function VideoReel({
   videoId = "0gQwwXwgSUs",
+
   title = "MediaShow en Acción",
+
   description = "Conoce el trabajo del Programa de Ingeniería Multimedia — proyectos, investigaciones y experiencias interactivas que definen la frontera entre tecnología y creatividad.",
 }: Props) {
   const [playing, setPlaying] = useState(false)
 
   const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+
   const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`
 
   return (
@@ -38,8 +44,11 @@ export default function VideoReel({
           className="relative rounded-2xl overflow-hidden"
           style={{
             aspectRatio: "16/9",
+
             background: "#000",
+
             border: "1px solid var(--surface-2)",
+
             boxShadow: "0 16px 48px rgba(0,0,0,0.12)",
           }}
         >
@@ -60,6 +69,7 @@ export default function VideoReel({
                 className="absolute inset-0 w-full h-full object-cover"
                 onError={(e) => {
                   // Fallback to hqdefault if maxresdefault not available
+
                   ;(e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
                 }}
               />
@@ -82,6 +92,7 @@ export default function VideoReel({
                   className="w-16 h-16 rounded-full flex items-center justify-center"
                   style={{
                     background: "var(--secondary)",
+
                     boxShadow: "0 0 32px rgba(214,120,10,0.5)",
                   }}
                 >
@@ -103,7 +114,9 @@ export default function VideoReel({
                 className="absolute bottom-3 right-3 font-display text-xs px-2 py-0.5 rounded"
                 style={{
                   background: "rgba(0,0,0,0.6)",
+
                   color: "#fff",
+
                   backdropFilter: "blur(4px)",
                 }}
               >
@@ -150,7 +163,9 @@ export default function VideoReel({
           <div className="flex flex-wrap gap-3">
             {[
               { icon: "", label: "Proyectos estudiantiles" },
+
               { icon: "", label: "Investigación aplicada" },
+
               { icon: "", label: "Innovación tecnológica" },
             ].map((tag) => (
               <span
@@ -158,7 +173,9 @@ export default function VideoReel({
                 className="flex items-center gap-2 font-display text-xs px-3 py-1.5 rounded-full"
                 style={{
                   background: "var(--surface)",
+
                   border: "1px solid var(--surface-2)",
+
                   color: "var(--fg-muted)",
                 }}
               >
