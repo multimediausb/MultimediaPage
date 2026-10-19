@@ -10,33 +10,30 @@ import siteConfiguration from "./.figma/make/site.json"
 
 // Vite config — https://vitejs.dev/config/
 
+
 export default defineConfig(({ mode }) => {
   // .figma/make/deploy-preview passes `--mode development` for cached-preview builds.
-
-  const emitSourcemaps = mode === "development"
+  const emitSourcemaps = mode === "development";
 
   return {
     base: process.env.FIGMA_PUBLIC_URL
       ? `${process.env.FIGMA_PUBLIC_URL}/`
       : "/",
 
+    // Reconocer archivos FBX como recursos estáticos
+    assetsInclude: ["**/*.fbx"],
+
     build: {
       sourcemap: emitSourcemaps ? "inline" : false,
-
       minify: !emitSourcemaps,
     },
 
     plugins: [
       react(),
-
       tailwindcss(),
-
       figmaSiteConfiguration(siteConfiguration),
-
       figmaErrorOverlayReplay(),
-
       figmaReactRefreshBoundaryFallback(),
-
       figmaMakeKitPlugin({ storiesGlob: "/src/**/*.stories.{ts,tsx,js,jsx}" }),
     ],
 
@@ -48,21 +45,17 @@ export default defineConfig(({ mode }) => {
 
     server: {
       host: "0.0.0.0",
-
       port: parseInt(process.env.PORT || "8443"),
-
       strictPort: true,
-
       watch: { ignored: ["**/.figma/**"] },
     },
 
     preview: {
       host: "0.0.0.0",
-
       port: parseInt(process.env.PORT || "8443"),
     },
-  }
-})
+  };
+});
 
 type FigmaSiteConfiguration = {
   title?: string

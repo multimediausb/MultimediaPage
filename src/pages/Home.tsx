@@ -1,138 +1,20 @@
 import { motion } from "framer-motion"
 
-import HeroScene from "../components/HeroScene"
-import ParticleField from "../components/ParticleField"
+
 import StatsChart from "../components/StatsChart"
+import Hero from "../components/sections/Home/hero"
 
 import SectionHeader from "../components/SectionHeader"
 import NewsCarousel from "../components/NewsCarousel"
 import VideoReel from "../components/VideoReel"
 import ScrollStatsSection from "../components/sections/common/ScrollStatsSection"
-import Button from "../components/ui/Button"
-import logoSrc from "@/imports/MediaShow.png"
+
 
 export default function Home() {
   return (
     <div className="relative">
       {/* ── Hero ───────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center overflow-hidden grid-bg">
-        <ParticleField />
-
-        <div className="relative z-10 max-w-screen-xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center py-28">
-          <div>
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              {/* Logo + label */}
-              <div className="flex items-center gap-4 mb-8">
-                <img
-                  src={logoSrc}
-                  alt="MediaShow"
-                  className="h-12 w-auto object-contain"
-                  style={{
-                    filter: "drop-shadow(0 0 10px rgba(14,154,147,0.4))",
-                  }}
-                />
-                <div
-                  className="h-px flex-1 max-w-24"
-                  style={{
-                    background:
-                      "linear-gradient(90deg, rgba(14,154,147,0.6), transparent)",
-                  }}
-                />
-                <span
-                  className="font-display text-xs tracking-widest"
-                  style={{ color: "var(--primary)" }}
-                >
-                  MEDIASHOW
-                </span>
-              </div>
-
-              <h1
-                className="font-display font-bold text-4xl md:text-5xl lg:text-6xl leading-[1.05] mb-6"
-                style={{ color: "var(--fg)" }}
-              >
-                CIENCIA QUE
-                <br />
-                <span
-                  style={{
-                    color: "var(--primary)",
-                    textShadow: "0 0 32px rgba(14,154,147,0.35)",
-                  }}
-                >
-                  TRANSFORMA
-                </span>
-                <br />
-                EL FUTURO
-              </h1>
-
-              <p
-                className="font-body text-sm leading-relaxed mb-8 max-w-md"
-                style={{ color: "var(--fg-muted)" }}
-              >
-                Explora el ecosistema académico del Programa de Ingeniería
-                Multimedia. Descubre proyectos, investigación y experiencias
-                interactivas desarrolladas con{" "}
-                <strong style={{ color: "var(--fg)" }}>
-                  nuevas tecnologías y gráficos mediante computadora
-                </strong>
-                , donde la creatividad y la innovación convergen para
-                transformar ideas en soluciones digitales.
-              </p>
-
-              <div className="flex flex-wrap gap-4">
-                <Button
-                  variant="primary"
-                  size="lg"
-                  asLink
-                  href="/investigacion"
-                >
-                  EXPLORAR INVESTIGACIÓN
-                </Button>
-                <Button
-                  variant="outline-primary"
-                  size="lg"
-                  asLink
-                  href="/about"
-                >
-                  ÚNETE AL EQUIPO
-                </Button>
-              </div>
-            </motion.div>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="h-80 lg:h-[480px] relative"
-          >
-            <HeroScene />
-          </motion.div>
-        </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <div
-            className="h-6 w-px"
-            style={{
-              background:
-                "linear-gradient(180deg, transparent, var(--primary))",
-            }}
-          />
-          <div
-            className="w-1 h-1 rounded-full"
-            style={{ background: "var(--primary)" }}
-          />
-        </motion.div>
-      </section>
-
+      <Hero />
       {/* ── Stats con efecto de scroll interactivo ──────── */}
       <ScrollStatsSection
         title="NUESTRO IMPACTO EN CIFRAS"

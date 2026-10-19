@@ -1,211 +1,402 @@
-import { useRef, useEffect } from "react"
 
-import * as THREE from "three"
+import { useRef, useEffect } from "react";
+import * as THREE from "three";
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
+import MODEL_PATH from "../assets/Models/Canon_AT-1.fbx";
+
+// Colores del wireframe
+const OUTLINE_COLORS = {
+  primary: 0x32c9cc, // Cian
+  accent: 0xf3880b,  // Naranja
+};
+
+const OUTLINE_OPACITY = 0.9;
+const MODEL_SIZE = 4;
+
+// true: todas las aristas de la triangulación
+// false: solo aristas marcadas
+const FULL_WIREFRAME = true;
+const EDGE_ANGLE_THRESHOLD = 20;
+
+// Mostrar el sólido detrás de las líneas
+const SHOW_SOLID = false;
+
+// Asignación manual de colores por nombre de Mesh
+// Las piezas que no estén en esta lista usarán el cian.
+const MESH_COLORS: Record<string, number> = {
+  "#CAM0001_Body": OUTLINE_COLORS.primary,
+  "#CAM0001_Battery_Check": OUTLINE_COLORS.accent,
+  "#CAM0001_Film_Advance": OUTLINE_COLORS.accent,
+  "#CAM0001_Shutter_Speed": OUTLINE_COLORS.accent,
+  "#CAM0001_Shutter": OUTLINE_COLORS.accent,
+  "#CAM0001_Spool": OUTLINE_COLORS.accent,
+};
+
+// Diagnóstico de la jerarquía del FBX
+const DEBUG_LOG_NAMES = true;
 
 export default function HeroScene() {
-  const mountRef = useRef<HTMLDivElement>(null)
+  const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const mount = mountRef.current
+    const mount = mountRef.current;
+    if (!mount) return;
 
-    if (!mount) return
+    const width = mount.clientWidth;
+    const height = mount.clientHeight;
 
-    const w = mount.clientWidth
-
-    const h = mount.clientHeight
+    if (!width || !height) return;
 
     // Renderer
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+    });
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+    mount.appendChild(renderer.domElement);
 
-    renderer.setSize(w, h)
+    // Escena y cámara
+    const scene = new THREE.Scene();
 
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    const camera = new THREE.PerspectiveCamera(
+      50,
+      width / height,
+      0.1,
+      100
+    );
 
-    renderer.setClearColor(0x000000, 0)
+    camera.position.z = 5;
 
-    mount.appendChild(renderer.domElement)
+    // Iluminación
+    scene.add(new THREE.AmbientLight(0xffffff, 2));
 
-    // Scene & camera
+    const light = new THREE.DirectionalLight(0xffffff, 2);
+    light.position.set(3, 5, 5);
+    scene.add(light);
 
-    const scene = new THREE.Scene()
+    // Grupo que controla la rotación del modelo
+    const modelRoot = new THREE.Group();
+    scene.add(modelRoot);
 
-    const camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 100)
+    let model: THREE.Group | null = null;
 
-    camera.position.z = 5
+    const wireframeMaterials = new Set<THREE.Material>();
+    const wireframeGeometries = new Set<THREE.BufferGeometry>();
 
-    // Outer wireframe icosahedron
-
-    const icoGeo = new THREE.IcosahedronGeometry(1.6, 1)
-
-    const icoMat = new THREE.MeshBasicMaterial({
-      color: 0x1ab5ad,
-
-      wireframe: true,
-
+    // Material fantasma para el sólido
+    const ghostMaterial = new THREE.MeshBasicMaterial({
+      color: 0x000000,
       transparent: true,
+      opacity: SHOW_SOLID ? 0.35 : 0,
+      depthWrite: SHOW_SOLID,
+      polygonOffset: true,
+      polygonOffsetFactor: 1,
+      polygonOffsetUnits: 1,
+    });
 
-      opacity: 0.28,
-    })
-
-    const ico = new THREE.Mesh(icoGeo, icoMat)
-
-    scene.add(ico)
-
-    // Inner solid icosahedron — orange tint from logo diamond
-
-    const innerGeo = new THREE.IcosahedronGeometry(0.9, 0)
-
-    const innerMat = new THREE.MeshBasicMaterial({
-      color: 0xe8870c,
-
-      wireframe: true,
-
+    // Material principal: cian
+    const primaryLineMaterial = new THREE.LineBasicMaterial({
+      color: OUTLINE_COLORS.primary,
       transparent: true,
+      opacity: OUTLINE_OPACITY,
+      depthTest: true,
+      depthWrite: false,
+      toneMapped: false,
+    });
 
-      opacity: 0.4,
-    })
-
-    const inner = new THREE.Mesh(innerGeo, innerMat)
-
-    scene.add(inner)
-
-    // Orbiting particles
-
-    const particleCount = 200
-
-    const positions = new Float32Array(particleCount * 3)
-
-    for (let i = 0; i < particleCount; i++) {
-      const theta = Math.random() * Math.PI * 2
-
-      const phi = Math.acos(2 * Math.random() - 1)
-
-      const r = 1.6 + Math.random() * 1.2
-
-      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta)
-
-      positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta)
-
-      positions[i * 3 + 2] = r * Math.cos(phi)
-    }
-
-    const pGeo = new THREE.BufferGeometry()
-
-    pGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3))
-
-    const pMat = new THREE.PointsMaterial({
-      color: 0x1ab5ad,
-
-      size: 0.035,
-
+    // Material de acento: naranja
+    const accentLineMaterial = new THREE.LineBasicMaterial({
+      color: OUTLINE_COLORS.accent,
       transparent: true,
+      opacity: OUTLINE_OPACITY,
+      depthTest: true,
+      depthWrite: false,
+      toneMapped: false,
+    });
 
-      opacity: 0.7,
-    })
+    wireframeMaterials.add(primaryLineMaterial);
+    wireframeMaterials.add(accentLineMaterial);
 
-    const points = new THREE.Points(pGeo, pMat)
+    // Seleccionar material por el nombre exacto de la pieza
+    const pickLineMaterial = (
+      mesh: THREE.Mesh
+    ): THREE.LineBasicMaterial => {
+      const color = MESH_COLORS[mesh.name];
 
-    scene.add(points)
+      if (color === OUTLINE_COLORS.accent) {
+        return accentLineMaterial;
+      }
 
-    // Accent ring
+      return primaryLineMaterial;
+    };
 
-    const ringGeo = new THREE.TorusGeometry(2.2, 0.008, 2, 80)
+    const loader = new FBXLoader();
 
-    const ringMat = new THREE.MeshBasicMaterial({
-      color: 0x3a8fc7,
+    loader.load(
+      MODEL_PATH,
+      (fbx) => {
+        model = fbx;
 
-      transparent: true,
+        // Centrar y escalar el modelo sin modificar la cámara
+        const box = new THREE.Box3().setFromObject(fbx);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
 
-      opacity: 0.5,
-    })
+        const maxDimension = Math.max(
+          size.x,
+          size.y,
+          size.z
+        );
 
-    const ring = new THREE.Mesh(ringGeo, ringMat)
+        const scaleFactor =
+          maxDimension > 0 ? MODEL_SIZE / maxDimension : 1;
 
-    ring.rotation.x = Math.PI / 3
+        fbx.scale.setScalar(scaleFactor);
+        fbx.position.sub(
+          center.clone().multiplyScalar(scaleFactor)
+        );
 
-    scene.add(ring)
+        // -----------------------------------------------
+        // DIAGNÓSTICO DE LA ESTRUCTURA DEL FBX
+        // -----------------------------------------------
 
-    // Mouse parallax
+        const meshes: THREE.Mesh[] = [];
 
-    let mouseX = 0
+        let totalObjects = 0;
+        let totalGroups = 0;
 
-    let mouseY = 0
+        console.group("Canon_AT-1 | Diagnóstico del FBX");
 
-    const onMouse = (e: MouseEvent) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 2
+        fbx.traverse((object) => {
+          totalObjects++;
 
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 2
-    }
+          if (object instanceof THREE.Group) {
+            totalGroups++;
+          }
 
-    window.addEventListener("mousemove", onMouse)
+          if (object instanceof THREE.Mesh) {
+            meshes.push(object);
+          }
+
+          if (DEBUG_LOG_NAMES) {
+            const mesh =
+              object instanceof THREE.Mesh ? object : null;
+
+            console.log({
+              tipo: object.type,
+              nombre: object.name || "(sin nombre)",
+              padre: object.parent?.name || "(raíz)",
+              hijosDirectos: object.children.length,
+              esMesh: Boolean(mesh),
+              geometria: mesh?.geometry.type,
+              vertices:
+                mesh?.geometry.attributes.position?.count ?? 0,
+              triangulos: mesh
+                ? mesh.geometry.index
+                  ? mesh.geometry.index.count / 3
+                  : (mesh.geometry.attributes.position?.count ?? 0) / 3
+                : undefined,
+            });
+          }
+        });
+
+        console.log("Resumen de la jerarquía:", {
+          objetosTotales: totalObjects,
+          grupos: totalGroups,
+          meshes: meshes.length,
+          coloresDisponibles: Object.keys(OUTLINE_COLORS).length,
+        });
+
+        console.table(
+          meshes.map((mesh, index) => {
+            const meshBox = new THREE.Box3().setFromObject(mesh);
+            const meshSize = meshBox.getSize(
+              new THREE.Vector3()
+            );
+
+            const material = pickLineMaterial(mesh);
+
+            return {
+              indice: index,
+              nombre: mesh.name || `Mesh_${index}`,
+              padre: mesh.parent?.name || "(raíz)",
+              hijos: mesh.children.length,
+              vertices:
+                mesh.geometry.attributes.position?.count ?? 0,
+              ancho: Number(meshSize.x.toFixed(3)),
+              alto: Number(meshSize.y.toFixed(3)),
+              profundidad: Number(meshSize.z.toFixed(3)),
+              color: `#${material.color.getHexString()}`,
+              asignacion: MESH_COLORS[mesh.name]
+                ? "Personalizado"
+                : "Color principal por defecto",
+            };
+          })
+        );
+
+        console.groupEnd();
+
+        // -----------------------------------------------
+        // CREAR EL WIREFRAME DE CADA MESH
+        // -----------------------------------------------
+
+        meshes.forEach((mesh, index) => {
+          const lineGeometry = FULL_WIREFRAME
+            ? new THREE.WireframeGeometry(mesh.geometry)
+            : new THREE.EdgesGeometry(
+                mesh.geometry,
+                EDGE_ANGLE_THRESHOLD
+              );
+
+          wireframeGeometries.add(lineGeometry);
+
+          const lineMaterial = pickLineMaterial(mesh);
+
+          console.log(
+            `[Wireframe ${index}]`,
+            mesh.name || `Mesh_${index}`,
+            `Color: #${lineMaterial.color.getHexString()}`
+          );
+
+          const lines = new THREE.LineSegments(
+            lineGeometry,
+            lineMaterial
+          );
+
+          lines.name = `Wireframe_${mesh.name || index}`;
+          lines.renderOrder = 1;
+
+          // Hereda la transformación de la malla
+          mesh.add(lines);
+
+          // Guardar material original para la limpieza
+          mesh.userData.originalMaterial = mesh.material;
+
+          // Ocultar el sólido si SHOW_SOLID es false
+          mesh.material = ghostMaterial;
+        });
+
+        console.info(
+          `Wireframe generado: ${meshes.length} mallas procesadas.`
+        );
+
+        modelRoot.add(fbx);
+      },
+      undefined,
+      (error) => {
+        console.error("Error al cargar el FBX:", error);
+      }
+    );
+
+    // Seguimiento del mouse
+    let mouseX = 0;
+    let mouseY = 0;
+
+    const onMouseMove = (event: MouseEvent) => {
+      const rect = mount.getBoundingClientRect();
+
+      if (!rect.width || !rect.height) return;
+
+      mouseX =
+        ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+
+      mouseY =
+        ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+    };
+
+    mount.addEventListener("mousemove", onMouseMove);
 
     // Resize
-
     const onResize = () => {
-      const nw = mount.clientWidth
+      const w = mount.clientWidth;
+      const h = mount.clientHeight;
 
-      const nh = mount.clientHeight
+      if (!w || !h) return;
 
-      camera.aspect = nw / nh
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    };
 
-      camera.updateProjectionMatrix()
+    window.addEventListener("resize", onResize);
 
-      renderer.setSize(nw, nh)
-    }
-
-    window.addEventListener("resize", onResize)
-
-    // Animate
-
-    let frame: number
-
-    const timer = new THREE.Timer()
+    // Animación
+    let frameId = 0;
 
     const animate = () => {
-      frame = requestAnimationFrame(animate)
+      frameId = requestAnimationFrame(animate);
 
-      timer.update()
+      const targetY = mouseX * 0.6;
+      const targetX = mouseY * 0.3;
 
-      const t = timer.getElapsed()
+      modelRoot.rotation.y +=
+        (targetY - modelRoot.rotation.y) * 0.05;
 
-      ico.rotation.y = t * 0.18
+      modelRoot.rotation.x +=
+        (targetX - modelRoot.rotation.x) * 0.05;
 
-      ico.rotation.x = t * 0.09
+      renderer.render(scene, camera);
+    };
 
-      inner.rotation.y = -t * 0.28
+    animate();
 
-      inner.rotation.z = t * 0.12
-
-      points.rotation.y = t * 0.06
-
-      ring.rotation.z = t * 0.04
-
-      // Parallax
-
-      scene.rotation.x += (mouseY * 0.15 - scene.rotation.x) * 0.05
-
-      scene.rotation.y += (mouseX * 0.15 - scene.rotation.y) * 0.05
-
-      renderer.render(scene, camera)
-    }
-
-    animate()
-
+    // Limpieza
     return () => {
-      cancelAnimationFrame(frame)
+      cancelAnimationFrame(frameId);
 
-      window.removeEventListener("mousemove", onMouse)
+      mount.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("resize", onResize);
 
-      window.removeEventListener("resize", onResize)
+      scene.remove(modelRoot);
 
-      renderer.dispose()
+      wireframeGeometries.forEach((geometry) => {
+        geometry.dispose();
+      });
+
+      wireframeMaterials.forEach((material) => {
+        material.dispose();
+      });
+
+      ghostMaterial.dispose();
+
+      if (model) {
+        const geometries = new Set<THREE.BufferGeometry>();
+        const materials = new Set<THREE.Material>();
+
+        model.traverse((object) => {
+          if (!(object instanceof THREE.Mesh)) return;
+
+          geometries.add(object.geometry);
+
+          const original = object.userData.originalMaterial;
+
+          if (original) {
+            (Array.isArray(original) ? original : [original])
+              .forEach((material) => {
+                materials.add(material);
+              });
+          }
+        });
+
+        geometries.forEach((geometry) => {
+          geometry.dispose();
+        });
+
+        materials.forEach((material) => {
+          material.dispose();
+        }); 
+      }
+
+      renderer.dispose();
 
       if (mount.contains(renderer.domElement)) {
-        mount.removeChild(renderer.domElement)
+        mount.removeChild(renderer.domElement);
       }
-    }
-  }, [])
+    };
+  }, []);
 
-  return <div ref={mountRef} className="w-full h-full" />
+  return <div ref={mountRef} className="w-full h-full" />;
 }
