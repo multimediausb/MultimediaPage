@@ -2,7 +2,7 @@ import { motion } from "framer-motion"
 
 
 import StatsChart from "../components/StatsChart"
-import Hero from "../components/sections/Home/hero"
+import HeroSection from "../components/sections/common/Hero"
 
 import SectionHeader from "../components/SectionHeader"
 import NewsCarousel from "../components/NewsCarousel"
@@ -14,12 +14,9 @@ export default function Home() {
   return (
     <div className="relative">
       {/* ── Hero ───────────────────────────────────────── */}
-      <Hero />
+      <HeroSection />
       {/* ── Stats con efecto de scroll interactivo ──────── */}
-      <ScrollStatsSection
-        title="NUESTRO IMPACTO EN CIFRAS"
-        tag="MÉTRICAS DEL PROGRAMA"
-      />
+      <ScrollStatsSection />
 
       {/* ── Noticias + Carrusel ────────────────────────── */}
       <section
@@ -156,3 +153,5 @@ export default function Home() {
     </div>
   )
 }
+
+

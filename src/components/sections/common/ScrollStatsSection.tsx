@@ -1,266 +1,183 @@
+
 import { useRef } from "react"
-import { motion, useScroll, useTransform, useSpring } from "framer-motion"
-import Button from "../../ui/Button"
+import { motion, useScroll, useSpring, useTransform } from "framer-motion"
 import Badge from "../../ui/Badge"
+import StatsCube3D from "../../graphics/StatsCube3D"
 
-interface StatItem {
-  number: string
-  label: string
-  subtext: string
-  category: "trayectoria" | "global" | "comunidad" | "investigacion" | "tecnologia"
-  accent: "primary" | "secondary" | "tertiary"
-}
-
-const statsData: StatItem[] = [
+const statsData = [
   {
     number: "25+",
     label: "AÑOS DE HISTORIA",
     subtext:
       "Formando líderes en ingeniería multimedia y producción interactiva de alto nivel.",
-    category: "trayectoria",
-    accent: "primary",
   },
   {
     number: "40+",
     label: "CONVENIOS GLOBALES",
     subtext:
-      "Alianzas internacionales con instituciones y laboratorios de primer nivel como el MIT Media Lab.",
-    category: "global",
-    accent: "secondary",
+      "Alianzas internacionales con instituciones y laboratorios de primer nivel.",
   },
   {
     number: "250+",
     label: "ESTUDIANTES ACTIVOS",
     subtext:
       "Talento joven creando experiencias interactivas, videojuegos, VFX y animación digital.",
-    category: "comunidad",
-    accent: "tertiary",
   },
   {
     number: "15+",
-    label: "SEMILLEROS & GRUPOS",
+    label: "SEMILLEROS Y GRUPOS",
     subtext:
       "Equipos multidisciplinarios de investigación aplicada en constante producción.",
-    category: "investigacion",
-    accent: "primary",
   },
   {
     number: "7",
-    label: "LABORATORIOS TOP",
+    label: "LABORATORIOS",
     subtext:
-      "Espacios dotados con hardware de captura de movimiento, renderizado y computación gráfica.",
-    category: "tecnologia",
-    accent: "secondary",
+      "Espacios dotados con tecnología para captura de movimiento, renderizado y computación gráfica.",
   },
 ]
 
-export default function ScrollStatsSection({
-  title = "MÉTRICAS QUE MARCAN LA DIFERENCIA",
-  tag = "IMPACTO EN CIFRAS",
-}: {
-  title?: string
-  tag?: string
-}) {
-  const containerRef = useRef<HTMLDivElement>(null)
+export default function ScrollStatsSection() {
+  const sectionRef = useRef<HTMLElement>(null)
 
   const { scrollYProgress } = useScroll({
-    target: containerRef,
+    target: sectionRef,
     offset: ["start start", "end end"],
   })
 
-  // Suavizado de la animación de scroll
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 70,
-    damping: 20,
+    damping: 24,
     restDelta: 0.001,
   })
 
-  // Transformaciones para el título y cabecera
-  const headerScale = useTransform(smoothProgress, [0, 0.25], [0.92, 1.05])
-  const headerOpacity = useTransform(
+  // El cubo completa su recorrido antes de terminar
+  // el scroll de toda la sección.
+  const cubeProgress = useTransform(
     smoothProgress,
-    [0, 0.15, 0.85, 1],
-    [0.3, 1, 1, 0.4],
+    [0.05, 0.78],
+    [0, 1],
+    { clamp: true },
   )
 
-  // Desplazamiento horizontal de las tarjetas con efecto parallax
-  const xTranslation = useTransform(smoothProgress, [0.1, 0.85], [
-    "18%",
-    "-75%",
-  ])
-  const backgroundY = useTransform(smoothProgress, [0, 1], ["0%", "30%"])
-  const glowScale = useTransform(smoothProgress, [0, 0.5, 1], [0.8, 1.3, 0.9])
+  const gridY = useTransform(
+    smoothProgress,
+    [0, 1],
+    ["0%", "20%"],
+  )
 
   return (
-    <div
-      ref={containerRef}
-      className="relative w-full h-[260vh] bg-neutral-950 text-white select-none"
+    <section
+      ref={sectionRef}
+      className="relative h-[300vh] bg-neutral-950 text-white"
       style={{
         background:
-          "radial-gradient(ellipse at 50% 30%, #0c2128 0%, #060d11 60%, #030608 100%)",
+          "radial-gradient(ellipse at 70% 35%, #0c2128 0%, #060d11 60%, #030608 100%)",
       }}
     >
-      {/* Contenedor Fijo (Sticky Viewport) */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-between py-12 px-6 lg:px-16 z-10">
-        {/* Fondo decorativo con rejilla y brillo con movimiento por scroll */}
+      <div className="sticky top-0 h-screen overflow-hidden">
+        {/* Cuadrícula de fondo */}
         <motion.div
-          style={{ y: backgroundY }}
+          style={{ y: gridY }}
           className="absolute inset-0 pointer-events-none opacity-20"
         >
           <div
-            className="w-full h-full"
+            className="h-full w-full"
             style={{
-              backgroundImage: `linear-gradient(rgba(50, 201, 204, 0.15) 1px, transparent 1px),
-                                linear-gradient(90deg, rgba(50, 201, 204, 0.15) 1px, transparent 1px)`,
+              backgroundImage: `
+                linear-gradient(rgba(50, 201, 204, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(50, 201, 204, 0.15) 1px, transparent 1px)
+              `,
               backgroundSize: "60px 60px",
             }}
           />
         </motion.div>
 
-        {/* Ambient Glows interactivos */}
-        <motion.div
-          style={{ scale: glowScale }}
-          className="absolute top-1/4 left-1/3 w-[500px] h-[500px] rounded-full pointer-events-none blur-[120px]"
-          animate={{
-            background: [
-              "radial-gradient(circle, rgba(50, 201, 204, 0.25) 0%, transparent 70%)",
-              "radial-gradient(circle, rgba(243, 136, 11, 0.22) 0%, transparent 70%)",
-              "radial-gradient(circle, rgba(47, 141, 207, 0.25) 0%, transparent 70%)",
-            ],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-        />
+        <div className="relative z-10 mx-auto grid h-full max-w-screen-xl grid-cols-1 items-center gap-8 px-6 py-12 md:grid-cols-2 lg:px-16">
+          {/* Izquierda: estadísticas */}
+          <div className="relative z-20 flex h-full flex-col justify-center py-10">
+            <div className="mb-8">
+              <div className="mb-4">
+                <Badge variant="primary" pulse>
+                  IMPACTO EN CIFRAS
+                </Badge>
+              </div>
 
-        {/* Header superior del Scroll Section */}
-        <motion.div
-          style={{ scale: headerScale, opacity: headerOpacity }}
-          className="relative z-20 max-w-screen-xl mx-auto w-full text-center"
-        >
-          <div className="inline-flex items-center gap-2 mb-3">
-            <span className="w-8 h-px bg-primary-400" />
-            <Badge variant="primary" pulse>
-              {tag}
-            </Badge>
-            <span className="w-8 h-px bg-primary-400" />
-          </div>
-          <h2 className="text-h3 md:text-h2 font-heading tracking-tight text-white mb-2">
-            {title}
-          </h2>
-          <p className="text-b3 font-display text-neutral-400 max-w-xl mx-auto">
-            Desliza para explorar la evolución, capacidades científicas y
-            proyección de nuestra comunidad.
-          </p>
-        </motion.div>
+              <h2 className="text-h3 md:text-h2 font-heading tracking-tight text-white">
+                MÉTRICAS QUE MARCAN LA DIFERENCIA
+              </h2>
 
-        {/* Carrusel interactivo guiado por Scroll (Horizontal Movement) */}
-        <div className="relative z-20 w-full overflow-hidden my-auto py-6">
-          <motion.div
-            style={{ x: xTranslation }}
-            className="flex gap-8 items-center w-max pl-8"
-          >
-            {statsData.map((stat, index) => {
-              const borderAccent =
-                stat.accent === "primary"
-                  ? "var(--color-primary-400)"
-                  : stat.accent === "secondary"
-                    ? "var(--color-secondary-400)"
-                    : "var(--color-tertiary-400)"
+              <p className="mt-4 max-w-lg text-b3 font-display leading-relaxed text-neutral-400">
+                Conoce la trayectoria, las capacidades científicas
+                y el alcance de nuestra comunidad.
+              </p>
+            </div>
 
-              const shadowAccent =
-                stat.accent === "primary"
-                  ? "var(--shadow-turquoise-normal-light)"
-                  : stat.accent === "secondary"
-                    ? "var(--shadow-orange-normal-light)"
-                    : "var(--shadow-blue-normal-light)"
-
-              return (
-                <div
-                  key={index}
-                  className="w-[340px] md:w-[420px] rounded-2xl p-8 backdrop-blur-xl transition-all duration-300 relative group"
+            <div className="space-y-5">
+              {statsData.map((stat, index) => (
+                <motion.article
+                  key={stat.label}
+                  className="border-l-2 border-primary-400/50 pl-5"
                   style={{
-                    background: "rgba(10, 24, 28, 0.75)",
-                    border: `1.5px solid ${borderAccent}`,
-                    boxShadow: shadowAccent,
+                    opacity: useTransform(
+                      smoothProgress,
+                      [
+                        Math.max(0, index / statsData.length - 0.1),
+                        index / statsData.length + 0.1,
+                        Math.min(1, index / statsData.length + 0.3),
+                      ],
+                      [0.4, 1, 0.65],
+                    ),
                   }}
                 >
-                  <div className="flex items-center justify-between mb-6">
-                    <span
-                      className="text-b4 font-display px-3 py-1 rounded-full uppercase tracking-wider"
-                      style={{
-                        background: "rgba(255,255,255,0.06)",
-                        color: borderAccent,
-                        border: `1px solid ${borderAccent}40`,
-                      }}
-                    >
-                      {stat.category}
+                  <div className="flex items-baseline gap-4">
+                    <span className="text-3xl font-bold tracking-tight text-primary-400 md:text-4xl">
+                      {stat.number}
                     </span>
-                    <span className="text-b4 font-display text-neutral-500">
-                      0{index + 1} / 0{statsData.length}
-                    </span>
+
+                    <h3 className="text-sm font-heading tracking-wide text-white md:text-base">
+                      {stat.label}
+                    </h3>
                   </div>
 
-                  <div
-                    className="text-h1 font-heading text-5xl md:text-6xl font-bold mb-4 tracking-tight"
-                    style={{
-                      color: borderAccent,
-                      textShadow: `0 0 28px ${borderAccent}60`,
-                    }}
-                  >
-                    {stat.number}
-                  </div>
-
-                  <h3 className="text-h5 font-heading text-white mb-3">
-                    {stat.label}
-                  </h3>
-
-                  <p className="text-b2 font-display text-neutral-300 leading-relaxed mb-6">
+                  <p className="mt-2 max-w-md text-sm leading-relaxed text-neutral-400">
                     {stat.subtext}
                   </p>
-
-                  <div className="w-full h-1 bg-neutral-800 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{
-                        background: borderAccent,
-                        width: `${((index + 1) / statsData.length) * 100}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-              )
-            })}
-          </motion.div>
-        </div>
-
-        {/* Footer y Barra de Progreso del Scroll */}
-        <div className="relative z-20 max-w-screen-xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-neutral-800/60">
-          <div className="flex items-center gap-3">
-            <span className="text-b4 font-display text-neutral-400 uppercase tracking-widest">
-              PROGRESO DE DESPLAZAMIENTO
-            </span>
-            <div className="w-36 h-1.5 bg-neutral-800 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-primary-400 rounded-full"
-                style={{ scaleX: smoothProgress, transformOrigin: "0%" }}
-              />
+                </motion.article>
+              ))}
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <span className="text-b4 font-display text-neutral-500 hidden sm:inline">
-              Scroll interactivo activo
-            </span>
-            <Button
-              variant="outline-primary"
-              size="sm"
-              asLink
-              href="/investigacion"
-            >
-              EXPLORAR SEMILLEROS
-            </Button>
+          {/* Derecha: escena 3D */}
+          <div className="relative hidden h-[75vh] min-h-[400px] md:block">
+            <div className="absolute inset-0 rounded-full bg-primary-400/5 blur-3xl" />
+
+            <div className="sticky top-[12.5vh] h-[75vh] overflow-hidden">
+              <StatsCube3D progress={cubeProgress.get()} />
+            </div>
+
+            <div className="pointer-events-none absolute bottom-4 left-0 right-0 text-center">
+              <span className="text-xs tracking-[0.3em] text-neutral-500">
+                EXPLORANDO NUESTRA EVOLUCIÓN
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Indicador inferior */}
+        <div className="absolute bottom-5 left-6 right-6 z-20 flex items-center gap-4 lg:left-16 lg:right-16">
+          <span className="text-xs tracking-widest text-neutral-500">
+            SCROLL
+          </span>
+
+          <div className="h-px flex-1 overflow-hidden bg-neutral-800">
+            <motion.div
+              className="h-full origin-left bg-primary-400"
+              style={{ scaleX: smoothProgress }}
+            />
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }

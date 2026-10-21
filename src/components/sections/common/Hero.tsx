@@ -4,7 +4,6 @@ import { motion } from "framer-motion"
 import HeroScene from "../../HeroScene"
 import ParticleField from "../../ParticleField"
 import Button from "../../ui/Button"
-import logoSrc from "@/imports/MediaShow.png"
 
 export default function Hero() {
   return (

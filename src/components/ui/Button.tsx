@@ -37,7 +37,7 @@ const sizeMap: Record<ButtonSize, SizeConfig> = {
     fontSize: "11px",
     padding: "6px 14px",
     gap: "6px",
-    cornerLength: 6,
+    cornerLength: 14,
     cornerThickness: 1.5,
     frameGap: 3,
     pressShrink: 2,
@@ -46,7 +46,7 @@ const sizeMap: Record<ButtonSize, SizeConfig> = {
     fontSize: "13px",
     padding: "9px 20px",
     gap: "8px",
-    cornerLength: 8,
+    cornerLength: 16,
     cornerThickness: 2,
     frameGap: 4,
     pressShrink: 2.5,
@@ -55,7 +55,7 @@ const sizeMap: Record<ButtonSize, SizeConfig> = {
     fontSize: "15px",
     padding: "12px 26px",
     gap: "10px",
-    cornerLength: 10,
+    cornerLength: 18,
     cornerThickness: 2,
     frameGap: 5,
     pressShrink: 3,
@@ -64,7 +64,7 @@ const sizeMap: Record<ButtonSize, SizeConfig> = {
     fontSize: "17px",
     padding: "16px 34px",
     gap: "12px",
-    cornerLength: 12,
+    cornerLength: 20,
     cornerThickness: 2.5,
     frameGap: 6,
     pressShrink: 3.5,
@@ -81,7 +81,6 @@ interface VariantColorConfig {
   hoverInnerText: string
   hoverInnerBorder: string
   hoverCornerColor: string
-  hoverShadow: string
 }
 
 const variantColorMap: Record<ButtonVariant, VariantColorConfig> = {
@@ -95,7 +94,6 @@ const variantColorMap: Record<ButtonVariant, VariantColorConfig> = {
     hoverInnerText: "var(--color-primary-100)",
     hoverInnerBorder: "var(--color-primary-500)",
     hoverCornerColor: "var(--color-primary-300)",
-    hoverShadow: "var(--shadow-turquoise-hover-light)",
   },
   secondary: {
     innerBg: "var(--color-secondary-500)",
@@ -107,7 +105,6 @@ const variantColorMap: Record<ButtonVariant, VariantColorConfig> = {
     hoverInnerText: "var(--color-secondary-100)",
     hoverInnerBorder: "var(--color-secondary-500)",
     hoverCornerColor: "var(--color-secondary-300)",
-    hoverShadow: "var(--shadow-orange-hover-light)",
   },
   tertiary: {
     innerBg: "var(--color-tertiary-500)",
@@ -119,7 +116,6 @@ const variantColorMap: Record<ButtonVariant, VariantColorConfig> = {
     hoverInnerText: "var(--color-tertiary-100)",
     hoverInnerBorder: "var(--color-tertiary-500)",
     hoverCornerColor: "var(--color-tertiary-300)",
-    hoverShadow: "var(--shadow-blue-hover-light)",
   },
   "outline-primary": {
     innerBg: "transparent",
@@ -131,7 +127,6 @@ const variantColorMap: Record<ButtonVariant, VariantColorConfig> = {
     hoverInnerText: "var(--color-primary-200)",
     hoverInnerBorder: "var(--color-primary-400)",
     hoverCornerColor: "var(--color-primary-300)",
-    hoverShadow: "var(--shadow-turquoise-hover-light)",
   },
   "outline-secondary": {
     innerBg: "transparent",
@@ -143,7 +138,6 @@ const variantColorMap: Record<ButtonVariant, VariantColorConfig> = {
     hoverInnerText: "var(--color-secondary-200)",
     hoverInnerBorder: "var(--color-secondary-400)",
     hoverCornerColor: "var(--color-secondary-300)",
-    hoverShadow: "var(--shadow-orange-hover-light)",
   },
   "outline-tertiary": {
     innerBg: "transparent",
@@ -155,7 +149,7 @@ const variantColorMap: Record<ButtonVariant, VariantColorConfig> = {
     hoverInnerText: "var(--color-tertiary-200)",
     hoverInnerBorder: "var(--color-tertiary-400)",
     hoverCornerColor: "var(--color-tertiary-300)",
-    hoverShadow: "var(--shadow-blue-hover-light)",
+
   },
   ghost: {
     innerBg: "transparent",
@@ -166,7 +160,7 @@ const variantColorMap: Record<ButtonVariant, VariantColorConfig> = {
     hoverInnerText: "var(--color-neutral-100)",
     hoverInnerBorder: "var(--color-neutral-700)",
     hoverCornerColor: "var(--color-neutral-300)",
-    hoverShadow: "none",
+
   },
 }
 
@@ -226,7 +220,6 @@ const innerButtonVariants: Variants = {
     backgroundColor: colors.innerBg,
     color: colors.innerText,
     borderColor: colors.innerBorder,
-    boxShadow: "none",
     transition: { duration: 0.2, ease: "easeOut" },
   },
   hover: {
@@ -234,7 +227,7 @@ const innerButtonVariants: Variants = {
     backgroundColor: colors.hoverInnerBg,
     color: colors.hoverInnerText,
     borderColor: colors.hoverInnerBorder,
-    boxShadow: colors.hoverShadow,
+
     transition: { duration: 0.2, ease: "easeOut" },
   },
   pressed: {
@@ -242,7 +235,6 @@ const innerButtonVariants: Variants = {
     backgroundColor: colors.hoverInnerBg,
     color: colors.hoverInnerText,
     borderColor: colors.hoverInnerBorder,
-    boxShadow: colors.hoverShadow,
     transition: { duration: 0.1, ease: "easeInOut" },
   },
 };
@@ -330,7 +322,7 @@ const innerButtonVariants: Variants = {
           padding: cfg.padding,
           fontSize: cfg.fontSize,
           gap: cfg.gap,
-          borderRadius: "var(--radius-m)",
+          borderRadius: "var(--radius-2xs)",
           borderWidth: "1.5px",
           borderStyle: "solid",
           letterSpacing: "0.08em",

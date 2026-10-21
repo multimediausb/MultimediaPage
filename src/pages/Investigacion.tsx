@@ -10,7 +10,7 @@ import StatsChart from "../components/StatsChart"
 
 import PageBanner from "../components/PageBanner"
 
-import SemillerosSection from "../components/SemillerosSection"
+import SemillerosSection from "../components/sections/investigacion/SemillerosSection"
 
 const filters = ["todos", "activo", "concluido", "en-revision"]
 

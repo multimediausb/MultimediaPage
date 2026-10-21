@@ -12,13 +12,9 @@ import Eventos from "./pages/Eventos"
 
 import ProximoEvento from "./pages/ProximoEvento"
 
-import Servicios from "./pages/Servicios"
-
-import About from "./pages/About"
-
 import Miembros from "./pages/Miembros"
 
-import Medios from "./pages/Medios"
+import Proyectos from "./pages/Proyectos"
 
 import logoSrc from "@/imports/MediaShow.png"
 
@@ -74,22 +70,6 @@ function AppRoutes() {
           }
         />
         <Route
-          path="/servicios"
-          element={
-            <PageTransition>
-              <Servicios />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/about"
-          element={
-            <PageTransition>
-              <About />
-            </PageTransition>
-          }
-        />
-        <Route
           path="/miembros"
           element={
             <PageTransition>
@@ -98,10 +78,10 @@ function AppRoutes() {
           }
         />
         <Route
-          path="/medios"
+          path="/proyectos"
           element={
             <PageTransition>
-              <Medios />
+              <Proyectos />
             </PageTransition>
           }
         />

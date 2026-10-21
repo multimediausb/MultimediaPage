@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 import { motion, AnimatePresence } from "framer-motion"
-import Button from "./ui/Button"
+import Button from "../../ui/Button"
 
 interface Semillero {
   id: string
