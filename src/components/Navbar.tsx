@@ -1,41 +1,25 @@
 import { useState, useEffect } from "react"
-
 import { NavLink, useLocation } from "react-router-dom"
-
 import { motion, AnimatePresence } from "framer-motion"
-
 import logoSrc from "@/imports/MediaShow.png"
 
 const links = [
   { to: "/", label: "HOME" },
-
-  //{to: '/about', label: 'ABOUT' },
-
+  { to: "/proyectos", label: "PROYECTOS" },
   { to: "/investigacion", label: "INVESTIGACIÓN" },
-
   { to: "/eventos", label: "EVENTOS" },
-
   { to: "/proximo-evento", label: "PRÓXIMO EVENTO" },
-
-  //{ to: '/servicios', label: 'SERVICIOS' },
-
   { to: "/miembros", label: "MIEMBROS" },
-
-  //{ to: '/medios', label: 'MEDIOS' },
 ]
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
-
   const [open, setOpen] = useState(false)
-
   const location = useLocation()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
-
     window.addEventListener("scroll", onScroll)
-
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
@@ -46,17 +30,16 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
           background: scrolled
-            ? "rgba(245,242,238,0.94)"
-            : "rgba(245,242,238,0)",
-
-          backdropFilter: scrolled ? "blur(20px)" : "none",
-
+            ? "rgba(10, 14, 20, 0.88)"
+            : "rgba(10, 14, 20, 0.45)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
           borderBottom: scrolled
-            ? "1px solid rgba(14,154,147,0.15)"
-            : "1px solid transparent",
+            ? "1px solid rgba(50, 201, 204, 0.2)"
+            : "1px solid rgba(255, 255, 255, 0.05)",
         }}
       >
         <div className="max-w-screen-xl mx-auto px-6 flex items-center justify-between h-16">
@@ -67,27 +50,24 @@ export default function Navbar() {
                 src={logoSrc}
                 alt="MediaShow Logo"
                 className="h-8 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-                style={{ filter: "drop-shadow(0 0 6px rgba(26,181,173,0.4))" }}
+                style={{ filter: "drop-shadow(0 0 6px rgba(50,201,204,0.4))" }}
               />
             </div>
-            <span
-              className="font-display font-semibold text-xs tracking-[0.18em] hidden sm:block"
-              style={{ color: "var(--fg)" }}
-            >
-              MEDIA<span style={{ color: "var(--primary)" }}>_</span>SHOW
+            <span className="font-display font-bold text-sm tracking-widest text-white">
+              MEDIA<span className="text-[var(--color-primary-500)]">_</span>SHOW
             </span>
           </NavLink>
 
           {/* Desktop links */}
-          <div className="hidden lg:flex items-center gap-0.5">
+          <div className="hidden lg:flex items-center gap-1">
             {links.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
                 end={link.to === "/"}
-                className="relative px-3 py-1.5 font-display text-xs tracking-widest transition-colors duration-200"
+                className="relative px-3.5 py-1.5 font-display text-xs tracking-widest transition-colors duration-200"
                 style={({ isActive }) => ({
-                  color: isActive ? "var(--primary)" : "var(--fg-muted)",
+                  color: isActive ? "var(--color-primary-400)" : "rgba(255, 255, 255, 0.75)",
                 })}
               >
                 {({ isActive }) => (
@@ -96,11 +76,10 @@ export default function Navbar() {
                     {isActive && (
                       <motion.div
                         layoutId="nav-indicator"
-                        className="absolute bottom-0 left-0 right-0 h-px"
+                        className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full"
                         style={{
-                          background: "var(--primary)",
-
-                          boxShadow: "0 0 6px var(--primary)",
+                          background: "var(--color-primary-500)",
+                          boxShadow: "0 0 8px var(--color-primary-500)",
                         }}
                         transition={{
                           type: "spring",
@@ -119,76 +98,56 @@ export default function Navbar() {
           <button
             className="lg:hidden flex flex-col gap-1.5 p-2"
             onClick={() => setOpen(!open)}
-            aria-label="Toggle menu"
+            aria-label="Abrir menú"
           >
-            {[0, 1, 2].map((i) => (
-              <motion.span
-                key={i}
-                className="block w-5 h-px"
-                style={{ background: "var(--primary)" }}
-                animate={
-                  open
-                    ? i === 0
-                      ? { rotate: 45, y: 6 }
-                      : i === 1
-                        ? { opacity: 0 }
-                        : { rotate: -45, y: -6 }
-                    : { rotate: 0, y: 0, opacity: 1 }
-                }
-                transition={{ duration: 0.2 }}
-              />
-            ))}
+            <span
+              className="w-5 h-0.5 bg-white transition-transform duration-200"
+              style={{
+                transform: open ? "translateY(5px) rotate(45deg)" : "none",
+              }}
+            />
+            <span
+              className="w-5 h-0.5 bg-white transition-opacity duration-200"
+              style={{ opacity: open ? 0 : 1 }}
+            />
+            <span
+              className="w-5 h-0.5 bg-white transition-transform duration-200"
+              style={{
+                transform: open ? "translateY(-5px) rotate(-45deg)" : "none",
+              }}
+            />
           </button>
         </div>
       </nav>
 
-      {/* Mobile menu */}
+      {/* Mobile drawer */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -16 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.22 }}
-            className="fixed inset-x-0 top-16 z-40 lg:hidden"
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-x-0 top-16 z-40 p-6 flex flex-col gap-4 lg:hidden border-b"
             style={{
-              background: "rgba(245,242,238,0.98)",
-
-              borderBottom: "1px solid rgba(14,154,147,0.15)",
-
-              backdropFilter: "blur(20px)",
+              background: "rgba(10, 14, 20, 0.98)",
+              backdropFilter: "blur(24px)",
+              borderColor: "rgba(50, 201, 204, 0.2)",
             }}
           >
-            {links.map((link, i) => (
-              <motion.div
+            {links.map((link) => (
+              <NavLink
                 key={link.to}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.04 }}
+                to={link.to}
+                end={link.to === "/"}
+                className="font-display text-sm tracking-widest py-2 px-3 rounded-lg"
+                style={({ isActive }) => ({
+                  color: isActive ? "var(--color-primary-400)" : "rgba(255, 255, 255, 0.8)",
+                  background: isActive ? "rgba(50, 201, 204, 0.1)" : "transparent",
+                })}
               >
-                <NavLink
-                  to={link.to}
-                  end={link.to === "/"}
-                  className="flex items-center gap-3 px-8 py-4 font-display text-xs tracking-widest border-b transition-colors duration-150"
-                  style={({ isActive }) => ({
-                    color: isActive ? "var(--primary)" : "var(--fg-muted)",
-
-                    borderColor: "rgba(14,154,147,0.1)",
-                  })}
-                >
-                  {({ isActive }) => (
-                    <>
-                      {isActive && (
-                        <span
-                          className="w-1 h-1 rounded-full shrink-0"
-                          style={{ background: "var(--primary)" }}
-                        />
-                      )}
-                      {link.label}
-                    </>
-                  )}
-                </NavLink>
-              </motion.div>
+                {link.label}
+              </NavLink>
             ))}
           </motion.div>
         )}

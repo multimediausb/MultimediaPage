@@ -6,7 +6,7 @@ import SectionHeader from "../components/SectionHeader"
 
 import ResearchCard from "../components/ResearchCard"
 
-import StatsChart from "../components/StatsChart"
+import StatsChart from "../components/graphics/StatsChart"
 
 import PageBanner from "../components/PageBanner"
 

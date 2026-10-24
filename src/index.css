@@ -107,5 +107,62 @@
   --fg-muted: #6b6358;
 }
 
+/* Theme variations: Light / Dark and Accent (Blue / Orange / Cyan) */
+[data-theme="dark"], .theme-dark {
+  --bg: #090c10;
+  --surface: #11161d;
+  --surface-2: #19202a;
+  --fg: #eef2f6;
+  --fg-muted: #94a3b8;
+}
+
+[data-theme="light"], .theme-light {
+  --bg: #f5f2ee;
+  --surface: #ffffff;
+  --surface-2: #ece8e2;
+  --fg: #1a1714;
+  --fg-muted: #6b6358;
+}
+
+/* Section accent color switches (Blue / Orange / Cyan) */
+[data-accent="blue"], .accent-blue {
+  --primary: var(--color-tertiary-500);
+  --primary-dim: var(--color-tertiary-alpha-10);
+  --color-primary: var(--color-tertiary-500);
+}
+
+[data-accent="orange"], .accent-orange {
+  --primary: var(--color-secondary-500);
+  --primary-dim: var(--color-secondary-alpha-10);
+  --color-primary: var(--color-secondary-500);
+}
+
+[data-accent="cyan"], .accent-cyan {
+  --primary: var(--color-primary-500);
+  --primary-dim: var(--color-primary-alpha-10);
+  --color-primary: var(--color-primary-500);
+}
+
+/* Lenis smooth scroll */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
 .font-display { font-family: 'JetBrains Mono', monospace; }
 .font-body    { font-family: 'Outfit', sans-serif; }

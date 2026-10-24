@@ -1,4 +1,4 @@
-import VideoReel from "../../VideoReel"
+import VideoReel from "../../graphics/VideoReel"
 import Badge from "../../ui/Badge"
 
 export default function NextEventVideoSection() {

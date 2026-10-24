@@ -1,22 +1,19 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
-
 import { AnimatePresence, motion } from "framer-motion"
-
 import Navbar from "./components/Navbar"
-
 import Home from "./pages/Home"
-
 import Investigacion from "./pages/Investigacion"
-
 import Eventos from "./pages/Eventos"
-
 import ProximoEvento from "./pages/ProximoEvento"
-
 import Miembros from "./pages/Miembros"
-
 import Proyectos from "./pages/Proyectos"
-
 import logoSrc from "@/imports/MediaShow.png"
+import { useSmoothScroll } from "./hooks/useParallax"
+
+function SmoothScrollProvider() {
+  useSmoothScroll()
+  return null
+}
 
 function PageTransition({ children }: { children: React.ReactNode }) {
   return (
@@ -42,6 +39,14 @@ function AppRoutes() {
           element={
             <PageTransition>
               <Home />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/proyectos"
+          element={
+            <PageTransition>
+              <Proyectos />
             </PageTransition>
           }
         />
@@ -77,14 +82,6 @@ function AppRoutes() {
             </PageTransition>
           }
         />
-        <Route
-          path="/proyectos"
-          element={
-            <PageTransition>
-              <Proyectos />
-            </PageTransition>
-          }
-        />
       </Routes>
     </AnimatePresence>
   )
@@ -93,62 +90,56 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <div
-        className="min-h-screen grid-bg relative"
-        style={{ background: "var(--bg)" }}
-      >
-        {/* Ambient glow — teal top-right */}
+      <SmoothScrollProvider />
+      <div className="min-h-screen relative flex flex-col" style={{ background: "var(--bg)" }}>
+        {/* Ambient glow top */}
         <div
-          className="fixed top-0 right-0 w-[480px] h-[480px] rounded-full pointer-events-none"
+          className="fixed top-0 right-0 w-[500px] h-[500px] rounded-full pointer-events-none"
           style={{
-            background:
-              "radial-gradient(circle, rgba(14,154,147,0.08) 0%, transparent 70%)",
-
-            filter: "blur(48px)",
+            background: "radial-gradient(circle, rgba(50,201,204,0.06) 0%, transparent 70%)",
+            filter: "blur(60px)",
+            zIndex: 0,
           }}
         />
-        {/* Ambient glow — orange bottom-left */}
-        <div
-          className="fixed bottom-0 left-0 w-[480px] h-[480px] rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(214,120,10,0.07) 0%, transparent 70%)",
 
-            filter: "blur(48px)",
+        {/* Ambient glow bottom */}
+        <div
+          className="fixed bottom-0 left-0 w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{
+            background: "radial-gradient(circle, rgba(243,136,11,0.05) 0%, transparent 70%)",
+            filter: "blur(60px)",
+            zIndex: 0,
           }}
         />
 
         <Navbar />
 
-        <main className="relative z-10">
+        <main className="relative z-10 flex-grow">
           <AppRoutes />
         </main>
 
         {/* Footer */}
         <footer
-          className="relative z-10 mt-auto py-10"
-          style={{ borderTop: "1px solid rgba(14,154,147,0.15)" }}
+          className="relative z-10 py-12 theme-dark"
+          style={{
+            background: "#070a0e",
+            borderTop: "1px solid rgba(50,201,204,0.15)",
+          }}
         >
-          <div className="max-w-screen-xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="max-w-screen-xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <img
                 src={logoSrc}
                 alt="MediaShow Logo"
                 className="h-8 w-auto object-contain"
-                style={{ filter: "drop-shadow(0 0 4px rgba(26,181,173,0.3))" }}
+                style={{ filter: "drop-shadow(0 0 6px rgba(50,201,204,0.3))" }}
               />
-              <span
-                className="font-display text-xs tracking-[0.18em]"
-                style={{ color: "var(--fg-muted)" }}
-              >
-                MEDIA<span style={{ color: "var(--primary)" }}>_</span>SHOW
+              <span className="font-display text-xs tracking-[0.2em] text-neutral-400">
+                MEDIA<span className="text-[var(--color-primary-500)]">_</span>SHOW — INGENIERÍA MULTIMEDIA
               </span>
             </div>
-            <p
-              className="font-display text-xs tracking-widest"
-              style={{ color: "var(--fg-muted)", opacity: 0.6 }}
-            >
-              © 2025 MEDIASHOW — TODOS LOS DERECHOS RESERVADOS
+            <p className="font-display text-xs tracking-widest text-neutral-500">
+              © {new Date().getFullYear()} UNIVERSIDAD DE SAN BUENAVENTURA — MEDIALAB
             </p>
           </div>
         </footer>
