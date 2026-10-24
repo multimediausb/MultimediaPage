@@ -13,16 +13,50 @@ const links = [
 ]
 
 export default function Navbar() {
+  const [visible, setVisible] = useState(true)
   const [scrolled, setScrolled] = useState(false)
+  const [lastScrollY, setLastScrollY] = useState(0)
   const [open, setOpen] = useState(false)
   const location = useLocation()
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20)
-    window.addEventListener("scroll", onScroll)
-    return () => window.removeEventListener("scroll", onScroll)
-  }, [])
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
 
+      // Check if scrolled past top threshold
+      if (currentScrollY > 20) {
+        setScrolled(true)
+      } else {
+        setScrolled(false)
+        setVisible(true)
+        setLastScrollY(currentScrollY)
+        return
+      }
+
+      // If mobile drawer is open, keep navbar visible
+      if (open) {
+        setVisible(true)
+        setLastScrollY(currentScrollY)
+        return
+      }
+
+      // Detect scroll direction:
+      // Scrolling down -> hide navbar
+      // Scrolling up -> show navbar with 100% white background
+      if (currentScrollY > lastScrollY && currentScrollY - lastScrollY > 4) {
+        setVisible(false)
+      } else if (currentScrollY < lastScrollY && lastScrollY - currentScrollY > 4) {
+        setVisible(true)
+      }
+
+      setLastScrollY(currentScrollY)
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [lastScrollY, open])
+
+  // Close mobile drawer on route navigation
   useEffect(() => {
     setOpen(false)
   }, [location])
@@ -32,14 +66,13 @@ export default function Navbar() {
       <nav
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
-          background: scrolled
-            ? "rgba(10, 14, 20, 0.88)"
-            : "rgba(10, 14, 20, 0.45)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
+          transform: visible ? "translateY(0)" : "translateY(-100%)",
+          background: scrolled ? "#ffffff" : "transparent",
+          boxShadow: scrolled ? "0 2px 14px rgba(0, 0, 0, 0.06)" : "none",
           borderBottom: scrolled
-            ? "1px solid rgba(50, 201, 204, 0.2)"
-            : "1px solid rgba(255, 255, 255, 0.05)",
+            ? "1px solid rgba(0, 0, 0, 0.08)"
+            : "1px solid transparent",
+          transition: "transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease",
         }}
       >
         <div className="max-w-screen-xl mx-auto px-6 flex items-center justify-between h-16">
@@ -50,11 +83,11 @@ export default function Navbar() {
                 src={logoSrc}
                 alt="MediaShow Logo"
                 className="h-8 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-                style={{ filter: "drop-shadow(0 0 6px rgba(50,201,204,0.4))" }}
+                style={{ filter: "drop-shadow(0 0 6px rgba(14,154,147,0.3))" }}
               />
             </div>
-            <span className="font-display font-bold text-sm tracking-widest text-white">
-              MEDIA<span className="text-[var(--color-primary-500)]">_</span>SHOW
+            <span className="font-display font-bold text-sm tracking-widest text-[#1a1714]">
+              MEDIA<span className="text-[var(--color-primary-600)]">_</span>SHOW
             </span>
           </NavLink>
 
@@ -67,19 +100,24 @@ export default function Navbar() {
                 end={link.to === "/"}
                 className="relative px-3.5 py-1.5 font-display text-xs tracking-widest transition-colors duration-200"
                 style={({ isActive }) => ({
-                  color: isActive ? "var(--color-primary-400)" : "rgba(255, 255, 255, 0.75)",
+                  color: isActive
+                    ? "var(--color-primary-600)"
+                    : "rgba(26, 23, 20, 0.75)",
+                  fontWeight: isActive ? 600 : 400,
                 })}
               >
                 {({ isActive }) => (
                   <>
-                    {link.label}
+                    <span className="hover:text-[var(--color-primary-600)] transition-colors duration-200">
+                      {link.label}
+                    </span>
                     {isActive && (
                       <motion.div
                         layoutId="nav-indicator"
                         className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full"
                         style={{
-                          background: "var(--color-primary-500)",
-                          boxShadow: "0 0 8px var(--color-primary-500)",
+                          background: "var(--color-primary-600)",
+                          boxShadow: "0 0 8px rgba(14, 154, 147, 0.4)",
                         }}
                         transition={{
                           type: "spring",
@@ -94,24 +132,24 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Hamburger */}
+          {/* Hamburger (Mobile) */}
           <button
-            className="lg:hidden flex flex-col gap-1.5 p-2"
+            className="lg:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-neutral-100 transition-colors"
             onClick={() => setOpen(!open)}
             aria-label="Abrir menú"
           >
             <span
-              className="w-5 h-0.5 bg-white transition-transform duration-200"
+              className="w-5 h-0.5 bg-[#1a1714] transition-transform duration-200"
               style={{
                 transform: open ? "translateY(5px) rotate(45deg)" : "none",
               }}
             />
             <span
-              className="w-5 h-0.5 bg-white transition-opacity duration-200"
+              className="w-5 h-0.5 bg-[#1a1714] transition-opacity duration-200"
               style={{ opacity: open ? 0 : 1 }}
             />
             <span
-              className="w-5 h-0.5 bg-white transition-transform duration-200"
+              className="w-5 h-0.5 bg-[#1a1714] transition-transform duration-200"
               style={{
                 transform: open ? "translateY(-5px) rotate(-45deg)" : "none",
               }}
@@ -128,11 +166,9 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-x-0 top-16 z-40 p-6 flex flex-col gap-4 lg:hidden border-b"
+            className="fixed inset-x-0 top-16 z-40 p-6 flex flex-col gap-3 lg:hidden border-b bg-white shadow-xl"
             style={{
-              background: "rgba(10, 14, 20, 0.98)",
-              backdropFilter: "blur(24px)",
-              borderColor: "rgba(50, 201, 204, 0.2)",
+              borderColor: "rgba(0, 0, 0, 0.08)",
             }}
           >
             {links.map((link) => (
@@ -140,10 +176,11 @@ export default function Navbar() {
                 key={link.to}
                 to={link.to}
                 end={link.to === "/"}
-                className="font-display text-sm tracking-widest py-2 px-3 rounded-lg"
+                className="font-display text-sm tracking-widest py-2.5 px-3 rounded-lg transition-colors"
                 style={({ isActive }) => ({
-                  color: isActive ? "var(--color-primary-400)" : "rgba(255, 255, 255, 0.8)",
-                  background: isActive ? "rgba(50, 201, 204, 0.1)" : "transparent",
+                  color: isActive ? "var(--color-primary-600)" : "#1a1714",
+                  background: isActive ? "rgba(14, 154, 147, 0.08)" : "transparent",
+                  fontWeight: isActive ? 600 : 400,
                 })}
               >
                 {link.label}

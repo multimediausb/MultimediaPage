@@ -1,181 +1,466 @@
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { motion } from "framer-motion"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 
-import { useRef } from "react"
-import { motion, useScroll, useSpring, useTransform } from "framer-motion"
 import Badge from "../../ui/Badge"
 import StatsCube3D from "../../graphics/StatsCube3D"
 
+gsap.registerPlugin(ScrollTrigger)
+
 const statsData = [
-  {
-    number: "25+",
-    label: "AÑOS DE HISTORIA",
-    subtext:
-      "Formando líderes en ingeniería multimedia y producción interactiva de alto nivel.",
-  },
-  {
-    number: "40+",
-    label: "CONVENIOS GLOBALES",
-    subtext:
-      "Alianzas internacionales con instituciones y laboratorios de primer nivel.",
-  },
-  {
-    number: "250+",
-    label: "ESTUDIANTES ACTIVOS",
-    subtext:
-      "Talento joven creando experiencias interactivas, videojuegos, VFX y animación digital.",
-  },
-  {
-    number: "15+",
-    label: "SEMILLEROS Y GRUPOS",
-    subtext:
-      "Equipos multidisciplinarios de investigación aplicada en constante producción.",
-  },
-  {
-    number: "7",
-    label: "LABORATORIOS",
-    subtext:
-      "Espacios dotados con tecnología para captura de movimiento, renderizado y computación gráfica.",
-  },
+  { number: "25+", label: "AÑOS DE HISTORIA" },
+  { number: "40+", label: "CONVENIOS GLOBALES" },
+  { number: "250+", label: "ESTUDIANTES ACTIVOS" },
+  { number: "15+", label: "SEMILLEROS Y GRUPOS" },
+  { number: "25+", label: "AÑOS DE HISTORIA" },
+  { number: "40+", label: "CONVENIOS GLOBALES" },
+  { number: "250+", label: "ESTUDIANTES ACTIVOS" },
+  { number: "15+", label: "SEMILLEROS Y GRUPOS" },
 ]
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value))
+
+const lerp = (start: number, end: number, amount: number) =>
+  start + (end - start) * clamp(amount, 0, 1)
+
+const smoothStep = (value: number) => {
+  const t = clamp(value, 0, 1)
+  return t * t * (3 - 2 * t)
+}
 
 export default function ScrollStatsSection() {
   const sectionRef = useRef<HTMLElement>(null)
+  const contentViewportRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const headingRef = useRef<HTMLDivElement>(null)
+  const metricsRef = useRef<HTMLDivElement>(null)
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  })
+  const progressRef = useRef(0)
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([])
+  const contentOffsetRef = useRef(0)
 
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 70,
-    damping: 24,
-    restDelta: 0.001,
-  })
+  const [activeIndex, setActiveIndex] = useState(-1)
+  const [activatedIndex, setActivatedIndex] = useState(-1)
+  const [contentOffset, setContentOffset] = useState(0)
+  const [sectionHeight, setSectionHeight] = useState("100vh")
 
-  // El cubo completa su recorrido antes de terminar
-  // el scroll de toda la sección.
-  const cubeProgress = useTransform(
-    smoothProgress,
-    [0.05, 0.78],
-    [0, 1],
-    { clamp: true },
-  )
+  const itemCount = statsData.length
 
-  const gridY = useTransform(
-    smoothProgress,
-    [0, 1],
-    ["0%", "20%"],
-  )
+  // Permite el desplazamiento cuando el contenido no cabe en pantalla.
+  const hasParallax = true
+
+  // =========================================================
+  // MEDICIÓN AUTOMÁTICA DEL CONTENIDO Y ALTURA DE LA SECCIÓN
+  // =========================================================
+
+  useLayoutEffect(() => {
+    const section = sectionRef.current
+    const viewport = contentViewportRef.current
+    const content = contentRef.current
+    const heading = headingRef.current
+    const metrics = metricsRef.current
+
+    if (!section || !viewport || !content || !heading || !metrics) {
+      return
+    }
+
+    let resizeFrame = 0
+
+    const measureLayout = () => {
+      const viewportHeight = window.innerHeight
+
+      // Altura natural del contenido: encabezado, métricas y espacios.
+      const contentHeight = content.scrollHeight
+
+      // Distancia real necesaria para recorrer el contenido.
+      const scrollableContent = Math.max(
+        0,
+        contentHeight - viewportHeight,
+      )
+
+      /*
+       * Se asigna un tramo de scroll por métrica a partir del
+       * desplazamiento real necesario, no de una constante por item.
+       *
+       * El mínimo permite que cada métrica tenga un intervalo de
+       * animación utilizable, incluso si el contenido cabe en pantalla.
+       */
+      const minimumTravel = viewportHeight * 0.7
+      const totalTravel = Math.max(
+        minimumTravel * Math.max(itemCount, 1),
+        scrollableContent + viewportHeight * 0.5,
+      )
+
+      setSectionHeight(`${viewportHeight + totalTravel}px`)
+    }
+
+    const scheduleMeasure = () => {
+      cancelAnimationFrame(resizeFrame)
+
+      resizeFrame = requestAnimationFrame(() => {
+        measureLayout()
+        ScrollTrigger.refresh()
+      })
+    }
+
+    const observer = new ResizeObserver(scheduleMeasure)
+
+    observer.observe(viewport)
+    observer.observe(content)
+    observer.observe(heading)
+    observer.observe(metrics)
+
+    window.addEventListener("resize", scheduleMeasure)
+
+    measureLayout()
+
+    return () => {
+      cancelAnimationFrame(resizeFrame)
+      observer.disconnect()
+      window.removeEventListener("resize", scheduleMeasure)
+    }
+  }, [itemCount])
+
+  // =========================================================
+  // SCROLL Y SINCRONIZACIÓN DE MÉTRICAS
+  // =========================================================
+
+  useEffect(() => {
+    const section = sectionRef.current
+    const viewport = contentViewportRef.current
+    const content = contentRef.current
+
+    if (!section || !viewport || !content || itemCount === 0) {
+      return
+    }
+
+    let maxOffset = 0
+
+    const measureContent = () => {
+      maxOffset = Math.max(
+        0,
+        content.scrollHeight - viewport.clientHeight,
+      )
+    }
+
+    const updateOffset = (nextOffset: number) => {
+      const safeOffset = clamp(nextOffset, 0, maxOffset)
+
+      if (Math.abs(contentOffsetRef.current - safeOffset) < 0.5) {
+        return
+      }
+
+      contentOffsetRef.current = safeOffset
+
+      setContentOffset((previous) =>
+        Math.abs(previous - safeOffset) < 0.5
+          ? previous
+          : safeOffset,
+      )
+    }
+
+    measureContent()
+
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: true,
+        invalidateOnRefresh: true,
+
+        onUpdate: (self) => {
+          const progress = self.progress
+          progressRef.current = progress
+
+          const scaledProgress = progress * itemCount
+
+          const index = Math.min(
+            itemCount - 1,
+            Math.floor(scaledProgress),
+          )
+
+          const localProgress =
+            progress >= 1 ? 1 : scaledProgress - index
+
+          const viewportRect = viewport.getBoundingClientRect()
+          const viewportCenter =
+            viewportRect.top + viewportRect.height / 2
+
+          const currentOffset = contentOffsetRef.current
+
+          const anchors = itemRefs.current
+            .slice(0, itemCount)
+            .map((element) => {
+              if (!element) return 0
+
+              const rect = element.getBoundingClientRect()
+
+              const originalCenter =
+                rect.top + rect.height / 2 + currentOffset
+
+              return clamp(
+                originalCenter - viewportCenter,
+                0,
+                maxOffset,
+              )
+            })
+
+          const currentAnchor = anchors[index] ?? 0
+          const nextAnchor =
+            anchors[Math.min(index + 1, itemCount - 1)] ??
+            currentAnchor
+
+          /*
+           * El bloque final contiene hasta las últimas tres métricas.
+           * Con pocas métricas, el índice nunca será negativo.
+           */
+          const finalBlockIndex = Math.max(0, itemCount - 3)
+          const finalBlockAnchor = anchors[finalBlockIndex] ?? 0
+
+          let nextOffset = 0
+
+          if (index >= finalBlockIndex) {
+            nextOffset = finalBlockAnchor
+          } else if (index === 0 && localProgress < 0.62) {
+            nextOffset = lerp(
+              0,
+              currentAnchor,
+              smoothStep(localProgress / 0.62),
+            )
+          } else if (localProgress <= 0.72) {
+            nextOffset = currentAnchor
+          } else {
+            nextOffset = lerp(
+              currentAnchor,
+              nextAnchor,
+              smoothStep((localProgress - 0.72) / 0.28),
+            )
+          }
+
+          updateOffset(nextOffset)
+
+          // Activación progresiva de las tarjetas.
+          const isActivated = localProgress >= 0.22
+
+          const nextActivatedIndex =
+            progress >= 1
+              ? itemCount - 1
+              : isActivated
+                ? index
+                : index - 1
+
+          setActivatedIndex((previous) =>
+            previous === nextActivatedIndex
+              ? previous
+              : nextActivatedIndex,
+          )
+
+          // Contacto del prisma con la métrica actual.
+          const isTouching =
+            localProgress >= 0.62 &&
+            localProgress <= 0.72
+
+          const nextActiveIndex = isTouching ? index : -1
+
+          setActiveIndex((previous) =>
+            previous === nextActiveIndex
+              ? previous
+              : nextActiveIndex,
+          )
+        },
+
+        onRefresh: measureContent,
+      })
+    }, section)
+
+    const observer = new ResizeObserver(() => {
+      measureContent()
+      ScrollTrigger.refresh()
+    })
+
+    observer.observe(viewport)
+    observer.observe(content)
+
+    const refreshFrame = requestAnimationFrame(() => {
+      measureContent()
+      ScrollTrigger.refresh()
+    })
+
+    return () => {
+      cancelAnimationFrame(refreshFrame)
+      observer.disconnect()
+      ctx.revert()
+
+      progressRef.current = 0
+      contentOffsetRef.current = 0
+    }
+  }, [itemCount])
 
   return (
     <section
       ref={sectionRef}
-      className="relative h-[300vh] bg-neutral-950 text-white"
+      className="relative bg-neutral-950 text-white"
       style={{
+        height: sectionHeight,
         background:
           "radial-gradient(ellipse at 70% 35%, #0c2128 0%, #060d11 60%, #030608 100%)",
       }}
+      aria-label="Estadísticas generales del programa"
     >
-      <div className="sticky top-0 h-screen overflow-hidden">
-        {/* Cuadrícula de fondo */}
-        <motion.div
-          style={{ y: gridY }}
-          className="absolute inset-0 pointer-events-none opacity-25"
-        >
-          <div
-            className="h-full w-full"
-            style={{
-              backgroundImage: `
-                linear-gradient(var(--grid-color, rgba(50, 201, 204, 0.15)) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-color, rgba(50, 201, 204, 0.15)) 1px, transparent 1px)
-              `,
-              backgroundSize: "60px 60px",
-            }}
-          />
-        </motion.div>
+      <div className="sticky top-0 isolate h-screen overflow-hidden">
+        {/* Fondo cuadriculado */}
+        <div
+          className="pointer-events-none absolute inset-0 z-0 opacity-25"
+          aria-hidden="true"
+          style={{
+            backgroundImage: `
+              linear-gradient(
+                rgba(50, 201, 204, 0.15) 1px,
+                transparent 1px
+              ),
+              linear-gradient(
+                90deg,
+                rgba(50, 201, 204, 0.15) 1px,
+                transparent 1px
+              )
+            `,
+            backgroundSize: "60px 60px",
+          }}
+        />
 
-        <div className="relative z-10 mx-auto grid h-full max-w-screen-xl grid-cols-1 items-center gap-8 px-6 py-12 md:grid-cols-2 lg:px-16">
-          {/* Izquierda: estadísticas */}
-          <div className="relative z-20 flex h-full flex-col justify-center py-10">
-            <div className="mb-8">
-              <div className="mb-4">
-                <Badge variant="primary" pulse>
-                  IMPACTO EN CIFRAS
-                </Badge>
+        {/* Aura del prisma */}
+        <div
+          className="pointer-events-none absolute inset-0 z-0"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(ellipse at 75% 50%, rgba(50,201,204,0.09), transparent 45%)",
+          }}
+        />
+
+        {/* Escena 3D */}
+        <StatsCube3D
+          progressRef={progressRef}
+          targetRefs={itemRefs}
+        />
+
+        {/* Composición principal */}
+        <div className="relative z-20 mx-auto grid h-full max-w-screen-xl grid-cols-1 px-5 sm:px-6 md:grid-cols-2 md:gap-8 lg:px-16">
+          {/* Viewport de métricas */}
+          <div
+            ref={contentViewportRef}
+            className="relative flex h-full min-h-0 min-w-0 flex-col justify-start overflow-hidden"
+          >
+            <motion.div
+              ref={contentRef}
+              className="w-full shrink-0 py-16"
+              style={{
+                y: -contentOffset,
+                willChange: "transform",
+              }}
+            >
+              {/* Encabezado */}
+              <div ref={headingRef} className="mb-7">
+                <div className="mb-4">
+                  <Badge variant="primary" pulse>
+                    IMPACTO EN CIFRAS
+                  </Badge>
+                </div>
+
+                <h2 className="max-w-xl font-heading text-3xl font-bold leading-tight tracking-tight text-white lg:text-4xl">
+                  MÉTRICAS QUE MARCAN LA DIFERENCIA
+                </h2>
+
+                <p className="mt-4 max-w-lg text-sm leading-relaxed text-neutral-400">
+                  Conoce la trayectoria, las capacidades científicas
+                  y el alcance de nuestra comunidad.
+                </p>
               </div>
 
-              <h2 className="text-h3 md:text-h2 font-heading tracking-tight text-white">
-                MÉTRICAS QUE MARCAN LA DIFERENCIA
-              </h2>
+              {/* Indicadores */}
+              <div
+                ref={metricsRef}
+                className="space-y-3 sm:space-y-4"
+              >
+                {statsData.map((stat, index) => {
+                  const isActive = activeIndex === index
+                  const isActivated = index <= activatedIndex
 
-              <p className="mt-4 max-w-lg text-b3 font-display leading-relaxed text-neutral-400">
-                Conoce la trayectoria, las capacidades científicas
-                y el alcance de nuestra comunidad.
-              </p>
-            </div>
+                  return (
+                    <motion.article
+                      key={stat.label}
+                      ref={(element) => {
+                        itemRefs.current[index] = element
+                      }}
+                      animate={{
+                        opacity: isActivated ? 1 : 0.3,
+                        x: isActive ? 8 : 0,
+                        scale: isActive ? 1.015 : 1,
+                      }}
+                      transition={{
+                        duration: 0.35,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
+                      className="relative w-full max-w-[430px] overflow-hidden rounded-r-md border-l-[5px] px-4 py-3 sm:px-5 sm:py-4"
+                      style={{
+                        background: isActive
+                          ? "rgba(50, 201, 204, 0.22)"
+                          : isActivated
+                            ? "rgba(24, 35, 39, 0.92)"
+                            : "rgba(10, 17, 20, 0.65)",
 
-            <div className="space-y-5">
-              {statsData.map((stat, index) => (
-                <motion.article
-                  key={stat.label}
-                  className="border-l-2 border-primary-400/50 pl-5"
-                  style={{
-                    opacity: useTransform(
-                      smoothProgress,
-                      [
-                        Math.max(0, index / statsData.length - 0.1),
-                        index / statsData.length + 0.1,
-                        Math.min(1, index / statsData.length + 0.3),
-                      ],
-                      [0.4, 1, 0.65],
-                    ),
-                  }}
-                >
-                  <div className="flex items-baseline gap-4">
-                    <span className="text-3xl font-bold tracking-tight text-primary-400 md:text-4xl">
-                      {stat.number}
-                    </span>
+                        borderLeftColor: isActive
+                          ? "#8affff"
+                          : isActivated
+                            ? "rgba(50, 201, 204, 0.65)"
+                            : "rgba(100, 116, 120, 0.2)",
 
-                    <h3 className="text-sm font-heading tracking-wide text-white md:text-base">
-                      {stat.label}
-                    </h3>
-                  </div>
+                        boxShadow: isActive
+                          ? "0 0 28px rgba(50,201,204,0.28)"
+                          : "none",
 
-                  <p className="mt-2 max-w-md text-sm leading-relaxed text-neutral-400">
-                    {stat.subtext}
-                  </p>
-                </motion.article>
-              ))}
-            </div>
+                        filter: isActivated
+                          ? "none"
+                          : "saturate(0.35)",
+                      }}
+                      aria-current={isActive ? "step" : undefined}
+                    >
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span
+                          className="shrink-0 font-heading text-2xl font-bold tracking-tight sm:text-3xl"
+                          style={{
+                            color: isActive
+                              ? "#8affff"
+                              : isActivated
+                                ? "#32c9cc"
+                                : "#526368",
+                          }}
+                        >
+                          {stat.number}
+                        </span>
+
+                        <h3
+                          className={`min-w-0 break-words font-heading text-xs font-semibold tracking-wide sm:text-sm md:text-base ${
+                            isActivated
+                              ? "text-white"
+                              : "text-neutral-600"
+                          }`}
+                        >
+                          {stat.label}
+                        </h3>
+                      </div>
+                    </motion.article>
+                  )
+                })}
+              </div>
+            </motion.div>
           </div>
 
-          {/* Derecha: escena 3D */}
-          <div className="relative hidden h-[75vh] min-h-[400px] md:block">
-            <div className="absolute inset-0 rounded-full bg-primary-400/5 blur-3xl" />
-
-            <div className="sticky top-[12.5vh] h-[75vh] overflow-hidden">
-              <StatsCube3D progress={cubeProgress.get()} />
-            </div>
-
-            <div className="pointer-events-none absolute bottom-4 left-0 right-0 text-center">
-              <span className="text-xs tracking-[0.3em] text-neutral-500">
-                EXPLORANDO NUESTRA EVOLUCIÓN
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Indicador inferior */}
-        <div className="absolute bottom-5 left-6 right-6 z-20 flex items-center gap-4 lg:left-16 lg:right-16">
-          <span className="text-xs tracking-widest text-neutral-500">
-            SCROLL
-          </span>
-
-          <div className="h-px flex-1 overflow-hidden bg-neutral-800">
-            <motion.div
-              className="h-full origin-left bg-primary-400"
-              style={{ scaleX: smoothProgress }}
-            />
-          </div>
+          {/* Columna derecha reservada para el prisma */}
+          <div className="pointer-events-none hidden h-full md:block" />
         </div>
       </div>
     </section>
