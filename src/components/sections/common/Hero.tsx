@@ -9,9 +9,9 @@ export default function Hero() {
 
   return (
     <section
-      className="relative min-h-screen flex items-center overflow-hidden theme-dark accent-cyan transition-colors duration-500"
+      className="relative min-h-screen flex items-center overflow-hidden theme-light accent-cyan grid-bg transition-colors duration-500"
       style={{
-        background: "var(--bg)",
+        background: "linear-gradient(180deg, #edfbf9 0%, #f6fcfb 60%, #f5f2ee 100%)",
         color: "var(--fg)",
       }}
     >
@@ -26,6 +26,19 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
             className="w-full"
           >
+            {/* Tag / badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-6 border"
+              style={{
+                background: "rgba(14, 154, 147, 0.08)",
+                borderColor: "rgba(14, 154, 147, 0.25)",
+              }}
+            >
+              <span className="w-2 h-2 rounded-full bg-[var(--color-primary-500)] animate-pulse" />
+              <span className="font-display text-xs font-semibold text-[var(--color-primary-700)] tracking-widest">
+                INGENIERÍA MULTIMEDIA USB
+              </span>
+            </div>
+
             {/* Título principal */}
             <h1
               className="w-full font-display font-bold text-4xl md:text-5xl lg:text-6xl leading-[1.05] mb-6"
@@ -36,7 +49,7 @@ export default function Hero() {
               <span
                 style={{
                   color: "var(--primary)",
-                  textShadow: "0 0 32px rgba(50,201,204,0.4)",
+                  textShadow: "0 0 24px rgba(14,154,147,0.3)",
                 }}
               >
                 TRANSFORMA
@@ -85,8 +98,14 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Columna derecha: escena 3D existente con parallax */}
+        {/* Columna derecha: escena 3D existente con parallax y aura cyan */}
         <div ref={sceneRef} className="h-80 lg:h-[500px] relative">
+          <div
+            className="absolute inset-0 rounded-full pointer-events-none opacity-40 blur-3xl"
+            style={{
+              background: "radial-gradient(circle, rgba(14,154,147,0.25) 0%, transparent 70%)",
+            }}
+          />
           <HeroScene />
         </div>
       </div>

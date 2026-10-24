@@ -2,11 +2,11 @@ import { useState } from "react"
 
 import { motion } from "framer-motion"
 
-import SectionHeader from "../components/SectionHeader"
+import SectionHeader from "../components/ui/SectionHeader"
 
-import MemberCard from "../components/MemberCard"
+import MemberCard from "../components/ui/MemberCard"
 
-import PageBanner from "../components/PageBanner"
+import PageBanner from "../components/ui/PageBanner"
 
 const categories = ["todos", "docente", "egresado", "estudiante"] as const
 

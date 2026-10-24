@@ -1,8 +1,8 @@
 import { motion } from "framer-motion"
 import StatsChart from "../components/graphics/StatsChart"
 import HeroSection from "../components/sections/common/Hero"
-import SectionHeader from "../components/SectionHeader"
-import NewsCarousel from "../components/NewsCarousel"
+import SectionHeader from "../components/ui/SectionHeader"
+import NewsCarousel from "../components/ui/NewsCarousel"
 import VideoReel from "../components/graphics/VideoReel"
 import ScrollStatsSection from "../components/sections/common/ScrollStatsSection"
 import FeaturedProjectsSection from "../components/sections/common/FeaturedProjectsSection"
@@ -11,15 +11,15 @@ import HomeNextEventCTA from "../components/sections/common/HomeNextEventCTA"
 export default function Home() {
   return (
     <div className="relative">
-      {/* ── 1. Hero (Dark + Cyan) ───────────────────────── */}
+      {/* ── 1. Hero (Light + Cyan + Grid) ───────────────── */}
       <HeroSection />
 
       {/* ── 2. Cifras con cubo 3D interactivo ────────────── */}
       <ScrollStatsSection />
 
-      {/* ── 3. Noticias + Carrusel (Light + Orange) ──────── */}
+      {/* ── 3. Noticias + Carrusel (Light + Orange + Grid) ─ */}
       <section
-        className="py-24 theme-light accent-orange transition-colors duration-500"
+        className="py-24 theme-light accent-orange grid-bg transition-colors duration-500"
         style={{
           background: "var(--bg)",
           color: "var(--fg)",
@@ -96,12 +96,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 4. Proyectos Destacados (Dark + Blue) ────────── */}
+      {/* ── 4. Proyectos Destacados (Dark + Blue + Grid) ─── */}
       <FeaturedProjectsSection />
 
-      {/* ── 5. Producción Científica (Light + Cyan) ──────── */}
+      {/* ── 5. Producción Científica (Light + Cyan + Grid) ─ */}
       <section
-        className="py-24 theme-light accent-cyan transition-colors duration-500"
+        className="py-24 theme-light accent-cyan grid-bg transition-colors duration-500"
         style={{
           background: "var(--bg)",
           color: "var(--fg)",
@@ -121,9 +121,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 6. Video Reel (Dark + Orange) ───────────────── */}
+      {/* ── 6. Video Reel (Dark + Orange + Grid) ────────── */}
       <section
-        className="py-24 theme-dark accent-orange transition-colors duration-500"
+        className="py-24 theme-dark accent-orange grid-bg transition-colors duration-500"
         style={{
           background: "var(--bg)",
           color: "var(--fg)",
@@ -147,7 +147,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 7. Call To Action Próximo Evento (Light + Orange) ── */}
+      {/* ── 7. Call To Action Próximo Evento (Light + Orange + Grid) ── */}
       <HomeNextEventCTA />
     </div>
   )

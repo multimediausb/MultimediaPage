@@ -10,7 +10,7 @@ export default function HomeNextEventCTA() {
 
   return (
     <section
-      className="relative py-24 theme-light accent-orange transition-colors duration-500 overflow-hidden"
+      className="relative py-24 theme-light accent-orange grid-bg transition-colors duration-500 overflow-hidden"
       style={{
         background: "var(--bg)",
         color: "var(--fg)",

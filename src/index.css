@@ -105,6 +105,8 @@
 
   --fg: #1a1714;
   --fg-muted: #6b6358;
+
+  --grid-color: rgba(14, 154, 147, 0.08);
 }
 
 /* Theme variations: Light / Dark and Accent (Blue / Orange / Cyan) */
@@ -114,6 +116,7 @@
   --surface-2: #19202a;
   --fg: #eef2f6;
   --fg-muted: #94a3b8;
+  --grid-color: rgba(50, 201, 204, 0.1);
 }
 
 [data-theme="light"], .theme-light {
@@ -122,25 +125,38 @@
   --surface-2: #ece8e2;
   --fg: #1a1714;
   --fg-muted: #6b6358;
+  --grid-color: rgba(14, 154, 147, 0.08);
 }
 
-/* Section accent color switches (Blue / Orange / Cyan) */
+/* Section accent color switches (Blue / Orange / Cyan) & reactive grid colors */
 [data-accent="blue"], .accent-blue {
   --primary: var(--color-tertiary-500);
   --primary-dim: var(--color-tertiary-alpha-10);
   --color-primary: var(--color-tertiary-500);
+  --grid-color: rgba(47, 141, 207, 0.09);
+}
+.theme-dark[data-accent="blue"], .theme-dark.accent-blue {
+  --grid-color: rgba(47, 141, 207, 0.14);
 }
 
 [data-accent="orange"], .accent-orange {
   --primary: var(--color-secondary-500);
   --primary-dim: var(--color-secondary-alpha-10);
   --color-primary: var(--color-secondary-500);
+  --grid-color: rgba(214, 120, 10, 0.08);
+}
+.theme-dark[data-accent="orange"], .theme-dark.accent-orange {
+  --grid-color: rgba(243, 136, 11, 0.13);
 }
 
 [data-accent="cyan"], .accent-cyan {
   --primary: var(--color-primary-500);
   --primary-dim: var(--color-primary-alpha-10);
   --color-primary: var(--color-primary-500);
+  --grid-color: rgba(14, 154, 147, 0.08);
+}
+.theme-dark[data-accent="cyan"], .theme-dark.accent-cyan {
+  --grid-color: rgba(50, 201, 204, 0.12);
 }
 
 /* Lenis smooth scroll */

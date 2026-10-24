@@ -2,13 +2,13 @@ import { useState } from "react"
 
 import { motion } from "framer-motion"
 
-import SectionHeader from "../components/SectionHeader"
+import SectionHeader from "../components/ui/SectionHeader"
 
-import ResearchCard from "../components/ResearchCard"
+import ResearchCard from "../components/ui/ResearchCard"
 
 import StatsChart from "../components/graphics/StatsChart"
 
-import PageBanner from "../components/PageBanner"
+import PageBanner from "../components/ui/PageBanner"
 
 import SemillerosSection from "../components/sections/investigacion/SemillerosSection"
 

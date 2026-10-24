@@ -1,5 +1,5 @@
-import PageBanner from "../components/PageBanner"
-import SectionHeader from "../components/SectionHeader"
+import PageBanner from "../components/ui/PageBanner"
+import SectionHeader from "../components/ui/SectionHeader"
 
 export default function Proyectos() {
   return (

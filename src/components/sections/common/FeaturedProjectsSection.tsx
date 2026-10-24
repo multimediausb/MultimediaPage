@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import SectionHeader from "@/components/SectionHeader"
+import SectionHeader from "@/components/ui/SectionHeader"
 import Button from "@/components/ui/Button"
 import Badge from "@/components/ui/Badge"
 import Card from "@/components/ui/Card"
@@ -65,7 +65,7 @@ export default function FeaturedProjectsSection() {
 
   return (
     <section
-      className="relative py-24 theme-dark accent-blue transition-colors duration-500 overflow-hidden"
+      className="relative py-24 theme-dark accent-blue grid-bg transition-colors duration-500 overflow-hidden"
       style={{
         background: "var(--bg)",
         color: "var(--fg)",

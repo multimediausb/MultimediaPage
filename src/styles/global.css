@@ -44,8 +44,8 @@ body {
 /* Efectos visuales y utilidades del sitio */
 .grid-bg {
   background-image:
-    linear-gradient(rgba(14, 154, 147, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(14, 154, 147, 0.06) 1px, transparent 1px);
+    linear-gradient(var(--grid-color, rgba(14, 154, 147, 0.08)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color, rgba(14, 154, 147, 0.08)) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 

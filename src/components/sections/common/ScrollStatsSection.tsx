@@ -79,14 +79,14 @@ export default function ScrollStatsSection() {
         {/* Cuadrícula de fondo */}
         <motion.div
           style={{ y: gridY }}
-          className="absolute inset-0 pointer-events-none opacity-20"
+          className="absolute inset-0 pointer-events-none opacity-25"
         >
           <div
             className="h-full w-full"
             style={{
               backgroundImage: `
-                linear-gradient(rgba(50, 201, 204, 0.15) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(50, 201, 204, 0.15) 1px, transparent 1px)
+                linear-gradient(var(--grid-color, rgba(50, 201, 204, 0.15)) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color, rgba(50, 201, 204, 0.15)) 1px, transparent 1px)
               `,
               backgroundSize: "60px 60px",
             }}

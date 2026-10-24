@@ -6,8 +6,8 @@ import MODEL_PATH from "../../assets/Models/Canon_AT-1.fbx";
 
 // Colores del wireframe
 const OUTLINE_COLORS = {
-  primary: 0x32c9cc, // Cian
-  accent: 0xf3880b,  // Naranja
+  primary: 0x0e9a93, // Cian oscuro / nítido para fondo claro
+  accent: 0xd6780a,  // Naranja
 };
 
 const OUTLINE_OPACITY = 0.9;

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react"
 
 import { motion, AnimatePresence } from "framer-motion"
 
-import noticias from "../data/noticias.json"
+import noticias from "@/data/noticias.json"
 
 const tagColor: Record<string, string> = {
   NUEVO: "#0e9a93",
