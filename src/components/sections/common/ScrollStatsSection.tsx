@@ -13,10 +13,6 @@ const statsData = [
   { number: "40+", label: "CONVENIOS GLOBALES" },
   { number: "250+", label: "ESTUDIANTES ACTIVOS" },
   { number: "15+", label: "SEMILLEROS Y GRUPOS" },
-  { number: "25+", label: "AÑOS DE HISTORIA" },
-  { number: "40+", label: "CONVENIOS GLOBALES" },
-  { number: "250+", label: "ESTUDIANTES ACTIVOS" },
-  { number: "15+", label: "SEMILLEROS Y GRUPOS" },
 ]
 
 const clamp = (value: number, min: number, max: number) =>

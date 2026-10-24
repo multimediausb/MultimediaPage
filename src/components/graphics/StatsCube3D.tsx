@@ -17,10 +17,10 @@ const MOTION_CONFIG = {
 
   // Duración de cada fase dentro del progreso de una tarjeta.
   // La suma de las fases debe ser 1.
-descendEnd: 0.0022,
-contactStart: 0.0058,
-contactEnd: 0.0072,
-returnEnd: 0.0092,
+  descendEnd: 0.22,
+  contactStart: 0.62,
+  contactEnd: 0.72,
+  returnEnd: 0.92,
 
   // Intensidad del giro y del escalado al contactar.
   contactRotation: 0.035,
