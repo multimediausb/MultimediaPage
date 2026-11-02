@@ -15,9 +15,9 @@ interface Props {
 }
 
 const accentMap = {
-  primary: "#0e9a93",
-  secondary: "#d6780a",
-  accent: "#2878b0",
+  primary: "var(--color-primary-600)",
+  secondary: "var(--color-secondary-600)",
+  accent: "var(--color-tertiary-600)",
 }
 
 export default function SectionHeader({

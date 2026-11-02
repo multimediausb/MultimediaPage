@@ -71,10 +71,7 @@ export default function ScrollStatsSection() {
       const contentHeight = content.scrollHeight
 
       // Distancia real necesaria para recorrer el contenido.
-      const scrollableContent = Math.max(
-        0,
-        contentHeight - viewportHeight,
-      )
+      const scrollableContent = Math.max(0, contentHeight - viewportHeight)
 
       /*
        * Se asigna un tramo de scroll por métrica a partir del
@@ -135,10 +132,7 @@ export default function ScrollStatsSection() {
     let maxOffset = 0
 
     const measureContent = () => {
-      maxOffset = Math.max(
-        0,
-        content.scrollHeight - viewport.clientHeight,
-      )
+      maxOffset = Math.max(0, content.scrollHeight - viewport.clientHeight)
     }
 
     const updateOffset = (nextOffset: number) => {
@@ -151,126 +145,107 @@ export default function ScrollStatsSection() {
       contentOffsetRef.current = safeOffset
 
       setContentOffset((previous) =>
-        Math.abs(previous - safeOffset) < 0.5
-          ? previous
-          : safeOffset,
+        Math.abs(previous - safeOffset) < 0.5 ? previous : safeOffset,
       )
     }
 
     measureContent()
 
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: true,
-        invalidateOnRefresh: true,
+    const ctx = gsap.context(
+      () => {
+        ScrollTrigger.create({
+          trigger: section,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true,
+          invalidateOnRefresh: true,
 
-        onUpdate: (self) => {
-          const progress = self.progress
-          progressRef.current = progress
+          onUpdate: (self) => {
+            const progress = self.progress
+            progressRef.current = progress
 
-          const scaledProgress = progress * itemCount
+            const scaledProgress = progress * itemCount
 
-          const index = Math.min(
-            itemCount - 1,
-            Math.floor(scaledProgress),
-          )
+            const index = Math.min(itemCount - 1, Math.floor(scaledProgress))
 
-          const localProgress =
-            progress >= 1 ? 1 : scaledProgress - index
+            const localProgress = progress >= 1 ? 1 : scaledProgress - index
 
-          const viewportRect = viewport.getBoundingClientRect()
-          const viewportCenter =
-            viewportRect.top + viewportRect.height / 2
+            const viewportRect = viewport.getBoundingClientRect()
+            const viewportCenter = viewportRect.top + viewportRect.height / 2
 
-          const currentOffset = contentOffsetRef.current
+            const currentOffset = contentOffsetRef.current
 
-          const anchors = itemRefs.current
-            .slice(0, itemCount)
-            .map((element) => {
-              if (!element) return 0
+            const anchors = itemRefs.current
+              .slice(0, itemCount)
+              .map((element) => {
+                if (!element) return 0
 
-              const rect = element.getBoundingClientRect()
+                const rect = element.getBoundingClientRect()
 
-              const originalCenter =
-                rect.top + rect.height / 2 + currentOffset
+                const originalCenter =
+                  rect.top + rect.height / 2 + currentOffset
 
-              return clamp(
-                originalCenter - viewportCenter,
+                return clamp(originalCenter - viewportCenter, 0, maxOffset)
+              })
+
+            const currentAnchor = anchors[index] ?? 0
+            const nextAnchor =
+              anchors[Math.min(index + 1, itemCount - 1)] ?? currentAnchor
+
+            /*
+             * El bloque final contiene hasta las últimas tres métricas.
+             * Con pocas métricas, el índice nunca será negativo.
+             */
+            const finalBlockIndex = Math.max(0, itemCount - 3)
+            const finalBlockAnchor = anchors[finalBlockIndex] ?? 0
+
+            let nextOffset = 0
+
+            if (index >= finalBlockIndex) {
+              nextOffset = finalBlockAnchor
+            } else if (index === 0 && localProgress < 0.62) {
+              nextOffset = lerp(
                 0,
-                maxOffset,
+                currentAnchor,
+                smoothStep(localProgress / 0.62),
               )
-            })
+            } else if (localProgress <= 0.72) {
+              nextOffset = currentAnchor
+            } else {
+              nextOffset = lerp(
+                currentAnchor,
+                nextAnchor,
+                smoothStep((localProgress - 0.72) / 0.28),
+              )
+            }
 
-          const currentAnchor = anchors[index] ?? 0
-          const nextAnchor =
-            anchors[Math.min(index + 1, itemCount - 1)] ??
-            currentAnchor
+            updateOffset(nextOffset)
 
-          /*
-           * El bloque final contiene hasta las últimas tres métricas.
-           * Con pocas métricas, el índice nunca será negativo.
-           */
-          const finalBlockIndex = Math.max(0, itemCount - 3)
-          const finalBlockAnchor = anchors[finalBlockIndex] ?? 0
+            // Activación progresiva de las tarjetas.
+            const isActivated = localProgress >= 0.22
 
-          let nextOffset = 0
+            const nextActivatedIndex =
+              progress >= 1 ? itemCount - 1 : isActivated ? index : index - 1
 
-          if (index >= finalBlockIndex) {
-            nextOffset = finalBlockAnchor
-          } else if (index === 0 && localProgress < 0.62) {
-            nextOffset = lerp(
-              0,
-              currentAnchor,
-              smoothStep(localProgress / 0.62),
+            setActivatedIndex((previous) =>
+              previous === nextActivatedIndex ? previous : nextActivatedIndex,
             )
-          } else if (localProgress <= 0.72) {
-            nextOffset = currentAnchor
-          } else {
-            nextOffset = lerp(
-              currentAnchor,
-              nextAnchor,
-              smoothStep((localProgress - 0.72) / 0.28),
+
+            // Contacto del prisma con la métrica actual.
+            const isTouching = localProgress >= 0.62 && localProgress <= 0.72
+
+            const nextActiveIndex = isTouching ? index : -1
+
+            setActiveIndex((previous) =>
+              previous === nextActiveIndex ? previous : nextActiveIndex,
             )
-          }
+          },
 
-          updateOffset(nextOffset)
-
-          // Activación progresiva de las tarjetas.
-          const isActivated = localProgress >= 0.22
-
-          const nextActivatedIndex =
-            progress >= 1
-              ? itemCount - 1
-              : isActivated
-                ? index
-                : index - 1
-
-          setActivatedIndex((previous) =>
-            previous === nextActivatedIndex
-              ? previous
-              : nextActivatedIndex,
-          )
-
-          // Contacto del prisma con la métrica actual.
-          const isTouching =
-            localProgress >= 0.62 &&
-            localProgress <= 0.72
-
-          const nextActiveIndex = isTouching ? index : -1
-
-          setActiveIndex((previous) =>
-            previous === nextActiveIndex
-              ? previous
-              : nextActiveIndex,
-          )
-        },
-
-        onRefresh: measureContent,
-      })
-    }, section)
+          onRefresh: measureContent,
+        })
+      },
+      section,
+    )
 
     const observer = new ResizeObserver(() => {
       measureContent()
@@ -298,50 +273,26 @@ export default function ScrollStatsSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-neutral-950 text-white"
+      className="relative theme-dark grid-primary dark-grid-bg text-[var(--color-neutral-100)]"
       style={{
         height: sectionHeight,
-        background:
-          "radial-gradient(ellipse at 70% 35%, #0c2128 0%, #060d11 60%, #030608 100%)",
+        backgroundColor: "var(--color-primary-900)",
       }}
       aria-label="Estadísticas generales del programa"
     >
       <div className="sticky top-0 isolate h-screen overflow-hidden">
-        {/* Fondo cuadriculado */}
-        <div
-          className="pointer-events-none absolute inset-0 z-0 opacity-25"
-          aria-hidden="true"
-          style={{
-            backgroundImage: `
-              linear-gradient(
-                rgba(50, 201, 204, 0.15) 1px,
-                transparent 1px
-              ),
-              linear-gradient(
-                90deg,
-                rgba(50, 201, 204, 0.15) 1px,
-                transparent 1px
-              )
-            `,
-            backgroundSize: "60px 60px",
-          }}
-        />
-
         {/* Aura del prisma */}
         <div
           className="pointer-events-none absolute inset-0 z-0"
           aria-hidden="true"
           style={{
             background:
-              "radial-gradient(ellipse at 75% 50%, rgba(50,201,204,0.09), transparent 45%)",
+              "radial-gradient(ellipse at 75% 50%, color-mix(in srgb, var(--color-primary-500) 9%, transparent), transparent 45%)",
           }}
         />
 
         {/* Escena 3D */}
-        <StatsCube3D
-          progressRef={progressRef}
-          targetRefs={itemRefs}
-        />
+        <StatsCube3D progressRef={progressRef} targetRefs={itemRefs} />
 
         {/* Composición principal */}
         <div className="relative z-20 mx-auto grid h-full max-w-screen-xl grid-cols-1 px-5 sm:px-6 md:grid-cols-2 md:gap-8 lg:px-16">
@@ -371,16 +322,13 @@ export default function ScrollStatsSection() {
                 </h2>
 
                 <p className="mt-4 max-w-lg text-sm leading-relaxed text-neutral-400">
-                  Conoce la trayectoria, las capacidades científicas
-                  y el alcance de nuestra comunidad.
+                  Conoce la trayectoria, las capacidades científicas y el
+                  alcance de nuestra comunidad.
                 </p>
               </div>
 
               {/* Indicadores */}
-              <div
-                ref={metricsRef}
-                className="space-y-3 sm:space-y-4"
-              >
+              <div ref={metricsRef} className="space-y-3 sm:space-y-4">
                 {statsData.map((stat, index) => {
                   const isActive = activeIndex === index
                   const isActivated = index <= activatedIndex
@@ -403,24 +351,22 @@ export default function ScrollStatsSection() {
                       className="relative w-full max-w-[430px] overflow-hidden rounded-r-md border-l-[5px] px-4 py-3 sm:px-5 sm:py-4"
                       style={{
                         background: isActive
-                          ? "rgba(50, 201, 204, 0.22)"
+                          ? "color-mix(in srgb, var(--color-primary-500) 22%, transparent)"
                           : isActivated
-                            ? "rgba(24, 35, 39, 0.92)"
-                            : "rgba(10, 17, 20, 0.65)",
+                            ? "color-mix(in srgb, var(--color-primary-900) 92%, transparent)"
+                            : "color-mix(in srgb, var(--color-neutral-900) 65%, transparent)",
 
                         borderLeftColor: isActive
-                          ? "#8affff"
+                          ? "var(--color-primary-300)"
                           : isActivated
-                            ? "rgba(50, 201, 204, 0.65)"
-                            : "rgba(100, 116, 120, 0.2)",
+                            ? "color-mix(in srgb, var(--color-primary-500) 65%, transparent)"
+                            : "color-mix(in srgb, var(--color-neutral-400) 20%, transparent)",
 
                         boxShadow: isActive
-                          ? "0 0 28px rgba(50,201,204,0.28)"
+                          ? "0 0 28px color-mix(in srgb, var(--color-primary-500) 28%, transparent)"
                           : "none",
 
-                        filter: isActivated
-                          ? "none"
-                          : "saturate(0.35)",
+                        filter: isActivated ? "none" : "saturate(0.35)",
                       }}
                       aria-current={isActive ? "step" : undefined}
                     >
@@ -429,10 +375,10 @@ export default function ScrollStatsSection() {
                           className="shrink-0 font-heading text-2xl font-bold tracking-tight sm:text-3xl"
                           style={{
                             color: isActive
-                              ? "#8affff"
+                              ? "var(--color-primary-300)"
                               : isActivated
-                                ? "#32c9cc"
-                                : "#526368",
+                                ? "var(--color-primary-500)"
+                                : "var(--color-neutral-500)",
                           }}
                         >
                           {stat.number}
@@ -440,9 +386,7 @@ export default function ScrollStatsSection() {
 
                         <h3
                           className={`min-w-0 break-words font-heading text-xs font-semibold tracking-wide sm:text-sm md:text-base ${
-                            isActivated
-                              ? "text-white"
-                              : "text-neutral-600"
+                            isActivated ? "text-white" : "text-neutral-600"
                           }`}
                         >
                           {stat.label}

@@ -27,6 +27,7 @@ html {
   color: var(--fg, #1a1714);
   font-family: var(--font-body, 'Outfit', sans-serif);
   -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -47,6 +48,81 @@ body {
     linear-gradient(var(--grid-color, rgba(14, 154, 147, 0.08)) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-color, rgba(14, 154, 147, 0.08)) 1px, transparent 1px);
   background-size: 40px 40px;
+}
+
+.dark-grid-bg {
+  background-image:
+    linear-gradient(var(--dark-grid-color, color-mix(in srgb, var(--color-primary-500) 15%, transparent)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--dark-grid-color, color-mix(in srgb, var(--color-primary-500) 15%, transparent)) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.section-transition {
+  position: relative;
+  isolation: isolate;
+  transition:
+    background-color 900ms ease,
+    color 900ms ease,
+    border-color 900ms ease;
+}
+
+.section-transition::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  z-index: -1;
+  height: 72px;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--bg) 72%, transparent)
+  );
+  opacity: 0.7;
+}
+
+.theme-light.grid-primary {
+  --bg: var(--color-neutral-100);
+  --fg: var(--color-primary-900);
+  --fg-muted: var(--color-neutral-700);
+  --grid-color: color-mix(in srgb, var(--color-primary-500) 16%, transparent);
+}
+
+.theme-light.grid-secondary {
+  --bg: var(--color-neutral-100);
+  --fg: var(--color-secondary-900);
+  --fg-muted: var(--color-neutral-700);
+  --grid-color: color-mix(in srgb, var(--color-secondary-500) 16%, transparent);
+}
+
+.theme-light.grid-tertiary {
+  --bg: var(--color-neutral-100);
+  --fg: var(--color-tertiary-900);
+  --fg-muted: var(--color-neutral-700);
+  --grid-color: color-mix(in srgb, var(--color-tertiary-500) 16%, transparent);
+}
+
+.theme-dark.grid-primary {
+  --bg: var(--color-primary-900);
+  --fg: var(--color-neutral-100);
+  --fg-muted: var(--color-neutral-300);
+  --dark-grid-color: color-mix(in srgb, var(--color-primary-500) 15%, transparent);
+}
+
+.theme-dark.grid-secondary {
+  --bg: var(--color-secondary-900);
+  --fg: var(--color-neutral-100);
+  --fg-muted: var(--color-neutral-300);
+  --dark-grid-color: color-mix(in srgb, var(--color-secondary-500) 15%, transparent);
+}
+
+.theme-dark.grid-tertiary {
+  --bg: var(--color-tertiary-900);
+  --fg: var(--color-neutral-100);
+  --fg-muted: var(--color-neutral-300);
+  --dark-grid-color: color-mix(in srgb, var(--color-tertiary-500) 15%, transparent);
 }
 
 /* Resplandores (Glow utilities) */

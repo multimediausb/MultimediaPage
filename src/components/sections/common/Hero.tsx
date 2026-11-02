@@ -9,9 +9,9 @@ export default function Hero() {
 
   return (
     <section
-      className="relative min-h-screen flex items-center overflow-hidden theme-light accent-cyan grid-bg transition-colors duration-500"
+      className="relative min-h-screen flex items-center overflow-hidden theme-light grid-primary grid-bg section-transition"
       style={{
-        background: "linear-gradient(180deg, #edfbf9 0%, #f6fcfb 60%, #f5f2ee 100%)",
+        backgroundColor: "var(--color-neutral-100)",
         color: "var(--fg)",
       }}
     >
@@ -27,10 +27,13 @@ export default function Hero() {
             className="w-full"
           >
             {/* Tag / badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-6 border"
+            <div
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-6 border"
               style={{
-                background: "rgba(14, 154, 147, 0.08)",
-                borderColor: "rgba(14, 154, 147, 0.25)",
+                background:
+                  "color-mix(in srgb, var(--color-primary-500) 8%, transparent)",
+                borderColor:
+                  "color-mix(in srgb, var(--color-primary-500) 25%, transparent)",
               }}
             >
               <span className="w-2 h-2 rounded-full bg-[var(--color-primary-500)] animate-pulse" />
@@ -49,7 +52,8 @@ export default function Hero() {
               <span
                 style={{
                   color: "var(--primary)",
-                  textShadow: "0 0 24px rgba(14,154,147,0.3)",
+                  textShadow:
+                    "0 0 24px color-mix(in srgb, var(--color-primary-500) 30%, transparent)",
                 }}
               >
                 TRANSFORMA
@@ -69,8 +73,8 @@ export default function Hero() {
               <strong style={{ color: "var(--fg)" }}>
                 nuevas tecnologías y gráficos mediante computadora
               </strong>
-              , donde la creatividad y la innovación convergen para
-              transformar ideas en soluciones digitales.
+              , donde la creatividad y la innovación convergen para transformar
+              ideas en soluciones digitales.
             </p>
 
             {/* Botones alineados horizontalmente */}
@@ -103,7 +107,8 @@ export default function Hero() {
           <div
             className="absolute inset-0 rounded-full pointer-events-none opacity-40 blur-3xl"
             style={{
-              background: "radial-gradient(circle, rgba(14,154,147,0.25) 0%, transparent 70%)",
+              background:
+                "radial-gradient(circle, color-mix(in srgb, var(--color-primary-500) 25%, transparent) 0%, transparent 70%)",
             }}
           />
           <HeroScene />
@@ -119,8 +124,7 @@ export default function Hero() {
         <div
           className="h-6 w-px"
           style={{
-            background:
-              "linear-gradient(180deg, transparent, var(--primary))",
+            background: "linear-gradient(180deg, transparent, var(--primary))",
           }}
         />
 
