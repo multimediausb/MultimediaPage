@@ -4,8 +4,7 @@ import {
   useScroll,
   useSpring,
 } from "framer-motion"
-import { useRef, useState } from "react"
-import { useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import HeroScene from "../../graphics/HeroScene"
 import ParticleField from "../../graphics/ParticleField"
 import Button from "../../ui/Button"
@@ -16,6 +15,18 @@ interface ProgressMarker {
   progress: number
   target: number
   color: string
+}
+
+const getDocumentTop = (element: HTMLElement) => {
+  let top = 0
+  let current: HTMLElement | null = element
+
+  while (current) {
+    top += current.offsetTop
+    current = current.offsetParent as HTMLElement | null
+  }
+
+  return top
 }
 
 export default function Hero() {
@@ -44,6 +55,7 @@ export default function Hero() {
 
   useEffect(() => {
     let updateFrame = 0
+    let settleFrame = 0
 
     const updateMarkers = () => {
       cancelAnimationFrame(updateFrame)
@@ -59,8 +71,7 @@ export default function Hero() {
 
         const markers = sections.map((section) => {
           const duration = Number(section.dataset.progressDuration ?? "0")
-          const sectionStart =
-            section.getBoundingClientRect().top + window.scrollY
+          const sectionStart = getDocumentTop(section)
           const anchorSection = section.dataset.progressAfter
             ? sections.find(
                 (candidate) =>
@@ -69,7 +80,7 @@ export default function Hero() {
               )
             : undefined
           const anchorStart = anchorSection
-            ? anchorSection.getBoundingClientRect().top + window.scrollY
+            ? getDocumentTop(anchorSection)
             : sectionStart
           const anchorHeight = anchorSection?.offsetHeight ?? 0
           const ratio = Math.min(
@@ -116,18 +127,15 @@ export default function Hero() {
     }
 
     updateMarkers()
+    settleFrame = requestAnimationFrame(() => {
+      settleFrame = requestAnimationFrame(updateMarkers)
+    })
     window.addEventListener("resize", updateMarkers)
-
-    const observer = new ResizeObserver(updateMarkers)
-    observer.observe(document.documentElement)
-    document
-      .querySelectorAll<HTMLElement>("[data-progress-section]")
-      .forEach((section) => observer.observe(section))
 
     return () => {
       cancelAnimationFrame(updateFrame)
+      cancelAnimationFrame(settleFrame)
       window.removeEventListener("resize", updateMarkers)
-      observer.disconnect()
     }
   }, [])
 
