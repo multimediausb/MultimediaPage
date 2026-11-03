@@ -7,6 +7,7 @@ interface Props {
   title?: string
   description?: string
   onOpen?: () => void
+  showDetails?: boolean
 }
 
 export default function VideoReel({
@@ -14,6 +15,7 @@ export default function VideoReel({
   title = "MediaShow en Acción",
   description = "Conoce el trabajo del Programa de Ingeniería Multimedia — proyectos, investigaciones y experiencias interactivas que definen la frontera entre tecnología y creatividad.",
   onOpen,
+  showDetails = true,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -74,14 +76,20 @@ export default function VideoReel({
         }}
       />
 
-      <div className="relative grid items-center gap-10 lg:grid-cols-2">
+      <div
+        className={`relative ${
+          showDetails ? "grid items-center gap-10 lg:grid-cols-2" : ""
+        }`}
+      >
         {/* Video side */}
         <motion.div
           initial={{ opacity: 0, x: 24 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.55, delay: 0.1 }}
-          className="relative overflow-hidden rounded-2xl"
+          className={`relative overflow-hidden rounded-2xl ${
+            showDetails ? "" : "mx-auto w-full"
+          }`}
           style={{
             aspectRatio: "16/9",
             background: "#000",
@@ -144,59 +152,61 @@ export default function VideoReel({
           </div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, x: -24 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.55 }}
-        >
-          <div className="mb-4 flex items-center gap-3">
-            <div
-              className="h-px w-4"
-              style={{ background: "var(--secondary)" }}
-            />
-            <span
-              className="font-display text-xs tracking-widest"
-              style={{ color: "var(--secondary)" }}
-            >
-              VIDEO REEL
-            </span>
-          </div>
-
-          <h2
-            className="mb-4 font-display text-2xl font-bold leading-tight md:text-3xl"
-            style={{ color: "var(--fg)" }}
+        {showDetails && (
+          <motion.div
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.55 }}
           >
-            {title}
-          </h2>
-
-          <p
-            className="mb-6 font-body text-sm leading-relaxed"
-            style={{ color: "var(--fg-muted)" }}
-          >
-            {description}
-          </p>
-
-          <div className="flex flex-wrap gap-3">
-            {[
-              "Proyectos estudiantiles",
-              "Investigación aplicada",
-              "Innovación tecnológica",
-            ].map((tag) => (
+            <div className="mb-4 flex items-center gap-3">
+              <div
+                className="h-px w-4"
+                style={{ background: "var(--secondary)" }}
+              />
               <span
-                key={tag}
-                className="flex items-center gap-2 rounded-full px-3 py-1.5 font-display text-xs"
-                style={{
-                  background: "var(--surface)",
-                  border: "1px solid var(--surface-2)",
-                  color: "var(--fg-muted)",
-                }}
+                className="font-display text-xs tracking-widest"
+                style={{ color: "var(--secondary)" }}
               >
-                {tag}
+                VIDEO REEL
               </span>
-            ))}
-          </div>
-        </motion.div>
+            </div>
+
+            <h2
+              className="mb-4 font-display text-2xl font-bold leading-tight md:text-3xl"
+              style={{ color: "var(--fg)" }}
+            >
+              {title}
+            </h2>
+
+            <p
+              className="mb-6 font-body text-sm leading-relaxed"
+              style={{ color: "var(--fg-muted)" }}
+            >
+              {description}
+            </p>
+
+            <div className="flex flex-wrap gap-3">
+              {[
+                "Proyectos estudiantiles",
+                "Investigación aplicada",
+                "Innovación tecnológica",
+              ].map((tag) => (
+                <span
+                  key={tag}
+                  className="flex items-center gap-2 rounded-full px-3 py-1.5 font-display text-xs"
+                  style={{
+                    background: "var(--surface)",
+                    border: "1px solid var(--surface-2)",
+                    color: "var(--fg-muted)",
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </div>
 
       <motion.div

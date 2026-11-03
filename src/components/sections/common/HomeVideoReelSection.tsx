@@ -41,12 +41,13 @@ export default function HomeVideoReelSection() {
           accent="primary"
           align="center"
         />
-        <div className="mt-8">
+        <div className="mx-auto mt-3 max-w-3xl">
           <VideoReel
             videoId="0gQwwXwgSUs"
             title="Segunda Creación Colectiva"
             description="Conoce la segunda creación colectiva del USB Medialab. En esta edición los estudiantes presentan una animación digital demostrando sus habilidades en animación 2D/3D, lip-sync y posproducción sonora."
             onOpen={centerVideoSection}
+            showDetails={false}
           />
         </div>
       </div>

@@ -95,8 +95,6 @@ export default function LatestNewsSection() {
       style={{
         backgroundColor: "var(--bg)",
         color: "var(--fg)",
-        borderBottom:
-          "1px solid color-mix(in srgb, var(--color-secondary-500) 24%, transparent)",
       }}
       aria-labelledby="latest-news-title"
     >
