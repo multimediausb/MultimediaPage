@@ -3,7 +3,6 @@ import { motion } from "framer-motion"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
-import Badge from "../../ui/Badge"
 import StatsCube3D from "../../graphics/StatsCube3D"
 
 gsap.registerPlugin(ScrollTrigger)
@@ -34,7 +33,7 @@ export default function ScrollStatsSection() {
   const metricsRef = useRef<HTMLDivElement>(null)
 
   const progressRef = useRef(0)
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([])
+  const itemRefs = useRef<(HTMLElement | null)[]>([])
   const contentOffsetRef = useRef(0)
 
   const [activeIndex, setActiveIndex] = useState(-1)
@@ -43,9 +42,6 @@ export default function ScrollStatsSection() {
   const [sectionHeight, setSectionHeight] = useState("100vh")
 
   const itemCount = statsData.length
-
-  // Permite el desplazamiento cuando el contenido no cabe en pantalla.
-  const hasParallax = true
 
   // =========================================================
   // MEDICIÓN AUTOMÁTICA DEL CONTENIDO Y ALTURA DE LA SECCIÓN
@@ -273,7 +269,7 @@ export default function ScrollStatsSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative theme-dark grid-primary dark-grid-bg text-[var(--color-neutral-100)]"
+      className="relative theme-dark grid-primary dark-grid-bg text-neutral-100"
       style={{
         height: sectionHeight,
         backgroundColor: "var(--color-primary-900)",
@@ -295,7 +291,7 @@ export default function ScrollStatsSection() {
         <StatsCube3D progressRef={progressRef} targetRefs={itemRefs} />
 
         {/* Composición principal */}
-        <div className="relative z-20 mx-auto grid h-full max-w-screen-xl grid-cols-1 px-5 sm:px-6 md:grid-cols-2 md:gap-8 lg:px-16">
+        <div className="relative z-20 mx-auto grid h-full max-w-7xl grid-cols-1 px-5 sm:px-6 md:grid-cols-2 md:gap-8 lg:px-16">
           {/* Viewport de métricas */}
           <div
             ref={contentViewportRef}
@@ -310,14 +306,9 @@ export default function ScrollStatsSection() {
               }}
             >
               {/* Encabezado */}
-              <div ref={headingRef} className="mb-7">
-                <div className="mb-4">
-                  <Badge variant="primary" pulse>
-                    IMPACTO EN CIFRAS
-                  </Badge>
-                </div>
+              <div ref={headingRef} className="mb-7 pt-8">
 
-                <h2 className="max-w-xl font-heading text-3xl font-bold leading-tight tracking-tight text-white lg:text-4xl">
+                <h2 className="max-w-xl font-heading text-3xl font-bold leading-tight tracking-tight text-white lg:text-4xl ">
                   MÉTRICAS QUE MARCAN LA DIFERENCIA
                 </h2>
 
@@ -348,7 +339,7 @@ export default function ScrollStatsSection() {
                         duration: 0.35,
                         ease: [0.16, 1, 0.3, 1],
                       }}
-                      className="relative w-full max-w-[430px] overflow-hidden rounded-r-md border-l-[5px] px-4 py-3 sm:px-5 sm:py-4"
+                      className="relative w-full max-w-107.5 overflow-hidden rounded-r-md border-l-[5px] px-4 py-3 sm:px-5 sm:py-4"
                       style={{
                         background: isActive
                           ? "color-mix(in srgb, var(--color-primary-500) 22%, transparent)"
@@ -385,7 +376,7 @@ export default function ScrollStatsSection() {
                         </span>
 
                         <h3
-                          className={`min-w-0 break-words font-heading text-xs font-semibold tracking-wide sm:text-sm md:text-base ${
+                          className={`min-w-0 wrap-break-word font-heading text-xs font-semibold tracking-wide sm:text-sm md:text-base ${
                             isActivated ? "text-white" : "text-neutral-600"
                           }`}
                         >

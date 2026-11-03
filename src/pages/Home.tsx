@@ -37,14 +37,14 @@ function ScientificProductionSection() {
     >
       <div
         ref={visualRef}
-        className="pointer-events-none absolute -left-40 top-1/3 h-[30rem] w-[30rem] rounded-full opacity-20 blur-3xl"
+        className="pointer-events-none absolute -left-40 top-1/3 h-120 w-120 rounded-full opacity-20 blur-3xl"
         style={{
           background:
             "radial-gradient(circle, color-mix(in srgb, var(--color-primary-500) 30%, transparent) 0%, transparent 70%)",
         }}
         aria-hidden="true"
       />
-      <div className="relative z-10 mx-auto max-w-screen-xl px-6">
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
         <SectionHeader
           label="Métricas"
           title="Producción científica"
@@ -74,7 +74,7 @@ function ScientificProductionSection() {
                 {metric.title}
               </span>
               <div className="mt-5 flex items-end justify-between gap-3">
-                <strong className="font-heading text-2xl text-[var(--color-neutral-100)]">
+                <strong className="font-heading text-2xl text-neutral-100">
                   {metric.value}
                 </strong>
                 <div className="flex h-12 items-end gap-1">
@@ -97,7 +97,7 @@ function ScientificProductionSection() {
         <div className="mt-8 text-center">
           <a
             href="/investigacion"
-            className="inline-flex border px-5 py-2.5 font-display text-xs tracking-widest transition-colors duration-300 hover:bg-[var(--color-primary-500)] hover:text-white"
+            className="inline-flex border px-5 py-2.5 font-display text-xs tracking-widest transition-colors duration-300 hover:bg-primary-500 hover:text-white"
             style={{
               borderColor: "var(--color-primary-500)",
               color: "var(--color-primary-300)",
@@ -146,14 +146,14 @@ export default function Home() {
       >
         <div
           ref={videoVisualRef}
-          className="pointer-events-none absolute -right-36 top-1/4 h-[26rem] w-[26rem] rounded-full opacity-20 blur-3xl"
+          className="pointer-events-none absolute -right-36 top-1/4 h-104 w-104 rounded-full opacity-20 blur-3xl"
           style={{
             background:
               "radial-gradient(circle, color-mix(in srgb, var(--color-secondary-500) 32%, transparent) 0%, transparent 70%)",
           }}
           aria-hidden="true"
         />
-        <div className="max-w-screen-xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-6">
           <SectionHeader
             label="Producción Audiovisual"
             title="Creación Colectiva"

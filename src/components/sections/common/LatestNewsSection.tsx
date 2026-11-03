@@ -42,7 +42,7 @@ export default function LatestNewsSection() {
     >
       <div
         ref={glowRef}
-        className="pointer-events-none absolute -left-40 top-1/3 h-[30rem] w-[30rem] rounded-full opacity-25 blur-3xl"
+        className="pointer-events-none absolute -left-40 top-1/3 h-120 w-120 rounded-full opacity-25 blur-3xl"
         style={{
           background:
             "radial-gradient(circle, color-mix(in srgb, var(--color-secondary-500) 32%, transparent) 0%, transparent 70%)",
@@ -50,7 +50,7 @@ export default function LatestNewsSection() {
         aria-hidden="true"
       />
 
-      <div className="relative z-10 mx-auto max-w-screen-xl px-6">
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
         <SectionHeader
           label="Actualidad"
           title="Últimas novedades"
@@ -83,7 +83,7 @@ export default function LatestNewsSection() {
                     "0 16px 35px color-mix(in srgb, var(--color-neutral-900) 18%, transparent)",
                 }}
               >
-                <div className="relative aspect-[16/10] overflow-hidden">
+                <div className="relative aspect-16/10 overflow-hidden">
                   <img
                     src={news.imagen}
                     alt=""
@@ -119,10 +119,10 @@ export default function LatestNewsSection() {
                       {news.categoria}
                     </span>
                   </div>
-                  <h3 className="mt-4 font-heading text-sm leading-relaxed text-[var(--color-neutral-100)]">
+                  <h3 className="mt-4 font-heading text-sm leading-relaxed text-neutral-100">
                     {news.titulo}
                   </h3>
-                  <p className="mt-3 line-clamp-3 font-body text-sm leading-relaxed text-[var(--color-neutral-300)]">
+                  <p className="mt-3 line-clamp-3 font-body text-sm leading-relaxed text-neutral-300">
                     {news.resumen}
                   </p>
                 </div>

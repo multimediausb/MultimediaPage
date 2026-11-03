@@ -67,7 +67,7 @@ export default function HomeEventsSection() {
     >
       <div
         ref={visualRef}
-        className="pointer-events-none absolute -right-36 top-20 h-[28rem] w-[28rem] rounded-full opacity-20 blur-3xl"
+        className="pointer-events-none absolute -right-36 top-20 h-112 w-md rounded-full opacity-20 blur-3xl"
         style={{
           background:
             "radial-gradient(circle, color-mix(in srgb, var(--color-tertiary-500) 35%, transparent) 0%, transparent 70%)",
@@ -75,7 +75,7 @@ export default function HomeEventsSection() {
         aria-hidden="true"
       />
 
-      <div className="relative z-10 mx-auto max-w-screen-xl px-6">
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
         <SectionHeader
           label="Agenda"
           title="Eventos principales"
@@ -111,10 +111,10 @@ export default function HomeEventsSection() {
                 >
                   {event.type}
                 </span>
-                <h3 className="mt-2 font-heading text-sm leading-relaxed text-[var(--fg)]">
+                <h3 className="mt-2 font-heading text-sm leading-relaxed text-(--fg)">
                   {event.title}
                 </h3>
-                <p className="mt-2 font-display text-[10px] tracking-widest text-[var(--fg-muted)]">
+                <p className="mt-2 font-display text-[10px] tracking-widest text-(--fg-muted)">
                   {event.date}
                 </p>
               </div>

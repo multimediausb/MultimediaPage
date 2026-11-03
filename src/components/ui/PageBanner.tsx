@@ -77,7 +77,7 @@ export default function PageBanner({
       {/* Text */}
       <motion.div
         style={{ y: textY, opacity }}
-        className="absolute inset-0 flex flex-col justify-end px-6 pb-7 max-w-screen-xl mx-auto left-0 right-0"
+        className="absolute inset-0 flex flex-col justify-end px-6 pb-7 max-w-7xl mx-auto left-0 right-0"
       >
         <span
           className="font-display text-xs tracking-[0.2em] mb-2 block"

@@ -7,7 +7,6 @@ export interface NewsStatCardProps {
   accent: string
   backgroundColor: string
   borderColor: string
-  index: number
 }
 
 export default function NewsStatCard({
@@ -16,7 +15,6 @@ export default function NewsStatCard({
   accent,
   backgroundColor,
   borderColor,
-  index,
 }: NewsStatCardProps) {
   const isSecondary = accent === "var(--color-secondary-500)"
 
@@ -26,12 +24,8 @@ export default function NewsStatCard({
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.35, delay: index * 0.08 }}
       whileHover={{
-        y: -3,
+        scale: 1.03,
         boxShadow: "0 4px 9px rgba(6, 6, 6, 0.14)",
         transition: { duration: 0.22, ease: "easeOut" },
       }}
@@ -40,7 +34,7 @@ export default function NewsStatCard({
         background: backgroundColor,
         borderColor,
         borderWidth: "var(--stroke-m)",
-        boxShadow: "var(--shadow-card-normal)",
+        boxShadow: "none",
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
       }}
@@ -59,7 +53,7 @@ export default function NewsStatCard({
         className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full blur-3xl"
         style={{
           backgroundColor: accent,
-          opacity: 0.10,
+          opacity: 0.1,
         }}
       />
 

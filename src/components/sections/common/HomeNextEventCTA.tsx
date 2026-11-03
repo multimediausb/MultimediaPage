@@ -1,4 +1,3 @@
-import { motion } from "framer-motion"
 import CountdownTimer from "@/components/ui/CountdownTimer"
 import Button from "@/components/ui/Button"
 import Badge from "@/components/ui/Badge"
@@ -17,13 +16,13 @@ export default function HomeNextEventCTA() {
         borderTop: "1px solid rgba(214,120,10,0.15)",
       }}
     >
-      <div className="relative z-10 max-w-screen-xl mx-auto px-6">
+      <div className="relative z-10 max-w-7xl mx-auto px-6">
         <Card
           accentLeft
           accentColor="var(--color-secondary-500)"
           shadowType="orange-light"
           radius="3xl"
-          className="p-8 md:p-14 border border-[var(--color-neutral-200)]"
+          className="p-8 md:p-14 border border-neutral-200"
           style={{ background: "var(--surface)" }}
         >
           <div className="grid lg:grid-cols-12 gap-10 items-center">
@@ -33,7 +32,10 @@ export default function HomeNextEventCTA() {
                 <Badge variant="secondary" pulse>
                   PRÓXIMO ENCUENTRO
                 </Badge>
-                <span className="font-display text-xs" style={{ color: "var(--fg-muted)" }}>
+                <span
+                  className="font-display text-xs"
+                  style={{ color: "var(--fg-muted)" }}
+                >
                   EDICIÓN 2026-2
                 </span>
               </div>
@@ -49,7 +51,9 @@ export default function HomeNextEventCTA() {
                 className="font-body text-sm md:text-base leading-relaxed mb-8 max-w-xl"
                 style={{ color: "var(--fg-muted)" }}
               >
-                Tres días de ponencias magistrales, talleres interactivos y muestras de videojuegos, animación y cómputo visual de vanguardia.
+                Tres días de ponencias magistrales, talleres interactivos y
+                muestras de videojuegos, animación y cómputo visual de
+                vanguardia.
               </p>
 
               <div className="flex flex-wrap items-center gap-4">
@@ -83,7 +87,7 @@ export default function HomeNextEventCTA() {
                 }}
               >
                 <div className="text-center mb-4">
-                  <span className="font-display text-xs tracking-widest text-[var(--color-secondary-600)] font-semibold">
+                  <span className="font-display text-xs tracking-widest text-secondary-600 font-semibold">
                     INICIO DEL EVENTO EN
                   </span>
                 </div>

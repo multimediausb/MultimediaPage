@@ -1,7 +1,11 @@
-import SectionHeader from "../../ui/SectionHeader"
+
+import { useLayoutEffect, useRef } from "react"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+
 import NewsStatCard from "../../ui/NewsStatCard"
 
-import { useParallax } from "@/hooks/useParallax"
+gsap.registerPlugin(ScrollTrigger)
 
 const newsStats = [
   {
@@ -28,38 +32,169 @@ const newsStats = [
 ]
 
 export default function NewsStatsSection() {
-  const cardsRef = useParallax<HTMLDivElement>(0.08, "up")
+  const sectionRef = useRef<HTMLElement>(null)
+  const darkOverlayRef = useRef<HTMLDivElement>(null)
+  const gridRef = useRef<HTMLDivElement>(null)
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  useLayoutEffect(() => {
+    const section = sectionRef.current
+    const darkOverlay = darkOverlayRef.current
+    const grid = gridRef.current
+
+    if (!section || !darkOverlay || !grid) return
+
+    const cards = cardRefs.current.filter(
+      (card): card is HTMLDivElement => card !== null
+    )
+
+    if (cards.length !== 3) return
+
+    const ctx = gsap.context(() => {
+      // Estado inicial de las tarjetas
+      gsap.set(cards[0], {
+        x: "-100vw",
+        opacity: 0,
+      })
+
+      gsap.set(cards[1], {
+        y: "100vh",
+        opacity: 0,
+      })
+
+      gsap.set(cards[2], {
+        x: "100vw",
+        opacity: 0,
+      })
+
+      // Estado inicial del fondo
+      gsap.set([darkOverlay, grid], {
+        opacity: 1,
+      })
+
+      // Recorrido completo del parallax
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => `+=${window.innerHeight * 3}`,
+          scrub: 0.8,
+          pin: true,
+          pinSpacing: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      })
+
+      // El fondo oscuro permanece antes de comenzar la transición
+      timeline.to(
+        [darkOverlay, grid],
+        {
+          opacity: 0,
+          duration: 0.25,
+          ease: "none",
+        },
+        0.15
+      )
+
+      // Primera tarjeta: entrada desde la izquierda
+      timeline.to(
+        cards[0],
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.25,
+          ease: "none",
+        },
+        0.15
+      )
+
+      // Segunda tarjeta: entrada desde abajo
+      timeline.to(
+        cards[1],
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.25,
+          ease: "none",
+        },
+        0.38
+      )
+
+      // Tercera tarjeta: entrada desde la derecha
+      timeline.to(
+        cards[2],
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.25,
+          ease: "none",
+        },
+        0.61
+      )
+
+      // Pausa final: mantener las tres tarjetas juntas
+      timeline.to({}, {
+        duration: 0.3,
+      })
+    }, section)
+
+    return () => ctx.revert()
+  }, [])
 
   return (
     <section
-      className="relative overflow-hidden py-20 theme-light grid-primary grid-bg section-transition"
+      ref={sectionRef}
+      className="relative flex min-h-screen items-center overflow-hidden theme-light grid-primary grid-bg section-transition"
       style={{
         backgroundColor: "var(--bg)",
         color: "var(--fg)",
-        borderTop:
-          "1px solid color-mix(in srgb, var(--color-primary-500) 20%, transparent)",
-        borderBottom:
-          "1px solid color-mix(in srgb, var(--color-primary-500) 20%, transparent)",
+        borderTop: "none",
+        borderBottom: "none",
       }}
-      aria-labelledby="news-stats-title"
+      aria-label="Estadísticas de noticias"
     >
-      <div className="relative z-10 mx-auto max-w-screen-xl px-2">
+      {/* Fondo oscuro de transición */}
+      <div
+        ref={darkOverlayRef}
+        className="pointer-events-none absolute inset-0 z-0 bg-primary-900"
+        aria-hidden="true"
+      />
 
+      {/* Malla tecnológica */}
+      <div
+        ref={gridRef}
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(color-mix(in srgb, var(--color-primary-500) 15%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--color-primary-500) 15%, transparent) 1px, transparent 1px)",
+          backgroundSize: "60px 60px",
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Contenido */}
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-2">
         <div
-          ref={cardsRef}
           id="news-stats-title"
           className="mx-auto mt-10 grid max-w-5xl grid-cols-1 gap-5 sm:grid-cols-3"
         >
           {newsStats.map((item, index) => (
-            <NewsStatCard
+            <div
               key={item.label}
-              label={item.label}
-              value={item.value}
-              accent={item.accent}
-              backgroundColor={item.backgroundColor}
-              borderColor={item.borderColor}
-              index={index}
-            />
+              ref={(element) => {
+                cardRefs.current[index] = element
+              }}
+              className="will-change-transform"
+            >
+              <NewsStatCard
+                label={item.label}
+                value={item.value}
+                accent={item.accent}
+                backgroundColor={item.backgroundColor}
+                borderColor={item.borderColor}
+              />
+            </div>
           ))}
         </div>
       </div>

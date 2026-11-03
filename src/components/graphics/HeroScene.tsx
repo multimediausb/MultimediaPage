@@ -1,25 +1,24 @@
-
-import { useRef, useEffect } from "react";
-import * as THREE from "three";
-import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
-import MODEL_PATH from "../../assets/Models/Canon_AT-1.fbx";
+import { useRef, useEffect, type RefObject } from "react"
+import * as THREE from "three"
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js"
+import MODEL_PATH from "../../assets/Models/Canon_AT-1.fbx"
 
 // Colores del wireframe
 const OUTLINE_COLORS = {
   primary: 0x0e9a93, // Cian oscuro / nítido para fondo claro
-  accent: 0xd6780a,  // Naranja
-};
+  accent: 0xd6780a, // Naranja
+}
 
-const OUTLINE_OPACITY = 0.9;
-const MODEL_SIZE = 4;
+const OUTLINE_OPACITY = 0.9
+const MODEL_SIZE = 4
 
 // true: todas las aristas de la triangulación
 // false: solo aristas marcadas
-const FULL_WIREFRAME = true;
-const EDGE_ANGLE_THRESHOLD = 20;
+const FULL_WIREFRAME = true
+const EDGE_ANGLE_THRESHOLD = 20
 
 // Mostrar el sólido detrás de las líneas
-const SHOW_SOLID = false;
+const SHOW_SOLID = false
 
 // Asignación manual de colores por nombre de Mesh
 // Las piezas que no estén en esta lista usarán el cian.
@@ -30,61 +29,61 @@ const MESH_COLORS: Record<string, number> = {
   "#CAM0001_Shutter_Speed": OUTLINE_COLORS.accent,
   "#CAM0001_Shutter": OUTLINE_COLORS.accent,
   "#CAM0001_Spool": OUTLINE_COLORS.accent,
-};
+}
 
 // Diagnóstico de la jerarquía del FBX
-const DEBUG_LOG_NAMES = true;
+const DEBUG_LOG_NAMES = true
 
-export default function HeroScene() {
-  const mountRef = useRef<HTMLDivElement>(null);
+interface HeroSceneProps {
+  interactionRef?: RefObject<HTMLElement | null>
+}
+
+export default function HeroScene({ interactionRef }: HeroSceneProps) {
+  const mountRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const mount = mountRef.current;
-    if (!mount) return;
+    const mount = mountRef.current
+    const interactionTarget = interactionRef?.current ?? mount
+    if (!mount || !interactionTarget) return
 
-    const width = mount.clientWidth;
-    const height = mount.clientHeight;
+    const width = mount.clientWidth
+    const height = mount.clientHeight
 
-    if (!width || !height) return;
+    if (!width || !height) return
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
-    });
+    })
 
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
-    mount.appendChild(renderer.domElement);
+    renderer.setSize(width, height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setClearColor(0x000000, 0)
+    mount.appendChild(renderer.domElement)
 
     // Escena y cámara
-    const scene = new THREE.Scene();
+    const scene = new THREE.Scene()
 
-    const camera = new THREE.PerspectiveCamera(
-      50,
-      width / height,
-      0.1,
-      100
-    );
+    const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100)
 
-    camera.position.z = 5;
+    camera.position.z = 5
 
     // Iluminación
-    scene.add(new THREE.AmbientLight(0xffffff, 2));
+    scene.add(new THREE.AmbientLight(0xffffff, 2))
 
-    const light = new THREE.DirectionalLight(0xffffff, 2);
-    light.position.set(3, 5, 5);
-    scene.add(light);
+    const light = new THREE.DirectionalLight(0xffffff, 2)
+    light.position.set(3, 5, 5)
+    scene.add(light)
 
     // Grupo que controla la rotación del modelo
-    const modelRoot = new THREE.Group();
-    scene.add(modelRoot);
+    const modelRoot = new THREE.Group()
+    scene.add(modelRoot)
 
-    let model: THREE.Group | null = null;
+    let model: THREE.Group | null = null
 
-    const wireframeMaterials = new Set<THREE.Material>();
-    const wireframeGeometries = new Set<THREE.BufferGeometry>();
+    const wireframeMaterials = new Set<THREE.Material>()
+    const wireframeGeometries = new Set<THREE.BufferGeometry>()
 
     // Material fantasma para el sólido
     const ghostMaterial = new THREE.MeshBasicMaterial({
@@ -95,7 +94,7 @@ export default function HeroScene() {
       polygonOffset: true,
       polygonOffsetFactor: 1,
       polygonOffsetUnits: 1,
-    });
+    })
 
     // Material principal: cian
     const primaryLineMaterial = new THREE.LineBasicMaterial({
@@ -105,7 +104,7 @@ export default function HeroScene() {
       depthTest: true,
       depthWrite: false,
       toneMapped: false,
-    });
+    })
 
     // Material de acento: naranja
     const accentLineMaterial = new THREE.LineBasicMaterial({
@@ -115,75 +114,65 @@ export default function HeroScene() {
       depthTest: true,
       depthWrite: false,
       toneMapped: false,
-    });
+    })
 
-    wireframeMaterials.add(primaryLineMaterial);
-    wireframeMaterials.add(accentLineMaterial);
+    wireframeMaterials.add(primaryLineMaterial)
+    wireframeMaterials.add(accentLineMaterial)
 
     // Seleccionar material por el nombre exacto de la pieza
-    const pickLineMaterial = (
-      mesh: THREE.Mesh
-    ): THREE.LineBasicMaterial => {
-      const color = MESH_COLORS[mesh.name];
+    const pickLineMaterial = (mesh: THREE.Mesh): THREE.LineBasicMaterial => {
+      const color = MESH_COLORS[mesh.name]
 
       if (color === OUTLINE_COLORS.accent) {
-        return accentLineMaterial;
+        return accentLineMaterial
       }
 
-      return primaryLineMaterial;
-    };
+      return primaryLineMaterial
+    }
 
-    const loader = new FBXLoader();
+    const loader = new FBXLoader()
 
     loader.load(
       MODEL_PATH,
       (fbx) => {
-        model = fbx;
+        model = fbx
 
         // Centrar y escalar el modelo sin modificar la cámara
-        const box = new THREE.Box3().setFromObject(fbx);
-        const center = box.getCenter(new THREE.Vector3());
-        const size = box.getSize(new THREE.Vector3());
+        const box = new THREE.Box3().setFromObject(fbx)
+        const center = box.getCenter(new THREE.Vector3())
+        const size = box.getSize(new THREE.Vector3())
 
-        const maxDimension = Math.max(
-          size.x,
-          size.y,
-          size.z
-        );
+        const maxDimension = Math.max(size.x, size.y, size.z)
 
-        const scaleFactor =
-          maxDimension > 0 ? MODEL_SIZE / maxDimension : 1;
+        const scaleFactor = maxDimension > 0 ? MODEL_SIZE / maxDimension : 1
 
-        fbx.scale.setScalar(scaleFactor);
-        fbx.position.sub(
-          center.clone().multiplyScalar(scaleFactor)
-        );
+        fbx.scale.setScalar(scaleFactor)
+        fbx.position.sub(center.clone().multiplyScalar(scaleFactor))
 
         // -----------------------------------------------
         // DIAGNÓSTICO DE LA ESTRUCTURA DEL FBX
         // -----------------------------------------------
 
-        const meshes: THREE.Mesh[] = [];
+        const meshes: THREE.Mesh[] = []
 
-        let totalObjects = 0;
-        let totalGroups = 0;
+        let totalObjects = 0
+        let totalGroups = 0
 
-        console.group("Canon_AT-1 | Diagnóstico del FBX");
+        console.group("Canon_AT-1 | Diagnóstico del FBX")
 
         fbx.traverse((object) => {
-          totalObjects++;
+          totalObjects++
 
           if (object instanceof THREE.Group) {
-            totalGroups++;
+            totalGroups++
           }
 
           if (object instanceof THREE.Mesh) {
-            meshes.push(object);
+            meshes.push(object)
           }
 
           if (DEBUG_LOG_NAMES) {
-            const mesh =
-              object instanceof THREE.Mesh ? object : null;
+            const mesh = object instanceof THREE.Mesh ? object : null
 
             console.log({
               tipo: object.type,
@@ -192,40 +181,36 @@ export default function HeroScene() {
               hijosDirectos: object.children.length,
               esMesh: Boolean(mesh),
               geometria: mesh?.geometry.type,
-              vertices:
-                mesh?.geometry.attributes.position?.count ?? 0,
+              vertices: mesh?.geometry.attributes.position?.count ?? 0,
               triangulos: mesh
                 ? mesh.geometry.index
                   ? mesh.geometry.index.count / 3
                   : (mesh.geometry.attributes.position?.count ?? 0) / 3
                 : undefined,
-            });
+            })
           }
-        });
+        })
 
         console.log("Resumen de la jerarquía:", {
           objetosTotales: totalObjects,
           grupos: totalGroups,
           meshes: meshes.length,
           coloresDisponibles: Object.keys(OUTLINE_COLORS).length,
-        });
+        })
 
         console.table(
           meshes.map((mesh, index) => {
-            const meshBox = new THREE.Box3().setFromObject(mesh);
-            const meshSize = meshBox.getSize(
-              new THREE.Vector3()
-            );
+            const meshBox = new THREE.Box3().setFromObject(mesh)
+            const meshSize = meshBox.getSize(new THREE.Vector3())
 
-            const material = pickLineMaterial(mesh);
+            const material = pickLineMaterial(mesh)
 
             return {
               indice: index,
               nombre: mesh.name || `Mesh_${index}`,
               padre: mesh.parent?.name || "(raíz)",
               hijos: mesh.children.length,
-              vertices:
-                mesh.geometry.attributes.position?.count ?? 0,
+              vertices: mesh.geometry.attributes.position?.count ?? 0,
               ancho: Number(meshSize.x.toFixed(3)),
               alto: Number(meshSize.y.toFixed(3)),
               profundidad: Number(meshSize.z.toFixed(3)),
@@ -233,11 +218,11 @@ export default function HeroScene() {
               asignacion: MESH_COLORS[mesh.name]
                 ? "Personalizado"
                 : "Color principal por defecto",
-            };
-          })
-        );
+            }
+          }),
+        )
 
-        console.groupEnd();
+        console.groupEnd()
 
         // -----------------------------------------------
         // CREAR EL WIREFRAME DE CADA MESH
@@ -246,157 +231,153 @@ export default function HeroScene() {
         meshes.forEach((mesh, index) => {
           const lineGeometry = FULL_WIREFRAME
             ? new THREE.WireframeGeometry(mesh.geometry)
-            : new THREE.EdgesGeometry(
-                mesh.geometry,
-                EDGE_ANGLE_THRESHOLD
-              );
+            : new THREE.EdgesGeometry(mesh.geometry, EDGE_ANGLE_THRESHOLD)
 
-          wireframeGeometries.add(lineGeometry);
+          wireframeGeometries.add(lineGeometry)
 
-          const lineMaterial = pickLineMaterial(mesh);
+          const lineMaterial = pickLineMaterial(mesh)
 
           console.log(
             `[Wireframe ${index}]`,
             mesh.name || `Mesh_${index}`,
-            `Color: #${lineMaterial.color.getHexString()}`
-          );
+            `Color: #${lineMaterial.color.getHexString()}`,
+          )
 
-          const lines = new THREE.LineSegments(
-            lineGeometry,
-            lineMaterial
-          );
+          const lines = new THREE.LineSegments(lineGeometry, lineMaterial)
 
-          lines.name = `Wireframe_${mesh.name || index}`;
-          lines.renderOrder = 1;
+          lines.name = `Wireframe_${mesh.name || index}`
+          lines.renderOrder = 1
 
           // Hereda la transformación de la malla
-          mesh.add(lines);
+          mesh.add(lines)
 
           // Guardar material original para la limpieza
-          mesh.userData.originalMaterial = mesh.material;
+          mesh.userData.originalMaterial = mesh.material
 
           // Ocultar el sólido si SHOW_SOLID es false
-          mesh.material = ghostMaterial;
-        });
+          mesh.material = ghostMaterial
+        })
 
-        console.info(
-          `Wireframe generado: ${meshes.length} mallas procesadas.`
-        );
+        console.info(`Wireframe generado: ${meshes.length} mallas procesadas.`)
 
-        modelRoot.add(fbx);
+        modelRoot.add(fbx)
       },
       undefined,
       (error) => {
-        console.error("Error al cargar el FBX:", error);
-      }
-    );
+        console.error("Error al cargar el FBX:", error)
+      },
+    )
 
     // Seguimiento del mouse
-    let mouseX = 0;
-    let mouseY = 0;
+    let mouseX = 0
+    let mouseY = 0
 
     const onMouseMove = (event: MouseEvent) => {
-      const rect = mount.getBoundingClientRect();
+      const rect = interactionTarget.getBoundingClientRect()
 
-      if (!rect.width || !rect.height) return;
+      if (!rect.width || !rect.height) return
 
-      mouseX =
-        ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+      mouseX = ((event.clientX - rect.left) / rect.width - 0.5) * 2
 
-      mouseY =
-        ((event.clientY - rect.top) / rect.height - 0.5) * 2;
-    };
+      mouseY = ((event.clientY - rect.top) / rect.height - 0.5) * 2
+    }
 
-    mount.addEventListener("mousemove", onMouseMove);
+    const onMouseLeave = () => {
+      mouseX = 0
+      mouseY = 0
+    }
+
+    interactionTarget.addEventListener("mousemove", onMouseMove)
+    interactionTarget.addEventListener("mouseleave", onMouseLeave)
 
     // Resize
     const onResize = () => {
-      const w = mount.clientWidth;
-      const h = mount.clientHeight;
+      const w = mount.clientWidth
+      const h = mount.clientHeight
 
-      if (!w || !h) return;
+      if (!w || !h) return
 
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
+      camera.aspect = w / h
+      camera.updateProjectionMatrix()
+      renderer.setSize(w, h)
+    }
 
-    window.addEventListener("resize", onResize);
+    window.addEventListener("resize", onResize)
 
     // Animación
-    let frameId = 0;
+    let frameId = 0
 
     const animate = () => {
-      frameId = requestAnimationFrame(animate);
+      frameId = requestAnimationFrame(animate)
 
-      const targetY = mouseX * 0.6;
-      const targetX = mouseY * 0.3;
+      const targetY = mouseX * 0.6
+      const targetX = mouseY * 0.3
 
-      modelRoot.rotation.y +=
-        (targetY - modelRoot.rotation.y) * 0.05;
+      modelRoot.rotation.y += (targetY - modelRoot.rotation.y) * 0.05
 
-      modelRoot.rotation.x +=
-        (targetX - modelRoot.rotation.x) * 0.05;
+      modelRoot.rotation.x += (targetX - modelRoot.rotation.x) * 0.05
 
-      renderer.render(scene, camera);
-    };
+      renderer.render(scene, camera)
+    }
 
-    animate();
+    animate()
 
     // Limpieza
     return () => {
-      cancelAnimationFrame(frameId);
+      cancelAnimationFrame(frameId)
 
-      mount.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("resize", onResize);
+      interactionTarget.removeEventListener("mousemove", onMouseMove)
+      interactionTarget.removeEventListener("mouseleave", onMouseLeave)
+      window.removeEventListener("resize", onResize)
 
-      scene.remove(modelRoot);
+      scene.remove(modelRoot)
 
       wireframeGeometries.forEach((geometry) => {
-        geometry.dispose();
-      });
+        geometry.dispose()
+      })
 
       wireframeMaterials.forEach((material) => {
-        material.dispose();
-      });
+        material.dispose()
+      })
 
-      ghostMaterial.dispose();
+      ghostMaterial.dispose()
 
       if (model) {
-        const geometries = new Set<THREE.BufferGeometry>();
-        const materials = new Set<THREE.Material>();
+        const geometries = new Set<THREE.BufferGeometry>()
+        const materials = new Set<THREE.Material>()
 
         model.traverse((object) => {
-          if (!(object instanceof THREE.Mesh)) return;
+          if (!(object instanceof THREE.Mesh)) return
 
-          geometries.add(object.geometry);
+          geometries.add(object.geometry)
 
-          const original = object.userData.originalMaterial;
+          const original = object.userData.originalMaterial
 
           if (original) {
-            (Array.isArray(original) ? original : [original])
-              .forEach((material) => {
-                materials.add(material);
-              });
+            ;(Array.isArray(original) ? original : [original]).forEach(
+              (material) => {
+                materials.add(material)
+              },
+            )
           }
-        });
+        })
 
         geometries.forEach((geometry) => {
-          geometry.dispose();
-        });
+          geometry.dispose()
+        })
 
         materials.forEach((material) => {
-          material.dispose();
-        }); 
+          material.dispose()
+        })
       }
 
-      renderer.dispose();
+      renderer.dispose()
 
       if (mount.contains(renderer.domElement)) {
-        mount.removeChild(renderer.domElement);
+        mount.removeChild(renderer.domElement)
       }
-    };
-  }, []);
+    }
+  }, [])
 
-  return <div ref={mountRef} className="w-full h-full" />;
+  return <div ref={mountRef} className="w-full h-full" />
 }
