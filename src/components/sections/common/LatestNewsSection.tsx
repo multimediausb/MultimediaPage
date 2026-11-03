@@ -91,6 +91,9 @@ export default function LatestNewsSection() {
   return (
     <section
       ref={sectionRef}
+      data-progress-section="Últimas novedades"
+      data-progress-color="var(--color-secondary-500)"
+      data-progress-duration="2.2"
       className="relative overflow-hidden py-24 theme-dark grid-secondary dark-grid-bg section-transition"
       style={{
         backgroundColor: "var(--bg)",

@@ -1,4 +1,3 @@
-
 import { useLayoutEffect, useRef } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -45,7 +44,7 @@ export default function NewsStatsSection() {
     if (!section || !darkOverlay || !grid) return
 
     const cards = cardRefs.current.filter(
-      (card): card is HTMLDivElement => card !== null
+      (card): card is HTMLDivElement => card !== null,
     )
 
     if (cards.length !== 3) return
@@ -83,6 +82,12 @@ export default function NewsStatsSection() {
           pinSpacing: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
+
+          // Marca cuando toda la secuencia termina
+          onUpdate: (self) => {
+            section.dataset.progressComplete =
+              self.progress >= 1 ? "true" : "false"
+          },
         },
       })
 
@@ -94,7 +99,7 @@ export default function NewsStatsSection() {
           duration: 0.25,
           ease: "none",
         },
-        0.15
+        0.15,
       )
 
       // Primera tarjeta: entrada desde la izquierda
@@ -106,7 +111,7 @@ export default function NewsStatsSection() {
           duration: 0.25,
           ease: "none",
         },
-        0.15
+        0.15,
       )
 
       // Segunda tarjeta: entrada desde abajo
@@ -118,7 +123,7 @@ export default function NewsStatsSection() {
           duration: 0.25,
           ease: "none",
         },
-        0.38
+        0.38,
       )
 
       // Tercera tarjeta: entrada desde la derecha
@@ -130,12 +135,17 @@ export default function NewsStatsSection() {
           duration: 0.25,
           ease: "none",
         },
-        0.61
+        0.61,
       )
 
       // Pausa final: mantener las tres tarjetas juntas
       timeline.to({}, {
         duration: 0.3,
+      })
+
+      // Marca de finalización después de toda la secuencia
+      timeline.call(() => {
+        section.dataset.progressComplete = "true"
       })
     }, section)
 
@@ -145,6 +155,11 @@ export default function NewsStatsSection() {
   return (
     <section
       ref={sectionRef}
+      data-progress-section="Cifras del programa"
+      data-progress-color="var(--color-primary-500)"
+      data-progress-duration="3"
+      data-progress-ratio="0.741"
+      data-progress-complete="false"
       className="relative flex min-h-screen items-center overflow-hidden theme-light grid-primary grid-bg section-transition"
       style={{
         backgroundColor: "var(--bg)",

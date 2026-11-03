@@ -139,6 +139,9 @@ export default function HomeVideoReelSection() {
   return (
     <section
       ref={sectionRef}
+      data-progress-section="Video Reel"
+      data-progress-color="var(--color-primary-500)"
+      data-progress-duration="1.8"
       className="relative overflow-hidden py-24 theme-light grid-primary grid-bg section-transition"
       style={{
         backgroundColor: "var(--bg)",

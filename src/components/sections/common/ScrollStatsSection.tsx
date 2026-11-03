@@ -218,6 +218,7 @@ export default function ScrollStatsSection() {
             updateOffset(nextOffset)
 
             // Activación progresiva de las tarjetas.
+            // Activación progresiva de las tarjetas.
             const isActivated = localProgress >= 0.22
 
             const nextActivatedIndex =
@@ -228,7 +229,9 @@ export default function ScrollStatsSection() {
             )
 
             // Contacto del prisma con la métrica actual.
-            const isTouching = localProgress >= 0.62 && localProgress <= 0.72
+            // Al llegar al final, la última métrica permanece activa.
+            const isTouching =
+              progress >= 1 || (localProgress >= 0.62 && localProgress <= 0.72)
 
             const nextActiveIndex = isTouching ? index : -1
 
@@ -269,6 +272,10 @@ export default function ScrollStatsSection() {
   return (
     <section
       ref={sectionRef}
+      data-progress-section="Estadísticas de noticias"
+      data-progress-color="var(--color-primary-500)"
+      data-progress-end="section"
+      data-progress-ratio="0.98"
       className="relative theme-dark grid-primary dark-grid-bg text-neutral-100"
       style={{
         height: sectionHeight,
@@ -307,7 +314,6 @@ export default function ScrollStatsSection() {
             >
               {/* Encabezado */}
               <div ref={headingRef} className="mb-7 pt-8">
-
                 <h2 className="max-w-xl font-heading text-3xl font-bold leading-tight tracking-tight text-white lg:text-4xl ">
                   MÉTRICAS QUE MARCAN LA DIFERENCIA
                 </h2>

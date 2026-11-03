@@ -1,4 +1,3 @@
-
 import { useLayoutEffect, useRef, useState } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -151,7 +150,7 @@ export default function HomeEventsSection() {
         {
           autoAlpha: 1,
           y: 0,
-          duration: 0.30,
+          duration: 0.3,
           ease: "power2.out",
         },
         0.48,
@@ -214,6 +213,9 @@ export default function HomeEventsSection() {
   return (
     <section
       ref={sectionRef}
+      data-progress-section="Eventos"
+      data-progress-color="var(--color-secondary-500)"
+      data-progress-duration="2.4"
       className="relative overflow-hidden py-24 theme-light grid-secondary grid-bg section-transition"
       style={{
         backgroundColor: "var(--bg)",
@@ -303,7 +305,11 @@ export default function HomeEventsSection() {
                 { id: "workshop", label: "Workshop" },
                 { id: "convocatoria", label: "Convocatoria" },
               ].map((filter) => (
-                <div key={filter.id} data-event-filter className="w-full max-w-52">
+                <div
+                  key={filter.id}
+                  data-event-filter
+                  className="w-full max-w-52"
+                >
                   <Button
                     variant={
                       selectedEventFilter === filter.id

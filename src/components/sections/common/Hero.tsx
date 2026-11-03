@@ -5,10 +5,18 @@ import {
   useSpring,
 } from "framer-motion"
 import { useRef, useState } from "react"
+import { useEffect } from "react"
 import HeroScene from "../../graphics/HeroScene"
 import ParticleField from "../../graphics/ParticleField"
 import Button from "../../ui/Button"
 import { useParallax } from "@/hooks/useParallax"
+
+interface ProgressMarker {
+  label: string
+  progress: number
+  target: number
+  color: string
+}
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement>(null)
@@ -20,15 +28,116 @@ export default function Hero() {
     restDelta: 0.001,
   })
   const [progressValue, setProgressValue] = useState(0)
+  const [progressMarkers, setProgressMarkers] = useState<ProgressMarker[]>([])
+  const progressMarkersRef = useRef<ProgressMarker[]>([])
+  const [progressColor, setProgressColor] = useState("var(--color-primary-500)")
 
   useMotionValueEvent(progress, "change", (value) => {
     setProgressValue(Math.round(value * 100))
+
+    const activeMarker = progressMarkersRef.current.find(
+      (marker) => value * 100 <= marker.progress,
+    )
+
+    setProgressColor(activeMarker?.color ?? "var(--color-primary-500)")
   })
+
+  useEffect(() => {
+    let updateFrame = 0
+
+    const updateMarkers = () => {
+      cancelAnimationFrame(updateFrame)
+
+      updateFrame = requestAnimationFrame(() => {
+        const maxScroll = Math.max(
+          document.documentElement.scrollHeight - window.innerHeight,
+          1,
+        )
+        const sections = Array.from(
+          document.querySelectorAll<HTMLElement>("[data-progress-section]"),
+        )
+
+        const markers = sections.map((section) => {
+          const duration = Number(section.dataset.progressDuration ?? "0")
+          const sectionStart =
+            section.getBoundingClientRect().top + window.scrollY
+          const anchorSection = section.dataset.progressAfter
+            ? sections.find(
+                (candidate) =>
+                  candidate.dataset.progressSection ===
+                  section.dataset.progressAfter,
+              )
+            : undefined
+          const anchorStart = anchorSection
+            ? anchorSection.getBoundingClientRect().top + window.scrollY
+            : sectionStart
+          const anchorHeight = anchorSection?.offsetHeight ?? 0
+          const ratio = Math.min(
+            Math.max(Number(section.dataset.progressRatio ?? "1"), 0),
+            1,
+          )
+          const endOffset = Math.max(
+            Number(section.dataset.progressEndOffset ?? "0"),
+            0,
+          )
+          const target =
+            section.dataset.progressPoint === "start"
+              ? sectionStart
+              : anchorSection
+                ? anchorStart + anchorHeight - endOffset
+                : section.dataset.progressEnd === "section"
+                  ? sectionStart +
+                    (section.offsetHeight - window.innerHeight) * ratio -
+                    endOffset
+                  : sectionStart + duration * window.innerHeight * ratio
+          const clampedTarget = Math.min(Math.max(target, 0), maxScroll)
+
+          return {
+            label: section.dataset.progressSection ?? "Sección",
+            progress:
+              section.dataset.progressPoint === "start"
+                ? Math.max((clampedTarget / maxScroll) * 100, 1)
+                : (clampedTarget / maxScroll) * 100,
+            target: clampedTarget,
+            color: section.dataset.progressColor ?? "var(--color-primary-500)",
+          }
+        })
+
+        progressMarkersRef.current = markers
+        setProgressMarkers(markers)
+
+        const currentProgress = window.scrollY / maxScroll
+        const activeMarker = markers.find(
+          (marker) => currentProgress * 100 <= marker.progress,
+        )
+
+        setProgressColor(activeMarker?.color ?? "var(--color-primary-500)")
+      })
+    }
+
+    updateMarkers()
+    window.addEventListener("resize", updateMarkers)
+
+    const observer = new ResizeObserver(updateMarkers)
+    observer.observe(document.documentElement)
+    document
+      .querySelectorAll<HTMLElement>("[data-progress-section]")
+      .forEach((section) => observer.observe(section))
+
+    return () => {
+      cancelAnimationFrame(updateFrame)
+      window.removeEventListener("resize", updateMarkers)
+      observer.disconnect()
+    }
+  }, [])
 
   return (
     <>
       <section
         ref={heroRef}
+        data-progress-section="Banner inicial"
+        data-progress-point="start"
+        data-progress-color="var(--color-primary-500)"
         className="relative min-h-screen flex items-center overflow-hidden theme-light grid-primary grid-bg section-transition"
         style={{
           backgroundColor: "var(--color-neutral-100)",
@@ -175,14 +284,53 @@ export default function Hero() {
           }}
         />
         <motion.div
-          className="relative h-full origin-left"
+          className="absolute inset-y-0 left-0 h-full w-full origin-left transition-colors duration-300"
           style={{
             scaleX: progress,
-            background: "var(--color-primary-500)",
-            boxShadow:
-              "0 0 10px color-mix(in srgb, var(--color-primary-500) 65%, transparent)",
+            background: progressColor,
+            boxShadow: `0 0 10px color-mix(in srgb, ${progressColor} 65%, transparent)`,
           }}
         />
+        {progressMarkers.map((marker, index) => (
+          <button
+            key={marker.label}
+            type="button"
+            className="group pointer-events-auto absolute top-1/2 flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full"
+            style={{ left: `${marker.progress}%` }}
+            onClick={() => {
+              window.scrollTo({
+                top: marker.target,
+                left: 0,
+                behavior: "smooth",
+              })
+            }}
+            onKeyDown={(event) => {
+              if (event.key !== "Enter" && event.key !== " ") {
+                return
+              }
+
+              event.preventDefault()
+              window.scrollTo({
+                top: marker.target,
+                left: 0,
+                behavior: "smooth",
+              })
+            }}
+            aria-label={`Ir al final de ${marker.label}`}
+          >
+            <span
+              className="h-2 w-2 rounded-full border border-white shadow-[0_0_0_2px_rgba(10,40,40,0.35)] transition-transform duration-200 hover:scale-150"
+              style={{ background: marker.color }}
+            />
+            <span
+              className={`pointer-events-none absolute bottom-6 hidden whitespace-nowrap rounded bg-primary-900 px-2 py-1 font-display text-[10px] tracking-wide text-white shadow-lg group-hover:block ${
+                index === 0 ? "left-0" : "left-1/2 -translate-x-1/2"
+              }`}
+            >
+              {marker.label}
+            </span>
+          </button>
+        ))}
       </div>
     </>
   )
