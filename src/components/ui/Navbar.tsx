@@ -45,7 +45,10 @@ export default function Navbar() {
       // Scrolling up -> show navbar with 100% white background
       if (currentScrollY > lastScrollY && currentScrollY - lastScrollY > 4) {
         setVisible(false)
-      } else if (currentScrollY < lastScrollY && lastScrollY - currentScrollY > 4) {
+      } else if (
+        currentScrollY < lastScrollY &&
+        lastScrollY - currentScrollY > 4
+      ) {
         setVisible(true)
       }
 
@@ -64,15 +67,16 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        className="site-navbar fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
           transform: visible ? "translateY(0)" : "translateY(-100%)",
-          background: scrolled ? "#ffffff" : "transparent",
+          background: "#ffffff",
           boxShadow: scrolled ? "0 2px 14px rgba(0, 0, 0, 0.06)" : "none",
           borderBottom: scrolled
             ? "1px solid rgba(0, 0, 0, 0.08)"
             : "1px solid transparent",
-          transition: "transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease",
+          transition:
+            "transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease",
         }}
       >
         <div className="max-w-screen-xl mx-auto px-6 flex items-center justify-between h-16">
@@ -87,7 +91,8 @@ export default function Navbar() {
               />
             </div>
             <span className="font-display font-bold text-sm tracking-widest text-[#1a1714]">
-              MEDIA<span className="text-[var(--color-primary-600)]">_</span>SHOW
+              MEDIA<span className="text-[var(--color-primary-600)]">_</span>
+              SHOW
             </span>
           </NavLink>
 
@@ -166,7 +171,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-x-0 top-16 z-40 p-6 flex flex-col gap-3 lg:hidden border-b bg-white shadow-xl"
+            className="site-navbar fixed inset-x-0 top-16 z-40 flex flex-col gap-3 border-b bg-white p-6 shadow-xl lg:hidden"
             style={{
               borderColor: "rgba(0, 0, 0, 0.08)",
             }}
@@ -179,7 +184,9 @@ export default function Navbar() {
                 className="font-display text-sm tracking-widest py-2.5 px-3 rounded-lg transition-colors"
                 style={({ isActive }) => ({
                   color: isActive ? "var(--color-primary-600)" : "#1a1714",
-                  background: isActive ? "rgba(14, 154, 147, 0.08)" : "transparent",
+                  background: isActive
+                    ? "rgba(14, 154, 147, 0.08)"
+                    : "transparent",
                   fontWeight: isActive ? 600 : 400,
                 })}
               >

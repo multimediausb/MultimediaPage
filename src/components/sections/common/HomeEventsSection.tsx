@@ -52,7 +52,7 @@ export default function HomeEventsSection() {
 
   return (
     <section
-      className="relative overflow-hidden py-24 theme-light grid-tertiary grid-bg section-transition"
+      className="relative overflow-hidden py-24 theme-light grid-secondary grid-bg section-transition"
       style={{
         backgroundColor: "var(--bg)",
 

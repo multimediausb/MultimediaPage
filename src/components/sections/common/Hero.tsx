@@ -171,7 +171,7 @@ export default function Hero() {
           className="absolute inset-0"
           style={{
             background:
-              "color-mix(in srgb, var(--color-neutral-900) 18%, transparent)",
+              "color-mix(in srgb, var(--color-neutral-900) 50%, transparent)",
           }}
         />
         <motion.div

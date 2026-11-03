@@ -1,6 +1,6 @@
 import HeroSection from "../components/sections/common/Hero"
 import SectionHeader from "../components/ui/SectionHeader"
-import VideoReel from "../components/graphics/VideoReel"
+import HomeVideoReelSection from "../components/sections/common/HomeVideoReelSection"
 import ScrollStatsSection from "../components/sections/common/ScrollStatsSection"
 import NewsStatsSection from "../components/sections/common/NewsStatsSection"
 import LatestNewsSection from "../components/sections/common/LatestNewsSection"
@@ -112,8 +112,6 @@ function ScientificProductionSection() {
 }
 
 export default function Home() {
-  const videoVisualRef = useParallax<HTMLDivElement>(0.12, "down")
-
   return (
     <div className="relative">
       {/* ── 1. Hero (Light + Cyan + Grid) ───────────────── */}
@@ -134,41 +132,8 @@ export default function Home() {
       {/* ── 6. Producción científica (Dark + Primary + Grid) ─ */}
       <ScientificProductionSection />
 
-      {/* ── 7. Video Reel (Light + Secondary + Grid) ───── */}
-      <section
-        className="relative overflow-hidden py-24 theme-light grid-secondary grid-bg section-transition"
-        style={{
-          backgroundColor: "var(--bg)",
-          color: "var(--fg)",
-          borderTop:
-            "1px solid color-mix(in srgb, var(--color-secondary-500) 22%, transparent)",
-        }}
-      >
-        <div
-          ref={videoVisualRef}
-          className="pointer-events-none absolute -right-36 top-1/4 h-104 w-104 rounded-full opacity-20 blur-3xl"
-          style={{
-            background:
-              "radial-gradient(circle, color-mix(in srgb, var(--color-secondary-500) 32%, transparent) 0%, transparent 70%)",
-          }}
-          aria-hidden="true"
-        />
-        <div className="max-w-7xl mx-auto px-6">
-          <SectionHeader
-            label="Producción Audiovisual"
-            title="Creación Colectiva"
-            subtitle="Espacio donde estudiantes de Ingeniería Multimedia integran animación digital, arte técnico y narrativa."
-            accent="secondary"
-          />
-          <div className="mt-8">
-            <VideoReel
-              videoId="0gQwwXwgSUs"
-              title="Segunda Creación Colectiva"
-              description="Conoce la segunda creación colectiva del USB Medialab. En esta edición los estudiantes presentan una animación digital demostrando sus habilidades en animación 2D/3D, lip-sync y posproducción sonora."
-            />
-          </div>
-        </div>
-      </section>
+      {/* ── 7. Video Reel (Light + Primary + Grid) ───── */}
+      <HomeVideoReelSection />
     </div>
   )
 }

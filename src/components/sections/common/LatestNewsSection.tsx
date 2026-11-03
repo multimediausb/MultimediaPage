@@ -1,48 +1,109 @@
-import { motion } from "framer-motion"
+import { useLayoutEffect, useRef } from "react"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 
 import noticias from "@/data/noticias.json"
 
 import SectionHeader from "../../ui/SectionHeader"
+import NewsCard from "../../ui/NewsCard"
 
 import { useParallax } from "@/hooks/useParallax"
 
-const tagColor: Record<string, string> = {
-  NUEVO: "var(--color-primary-500)",
-  LOGRO: "var(--color-secondary-500)",
-  PUBLICACIÓN: "var(--color-tertiary-400)",
-  ABIERTO: "var(--color-green-100)",
-  ALIANZA: "var(--color-tertiary-300)",
-}
+gsap.registerPlugin(ScrollTrigger)
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("es-CO", {
     day: "numeric",
-
     month: "short",
-
     year: "numeric",
   })
 
 export default function LatestNewsSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const gridRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLDivElement>(null)
+
   const glowRef = useParallax<HTMLDivElement>(0.18, "up")
-  const cardsRef = useParallax<HTMLDivElement>(0.1, "down")
+
+  useLayoutEffect(() => {
+    const section = sectionRef.current
+    const grid = gridRef.current
+    const header = headerRef.current
+
+    if (!section || !grid || !header) return
+
+    const cards = Array.from(
+      grid.querySelectorAll<HTMLElement>("[data-news-card]"),
+    )
+
+    if (!cards.length) return
+
+    const ctx = gsap.context(() => {
+      gsap.set(header, { autoAlpha: 0, y: -40 })
+      gsap.set(cards, { autoAlpha: 0, x: 160 })
+
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => `+=${window.innerHeight * 2.2}`,
+          scrub: 0.65,
+          pin: true,
+          pinSpacing: true,
+          invalidateOnRefresh: true,
+          anticipatePin: 1,
+        },
+      })
+
+      timeline.to(header, {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.3,
+        ease: "power2.out",
+      })
+
+      cards.forEach((card, index) => {
+        timeline.to(
+          card,
+          {
+            autoAlpha: 1,
+            x: 0,
+            duration: 0.35,
+            ease: "power2.out",
+          },
+          index === 0 ? ">-0.12" : ">-0.08",
+        )
+      })
+
+      timeline.to({}, { duration: 0.35 })
+    }, section)
+
+    const refreshFrame = requestAnimationFrame(() => {
+      ScrollTrigger.refresh()
+    })
+
+    return () => {
+      cancelAnimationFrame(refreshFrame)
+      ctx.revert()
+    }
+  }, [])
 
   return (
     <section
+      ref={sectionRef}
       className="relative overflow-hidden py-24 theme-dark grid-secondary dark-grid-bg section-transition"
       style={{
         backgroundColor: "var(--bg)",
-
         color: "var(--fg)",
-
         borderBottom:
           "1px solid color-mix(in srgb, var(--color-secondary-500) 24%, transparent)",
       }}
       aria-labelledby="latest-news-title"
     >
+      {/* Aura decorativa con parallax */}
       <div
         ref={glowRef}
-        className="pointer-events-none absolute -left-40 top-1/3 h-120 w-120 rounded-full opacity-25 blur-3xl"
+        className="pointer-events-none absolute -left-40 top-1/2 h-120 w-120 rounded-full opacity-25 blur-3xl"
         style={{
           background:
             "radial-gradient(circle, color-mix(in srgb, var(--color-secondary-500) 32%, transparent) 0%, transparent 70%)",
@@ -50,85 +111,37 @@ export default function LatestNewsSection() {
         aria-hidden="true"
       />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
-        <SectionHeader
-          label="Actualidad"
-          title="Últimas novedades"
-          subtitle="Eventos, logros, convocatorias y publicaciones del Programa de Ingeniería Multimedia."
-          accent="secondary"
-        />
+      {/* Contenido */}
+      <div className="relative z-10 mx-auto max-w-7xl px-5">
+        <div ref={headerRef}>
+          <SectionHeader
+            label="Actualidad"
+            title="Últimas novedades"
+            subtitle="Eventos, logros, convocatorias y publicaciones del Programa de Ingeniería Multimedia."
+            accent="secondary"
+          />
+        </div>
 
+        {/* Tarjetas */}
         <div
-          ref={cardsRef}
+          ref={gridRef}
           id="latest-news-title"
-          className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+          className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
         >
-          {noticias.slice(0, 4).map((news, index) => {
-            const accent = tagColor[news.tag] ?? "var(--color-primary-500)"
-
-            return (
-              <motion.article
-                key={news.id}
-                initial={{ opacity: 0, y: 26 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.45, delay: index * 0.07 }}
-                className="group overflow-hidden rounded-xl border transition-transform duration-300 hover:-translate-y-1"
-                style={{
-                  background:
-                    "color-mix(in srgb, var(--color-neutral-900) 88%, transparent)",
-                  borderColor:
-                    "color-mix(in srgb, var(--color-neutral-100) 10%, transparent)",
-                  boxShadow:
-                    "0 16px 35px color-mix(in srgb, var(--color-neutral-900) 18%, transparent)",
-                }}
-              >
-                <div className="relative aspect-16/10 overflow-hidden">
-                  <img
-                    src={news.imagen}
-                    alt=""
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                  />
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background:
-                        "linear-gradient(180deg, transparent, color-mix(in srgb, var(--color-neutral-900) 72%, transparent))",
-                    }}
-                  />
-                  <span
-                    className="absolute left-4 top-4 rounded px-2 py-1 font-display text-[10px] tracking-[0.12em]"
-                    style={{
-                      background: accent,
-                      color: "var(--color-primary-900)",
-                    }}
-                  >
-                    {news.tag}
-                  </span>
-                </div>
-
-                <div className="p-5">
-                  <div className="flex items-center justify-between gap-3">
-                    <span
-                      className="font-display text-[10px] uppercase tracking-widest"
-                      style={{ color: accent }}
-                    >
-                      {formatDate(news.fecha)}
-                    </span>
-                    <span className="font-display text-[10px] uppercase tracking-widest text-slate-500">
-                      {news.categoria}
-                    </span>
-                  </div>
-                  <h3 className="mt-4 font-heading text-sm leading-relaxed text-neutral-100">
-                    {news.titulo}
-                  </h3>
-                  <p className="mt-3 line-clamp-3 font-body text-sm leading-relaxed text-neutral-300">
-                    {news.resumen}
-                  </p>
-                </div>
-              </motion.article>
-            )
-          })}
+          {noticias.slice(0, 4).map((news, index) => (
+            <div key={news.id} data-news-card className="min-w-0">
+              <NewsCard
+                image={news.imagen}
+                tag={news.tag}
+                date={formatDate(news.fecha)}
+                category={news.categoria}
+                title={news.titulo}
+                summary={news.resumen}
+                index={index}
+                variant="secondary-dark"
+              />
+            </div>
+          ))}
         </div>
       </div>
     </section>

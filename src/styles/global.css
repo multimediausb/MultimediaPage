@@ -36,6 +36,11 @@ body {
   background: var(--bg, #f5f2ee);
 }
 
+body.video-modal-open .site-navbar {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 #root {
   min-height: 100vh;
   display: flex;
@@ -47,7 +52,7 @@ body {
   background-image:
     linear-gradient(var(--grid-color, rgba(14, 154, 147, 0.08)) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-color, rgba(14, 154, 147, 0.08)) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-size: 60px 60px;
 }
 
 .dark-grid-bg {
