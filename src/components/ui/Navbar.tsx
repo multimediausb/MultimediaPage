@@ -5,11 +5,7 @@ import logoSrc from "@/imports/MediaShow.png"
 
 const links = [
   { to: "/", label: "HOME" },
-  { to: "/proyectos", label: "PROYECTOS" },
-  { to: "/investigacion", label: "INVESTIGACIÓN" },
-  { to: "/eventos", label: "EVENTOS" },
   { to: "/proximo-evento", label: "PRÓXIMO EVENTO" },
-  { to: "/miembros", label: "MIEMBROS" },
 ]
 
 export default function Navbar() {

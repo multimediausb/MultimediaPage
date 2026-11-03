@@ -179,7 +179,7 @@ export default function HomeVideoReelSection() {
         aria-hidden="true"
       />
 
-      <div className="relative z-10 mx-auto -translate-y-6 max-w-7xl px-6">
+      <div className="relative z-10 mx-auto -translate-y-3 max-w-7xl px-4 sm:-translate-y-6 sm:px-6">
         {/* Section Header */}
         <div ref={headerRef}>
           <SectionHeader

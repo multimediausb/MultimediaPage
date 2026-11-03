@@ -298,7 +298,7 @@ export default function ScrollStatsSection() {
         <StatsCube3D progressRef={progressRef} targetRefs={itemRefs} />
 
         {/* Composición principal */}
-        <div className="relative z-20 mx-auto grid h-full max-w-7xl grid-cols-1 px-5 sm:px-6 md:grid-cols-2 md:gap-8 lg:px-16">
+        <div className="relative z-20 mx-auto grid h-full max-w-7xl grid-cols-1 px-4 sm:px-6 md:grid-cols-2 md:gap-8 lg:px-16">
           {/* Viewport de métricas */}
           <div
             ref={contentViewportRef}
@@ -314,7 +314,7 @@ export default function ScrollStatsSection() {
             >
               {/* Encabezado */}
               <div ref={headingRef} className="mb-7 pt-8">
-                <h2 className="max-w-xl font-heading text-3xl font-bold leading-tight tracking-tight text-white lg:text-4xl ">
+                <h2 className="max-w-xl font-heading text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl lg:text-4xl ">
                   MÉTRICAS QUE MARCAN LA DIFERENCIA
                 </h2>
 

@@ -254,7 +254,7 @@ export default function HomeEventsSection() {
         aria-hidden="true"
       />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
         {/* Section Header */}
         <div ref={headerRef} className="flex justify-end">
           <div className="w-full lg:max-w-3xl">
@@ -298,7 +298,7 @@ export default function HomeEventsSection() {
             {/* Filtros */}
             <div
               ref={buttonsRef}
-              className="flex flex-row flex-wrap items-center justify-center gap-3 lg:flex-col lg:justify-center"
+              className="flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-3 lg:flex-col lg:justify-center"
             >
               {[
                 { id: "reunion", label: "Reunión" },

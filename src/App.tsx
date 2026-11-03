@@ -1,5 +1,11 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom"
 import { AnimatePresence, motion } from "framer-motion"
+import { useEffect } from "react"
 import Navbar from "./components/ui/Navbar"
 import Home from "./pages/Home"
 import Investigacion from "./pages/Investigacion"
@@ -12,6 +18,20 @@ import { useSmoothScroll } from "./hooks/useParallax"
 
 function SmoothScrollProvider() {
   useSmoothScroll()
+  return null
+}
+
+function HomeScrollReset() {
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      return
+    }
+
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" })
+  }, [location.pathname])
+
   return null
 }
 
@@ -91,6 +111,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <SmoothScrollProvider />
+      <HomeScrollReset />
       <div
         className="min-h-screen relative flex flex-col"
         style={{ background: "var(--bg)" }}

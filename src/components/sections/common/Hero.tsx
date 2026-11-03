@@ -154,7 +154,7 @@ export default function Hero() {
       >
         <ParticleField />
 
-        <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 py-28 lg:grid-cols-2 lg:gap-16">
+        <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-4 py-24 sm:px-6 sm:py-28 lg:grid-cols-2 lg:gap-16">
           {/* Columna izquierda: identidad y contenido */}
           <div className="mx-auto w-full max-w-lg">
             <motion.div
@@ -181,7 +181,7 @@ export default function Hero() {
 
               {/* Título principal */}
               <h1
-                className="w-full font-display font-bold text-4xl md:text-5xl lg:text-6xl leading-[1.05] mb-6"
+                className="w-full font-display text-4xl font-bold leading-[1.05] sm:text-5xl lg:text-6xl mb-6"
                 style={{ color: "var(--fg)" }}
               >
                 CIENCIA QUE
@@ -215,7 +215,7 @@ export default function Hero() {
               </p>
 
               {/* Botones alineados horizontalmente */}
-              <div className="flex items-center gap-3 w-full">
+              <div className="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:items-center">
                 <Button
                   variant="primary"
                   size="md"

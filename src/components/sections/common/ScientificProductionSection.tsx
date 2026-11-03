@@ -1,12 +1,24 @@
-import { useLayoutEffect, useRef } from "react"
+import { useLayoutEffect, useMemo, useRef, useState } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  Tooltip,
+  type ChartData,
+  type ChartOptions,
+} from "chart.js"
 
 import SectionHeader from "../../ui/SectionHeader"
 import MetricChartCard from "../../ui/MetricChartCard"
 import Button from "../../ui/Button"
+import MetricChartModal from "../../ui/MetricChartModal"
 
 gsap.registerPlugin(ScrollTrigger)
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend)
 
 const scientificMetrics = [
   {
@@ -35,6 +47,7 @@ export default function ScientificProductionSection() {
   const cardsRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLDivElement>(null)
   const visualRef = useRef<HTMLDivElement>(null)
+  const [isCombinedChartOpen, setIsCombinedChartOpen] = useState(false)
 
   const centerSection = () => {
     sectionRef.current?.scrollIntoView({
@@ -42,6 +55,89 @@ export default function ScientificProductionSection() {
       block: "center",
     })
   }
+
+  const combinedChartData = useMemo<ChartData<"bar">>(
+    () => ({
+      labels: ["2019", "2020", "2021", "2022", "2023", "2024"],
+      datasets: [
+        {
+          label: "Publicaciones",
+          data: scientificMetrics[0].data,
+          backgroundColor: "#48c8ca",
+          borderColor: "#48c8ca",
+          borderWidth: 1,
+          borderRadius: 3,
+          barPercentage: 0.8,
+          categoryPercentage: 0.72,
+        },
+        {
+          label: "Proyectos activos",
+          data: scientificMetrics[1].data.map((value, index) =>
+            index === 3 ? value - 1 : value,
+          ),
+          backgroundColor: "#f6a43b",
+          borderColor: "#f6a43b",
+          borderWidth: 1,
+          borderRadius: 3,
+          barPercentage: 0.8,
+          categoryPercentage: 0.72,
+        },
+        {
+          label: "Grupos de investigación",
+          data: scientificMetrics[2].data.map((value, index) =>
+            index === 1 || index === 4 ? value + 1 : value,
+          ),
+          backgroundColor: "#58a4d8",
+          borderColor: "#58a4d8",
+          borderWidth: 1,
+          borderRadius: 3,
+          barPercentage: 0.8,
+          categoryPercentage: 0.72,
+        },
+      ],
+    }),
+    [],
+  )
+
+  const combinedChartOptions = useMemo<ChartOptions<"bar">>(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 500 },
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            color: "#e1f1ff",
+            padding: 18,
+            usePointStyle: true,
+          },
+        },
+        tooltip: {
+          backgroundColor: "#073334",
+          titleColor: "#d8ffff",
+          bodyColor: "#d8ffff",
+          borderColor: "rgba(72, 200, 202, 0.28)",
+          borderWidth: 1,
+          padding: 10,
+        },
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: "rgba(255,255,255,0.65)" },
+          border: { display: false },
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: "rgba(255,255,255,0.12)" },
+          ticks: { color: "rgba(255,255,255,0.65)" },
+          border: { display: false },
+        },
+      },
+    }),
+    [],
+  )
 
   useLayoutEffect(() => {
     const section = sectionRef.current
@@ -187,7 +283,7 @@ export default function ScientificProductionSection() {
         aria-hidden="true"
       />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
         {/* Section Header */}
         <div ref={headerRef}>
           <SectionHeader
@@ -220,11 +316,32 @@ export default function ScientificProductionSection() {
 
         {/* Botón */}
         <div ref={buttonRef} className="mt-8 text-center">
-          <Button variant="primary" size="md" asLink href="/investigacion">
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => {
+              centerSection()
+              setIsCombinedChartOpen(true)
+            }}
+          >
             VER LAS JUNTAS
           </Button>
         </div>
       </div>
+
+      {isCombinedChartOpen && (
+        <MetricChartModal
+          title="Producción científica combinada"
+          surface="#073334"
+          backdrop="var(--color-primary-900)"
+          accent="#48c8ca"
+          border="rgba(72, 200, 202, 0.28)"
+          text="#d8ffff"
+          chartData={combinedChartData}
+          chartOptions={combinedChartOptions}
+          onClose={() => setIsCombinedChartOpen(false)}
+        />
+      )}
     </section>
   )
 }

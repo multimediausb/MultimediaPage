@@ -13,6 +13,9 @@ if (typeof window !== "undefined") {
  */
 export function useSmoothScroll() {
   useEffect(() => {
+    // Let the browser restore the current URL and scroll position on reload.
+    window.history.scrollRestoration = "auto"
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),

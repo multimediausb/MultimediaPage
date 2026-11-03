@@ -189,10 +189,10 @@ export default function NewsStatsSection() {
       />
 
       {/* Contenido */}
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-2">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6">
         <div
           id="news-stats-title"
-          className="mx-auto mt-10 grid max-w-5xl grid-cols-1 gap-5 sm:grid-cols-3"
+          className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-3 sm:gap-5"
         >
           {newsStats.map((item, index) => (
             <div
