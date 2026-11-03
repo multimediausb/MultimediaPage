@@ -1,247 +1,417 @@
 import React from "react"
+
 import { motion, type HTMLMotionProps, type Variants } from "framer-motion"
 
-export type ButtonVariant = "primary" | "secondary" | "tertiary" | "outline-primary" | "outline-secondary" | "outline-tertiary" | "ghost"
+export type ButtonVariant = "primary" | "primary-active" | "secondary" | "tertiary" | "outline-primary" | "outline-secondary" | "outline-tertiary" | "ghost"
 
 export type ButtonSize = "sm" | "md" | "lg" | "xl"
 
 export interface ButtonProps
   extends Omit<HTMLMotionProps<"button">, "children"> {
   variant?: ButtonVariant
+
   size?: ButtonSize
+
   leftIcon?: React.ReactNode
+
   rightIcon?: React.ReactNode
+
   children: React.ReactNode
+
   className?: string
+
   asLink?: boolean
+
   href?: string
+
   download?: string
+
   target?: string
+
   showCornerFrame?: boolean
+
+  truncateText?: boolean
+
   onClick?: React.MouseEventHandler<HTMLElement>
 }
 
 // Configuración de los 4 tamaños oficiales
+
 interface SizeConfig {
   fontSize: string
+
   padding: string
+
   gap: string
+
   cornerLength: number
+
   cornerThickness: number
+
   frameGap: number
+
   pressShrink: number
 }
 
 const sizeMap: Record<ButtonSize, SizeConfig> = {
   sm: {
     fontSize: "11px",
+
     padding: "6px 14px",
+
     gap: "6px",
+
     cornerLength: 14,
+
     cornerThickness: 1.5,
+
     frameGap: 3,
+
     pressShrink: 2,
   },
+
   md: {
     fontSize: "13px",
+
     padding: "9px 20px",
+
     gap: "8px",
+
     cornerLength: 16,
+
     cornerThickness: 2,
+
     frameGap: 4,
+
     pressShrink: 2.5,
   },
+
   lg: {
     fontSize: "15px",
+
     padding: "12px 26px",
+
     gap: "10px",
+
     cornerLength: 18,
+
     cornerThickness: 2,
+
     frameGap: 5,
+
     pressShrink: 3,
   },
+
   xl: {
     fontSize: "17px",
+
     padding: "16px 34px",
+
     gap: "12px",
+
     cornerLength: 20,
+
     cornerThickness: 2.5,
+
     frameGap: 6,
+
     pressShrink: 3.5,
   },
 }
 
 // Configuración de colores para cada variante (Enabled vs Hover más oscuro del sistema)
+
 interface VariantColorConfig {
   innerBg: string
+
   innerText: string
+
   innerBorder: string
+
   cornerColor: string
+
   hoverInnerBg: string
+
   hoverInnerText: string
+
   hoverInnerBorder: string
+
   hoverCornerColor: string
 }
 
 const variantColorMap: Record<ButtonVariant, VariantColorConfig> = {
   primary: {
     innerBg: "var(--color-primary-500)",
+
     innerText: "var(--color-neutral-900)",
+
     innerBorder: "var(--color-primary-400)",
+
     cornerColor: "var(--color-primary-500)",
+
     // Al hacer hover cambia a tono más oscuro del sistema de diseño (Primary 700 / 800)
+
+    hoverInnerBg: "var(--color-primary-900)",
+
+    hoverInnerText: "var(--color-primary-100)",
+
+    hoverInnerBorder: "var(--color-primary-500)",
+
+    hoverCornerColor: "var(--color-primary-300)",
+  },
+  "primary-active": {
+    innerBg: "var(--color-primary-800)",
+    innerText: "var(--color-primary-100)",
+    innerBorder: "var(--color-primary-500)",
+    cornerColor: "var(--color-primary-300)",
     hoverInnerBg: "var(--color-primary-700)",
     hoverInnerText: "var(--color-primary-100)",
     hoverInnerBorder: "var(--color-primary-500)",
     hoverCornerColor: "var(--color-primary-300)",
   },
+
   secondary: {
     innerBg: "var(--color-secondary-500)",
+
     innerText: "var(--color-neutral-900)",
+
     innerBorder: "var(--color-secondary-400)",
+
     cornerColor: "var(--color-secondary-500)",
+
     // Al hacer hover cambia a tono más oscuro del sistema de diseño (Secondary 700 / 800)
+
     hoverInnerBg: "var(--color-secondary-700)",
+
     hoverInnerText: "var(--color-secondary-100)",
+
     hoverInnerBorder: "var(--color-secondary-500)",
+
     hoverCornerColor: "var(--color-secondary-300)",
   },
+
   tertiary: {
     innerBg: "var(--color-tertiary-500)",
+
     innerText: "#ffffff",
+
     innerBorder: "var(--color-tertiary-400)",
+
     cornerColor: "var(--color-tertiary-500)",
+
     // Al hacer hover cambia a tono más oscuro (Tertiary 700 / 800)
+
     hoverInnerBg: "var(--color-tertiary-700)",
+
     hoverInnerText: "var(--color-tertiary-100)",
+
     hoverInnerBorder: "var(--color-tertiary-500)",
+
     hoverCornerColor: "var(--color-tertiary-300)",
   },
+
   "outline-primary": {
     innerBg: "transparent",
+
     innerText: "var(--color-primary-500)",
+
     innerBorder: "var(--color-primary-500)",
+
     cornerColor: "var(--color-primary-400)",
+
     // Al hacer hover cambia a tono más oscuro del sistema (Primary 900)
+
     hoverInnerBg: "var(--color-primary-900)",
+
     hoverInnerText: "var(--color-primary-200)",
+
     hoverInnerBorder: "var(--color-primary-400)",
+
     hoverCornerColor: "var(--color-primary-300)",
   },
+
   "outline-secondary": {
     innerBg: "transparent",
+
     innerText: "var(--color-secondary-500)",
+
     innerBorder: "var(--color-secondary-500)",
+
     cornerColor: "var(--color-secondary-400)",
+
     // Al hacer hover cambia a tono más oscuro del sistema (Secondary 900)
+
     hoverInnerBg: "var(--color-secondary-900)",
+
     hoverInnerText: "var(--color-secondary-200)",
+
     hoverInnerBorder: "var(--color-secondary-400)",
+
     hoverCornerColor: "var(--color-secondary-300)",
   },
+
   "outline-tertiary": {
     innerBg: "transparent",
-    innerText: "var(--color-tertiary-500)",
-    innerBorder: "var(--color-tertiary-500)",
-    cornerColor: "var(--color-tertiary-400)",
-    // Al hacer hover cambia a tono más oscuro del sistema (Tertiary 900)
-    hoverInnerBg: "var(--color-tertiary-900)",
-    hoverInnerText: "var(--color-tertiary-200)",
-    hoverInnerBorder: "var(--color-tertiary-400)",
-    hoverCornerColor: "var(--color-tertiary-300)",
 
+    innerText: "var(--color-tertiary-500)",
+
+    innerBorder: "var(--color-tertiary-500)",
+
+    cornerColor: "var(--color-tertiary-400)",
+
+    // Al hacer hover cambia a tono más oscuro del sistema (Tertiary 900)
+
+    hoverInnerBg: "var(--color-tertiary-900)",
+
+    hoverInnerText: "var(--color-tertiary-200)",
+
+    hoverInnerBorder: "var(--color-tertiary-400)",
+
+    hoverCornerColor: "var(--color-tertiary-300)",
   },
+
   ghost: {
     innerBg: "transparent",
-    innerText: "var(--color-neutral-400)",
-    innerBorder: "transparent",
-    cornerColor: "var(--color-neutral-400)",
-    hoverInnerBg: "var(--color-neutral-800)",
-    hoverInnerText: "var(--color-neutral-100)",
-    hoverInnerBorder: "var(--color-neutral-700)",
-    hoverCornerColor: "var(--color-neutral-300)",
 
+    innerText: "var(--color-neutral-400)",
+
+    innerBorder: "transparent",
+
+    cornerColor: "var(--color-neutral-400)",
+
+    hoverInnerBg: "var(--color-neutral-900)",
+
+    hoverInnerText: "var(--color-neutral-100)",
+
+    hoverInnerBorder: "var(--color-neutral-900)",
+
+    hoverCornerColor: "var(--color-neutral-300)",
   },
 }
 
 export default function Button({
   variant = "primary",
+
   size = "md",
+
   leftIcon,
+
   rightIcon,
+
   children,
+
   className = "",
+
   asLink = false,
+
   href,
+
   download,
+
   target,
+
   showCornerFrame = true,
+
+  truncateText = true,
+
   onClick,
+
   ...props
 }: ButtonProps) {
   const cfg = sizeMap[size]
+
   const colors = variantColorMap[variant]
 
   // Variantes de animación para las esquinas del marco cuando se presiona (se achica)
-const cornerVariants: Variants = {
-  idle: {
-    x: 0,
-    y: 0,
-    borderColor: colors.cornerColor,
-    transition: { duration: 0.18, ease: "easeOut" },
-  },
-  hover: {
-    x: 0,
-    y: 0,
-    borderColor: colors.hoverCornerColor,
-    transition: { duration: 0.18, ease: "easeOut" },
-  },
-  pressed: (direction: "tl" | "tr" | "bl" | "br") => {
-    const shrink = cfg.pressShrink;
 
-    const deltaMap = {
-      tl: { x: shrink, y: shrink },
-      tr: { x: -shrink, y: shrink },
-      bl: { x: shrink, y: -shrink },
-      br: { x: -shrink, y: -shrink },
-    };
+  const cornerVariants: Variants = {
+    idle: {
+      x: 0,
 
-    return {
-      ...deltaMap[direction],
+      y: 0,
+
+      borderColor: colors.cornerColor,
+
+      transition: { duration: 0.18, ease: "easeOut" },
+    },
+
+    hover: {
+      x: 0,
+
+      y: 0,
+
       borderColor: colors.hoverCornerColor,
-      transition: { duration: 0.1, ease: "easeInOut" },
-    };
-  },
-};
-  // Variantes del contenedor interno del botón (cambia a color más oscuro en hover y se achica al presionar)
-const innerButtonVariants: Variants = {
-  idle: {
-    scale: 1,
-    backgroundColor: colors.innerBg,
-    color: colors.innerText,
-    borderColor: colors.innerBorder,
-    transition: { duration: 0.2, ease: "easeOut" },
-  },
-  hover: {
-    scale: 1,
-    backgroundColor: colors.hoverInnerBg,
-    color: colors.hoverInnerText,
-    borderColor: colors.hoverInnerBorder,
 
-    transition: { duration: 0.2, ease: "easeOut" },
-  },
-  pressed: {
-    scale: 1,
-    backgroundColor: colors.hoverInnerBg,
-    color: colors.hoverInnerText,
-    borderColor: colors.hoverInnerBorder,
-    transition: { duration: 0.1, ease: "easeInOut" },
-  },
-};
+      transition: { duration: 0.18, ease: "easeOut" },
+    },
+
+    pressed: (direction: "tl" | "tr" | "bl" | "br") => {
+      const shrink = cfg.pressShrink
+
+      const deltaMap = {
+        tl: { x: shrink, y: shrink },
+
+        tr: { x: -shrink, y: shrink },
+
+        bl: { x: shrink, y: -shrink },
+
+        br: { x: -shrink, y: -shrink },
+      }
+
+      return {
+        ...deltaMap[direction],
+
+        borderColor: colors.hoverCornerColor,
+
+        transition: { duration: 0.1, ease: "easeInOut" },
+      }
+    },
+  }
+
+  // Variantes del contenedor interno del botón (cambia a color más oscuro en hover y se achica al presionar)
+
+  const innerButtonVariants: Variants = {
+    idle: {
+      scale: 1,
+
+      backgroundColor: colors.innerBg,
+
+      color: colors.innerText,
+
+      borderColor: colors.innerBorder,
+
+      transition: { duration: 0.2, ease: "easeOut" },
+    },
+
+    hover: {
+      scale: 1,
+
+      backgroundColor: colors.hoverInnerBg,
+
+      color: colors.hoverInnerText,
+
+      borderColor: colors.hoverInnerBorder,
+
+      transition: { duration: 0.2, ease: "easeOut" },
+    },
+
+    pressed: {
+      scale: 1,
+
+      backgroundColor: colors.hoverInnerBg,
+
+      color: colors.hoverInnerText,
+
+      borderColor: colors.hoverInnerBorder,
+
+      transition: { duration: 0.1, ease: "easeInOut" },
+    },
+  }
 
   const isFullWidth = className.includes("w-full")
 
   // Contenido interno del botón
+
   const buttonContent = (
     <>
       {showCornerFrame && (
@@ -256,11 +426,17 @@ const innerButtonVariants: Variants = {
             className="absolute"
             style={{
               top: 0,
+
               left: 0,
+
               width: `${cfg.cornerLength}px`,
+
               height: `${cfg.cornerLength}px`,
+
               borderTopWidth: `${cfg.cornerThickness}px`,
+
               borderLeftWidth: `${cfg.cornerThickness}px`,
+
               borderStyle: "solid",
             }}
           />
@@ -271,11 +447,17 @@ const innerButtonVariants: Variants = {
             className="absolute"
             style={{
               top: 0,
+
               right: 0,
+
               width: `${cfg.cornerLength}px`,
+
               height: `${cfg.cornerLength}px`,
+
               borderTopWidth: `${cfg.cornerThickness}px`,
+
               borderRightWidth: `${cfg.cornerThickness}px`,
+
               borderStyle: "solid",
             }}
           />
@@ -286,11 +468,17 @@ const innerButtonVariants: Variants = {
             className="absolute"
             style={{
               bottom: 0,
+
               left: 0,
+
               width: `${cfg.cornerLength}px`,
+
               height: `${cfg.cornerLength}px`,
+
               borderBottomWidth: `${cfg.cornerThickness}px`,
+
               borderLeftWidth: `${cfg.cornerThickness}px`,
+
               borderStyle: "solid",
             }}
           />
@@ -301,11 +489,17 @@ const innerButtonVariants: Variants = {
             className="absolute"
             style={{
               bottom: 0,
+
               right: 0,
+
               width: `${cfg.cornerLength}px`,
+
               height: `${cfg.cornerLength}px`,
+
               borderBottomWidth: `${cfg.cornerThickness}px`,
+
               borderRightWidth: `${cfg.cornerThickness}px`,
+
               borderStyle: "solid",
             }}
           />
@@ -320,12 +514,19 @@ const innerButtonVariants: Variants = {
         }`}
         style={{
           padding: cfg.padding,
+
           fontSize: cfg.fontSize,
+
           gap: cfg.gap,
+
           borderRadius: "var(--radius-2xs)",
+
           borderWidth: "1.5px",
+
           borderStyle: "solid",
+
           letterSpacing: "0.08em",
+
           lineHeight: 1.2,
         }}
       >
@@ -334,7 +535,9 @@ const innerButtonVariants: Variants = {
             {leftIcon}
           </span>
         )}
-        <span className="truncate">{children}</span>
+        <span className={truncateText ? "truncate" : "whitespace-nowrap"}>
+          {children}
+        </span>
         {rightIcon && (
           <span className="inline-flex shrink-0 items-center justify-center">
             {rightIcon}
@@ -345,15 +548,24 @@ const innerButtonVariants: Variants = {
   )
 
   // Wrapper externo: marco relativo que alberga el contenedor y las esquinas
+
   const wrapperStyle: React.CSSProperties = {
     padding: showCornerFrame ? `${cfg.frameGap + 2}px` : "0px",
+
     display: isFullWidth ? "flex" : "inline-flex",
+
     position: "relative",
+
     alignItems: "center",
+
     justifyContent: "center",
+
     cursor: "pointer",
+
     background: "transparent",
+
     border: "none",
+
     outline: "none",
   }
 

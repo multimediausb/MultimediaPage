@@ -1,5 +1,7 @@
-import { motion } from "framer-motion"
+import { useState } from "react"
 
+import Button from "../../ui/Button"
+import EventCard from "../../ui/EventCard"
 import SectionHeader from "../../ui/SectionHeader"
 
 import { useParallax } from "@/hooks/useParallax"
@@ -11,8 +13,9 @@ const events = [
     date: "18 SEP 2026",
 
     type: "ENCUENTRO",
-
-    accent: "var(--color-primary-500)",
+    image:
+      "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800&h=600&fit=crop&auto=format",
+    variant: "primary-light" as const,
   },
 
   {
@@ -21,8 +24,9 @@ const events = [
     date: "02 OCT 2026",
 
     type: "TALLER",
-
-    accent: "var(--color-tertiary-500)",
+    image:
+      "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=800&h=600&fit=crop&auto=format",
+    variant: "secondary-light" as const,
   },
 
   {
@@ -31,8 +35,9 @@ const events = [
     date: "15 OCT 2026",
 
     type: "CONVOCATORIA",
-
-    accent: "var(--color-secondary-500)",
+    image:
+      "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=600&fit=crop&auto=format",
+    variant: "primary-light" as const,
   },
 
   {
@@ -41,12 +46,14 @@ const events = [
     date: "27 NOV 2026",
 
     type: "MUESTRA",
-
-    accent: "var(--color-primary-500)",
+    image:
+      "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=800&h=600&fit=crop&auto=format",
+    variant: "secondary-light" as const,
   },
 ]
 
 export default function HomeEventsSection() {
+  const [selectedEventFilter, setSelectedEventFilter] = useState("reunion")
   const visualRef = useParallax<HTMLDivElement>(0.16, "down")
   const eventsRef = useParallax<HTMLDivElement>(0.08, "up")
 
@@ -76,60 +83,86 @@ export default function HomeEventsSection() {
       />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
-        <SectionHeader
-          label="Agenda"
-          title="Eventos principales"
-          subtitle="Conoce nuestros eventos más importantes y cómo unirte a ellos."
-          accent="primary"
-          align="center"
-        />
+        <div className="flex justify-end">
+          <div className="w-full lg:max-w-3xl">
+            <SectionHeader
+              label="Agenda"
+              title="Eventos principales"
+              subtitle="Conoce nuestros eventos más importantes y cómo unirte a ellos."
+              accent="secondary"
+              align="right"
+            />
+          </div>
+        </div>
 
-        <div
-          ref={eventsRef}
-          id="home-events-title"
-          className="mx-auto mt-12 grid max-w-5xl gap-5 md:grid-cols-2"
-        >
-          {events.map((event, index) => (
-            <motion.article
-              key={event.title}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -18 : 18 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.45, delay: index * 0.07 }}
-              className="group flex min-h-28 items-center justify-between gap-5 overflow-hidden rounded-xl border p-5 shadow-sm transition-transform duration-300 hover:-translate-y-1"
-              style={{
-                background:
-                  "color-mix(in srgb, var(--color-neutral-100) 75%, transparent)",
-                borderColor:
-                  "color-mix(in srgb, var(--color-tertiary-500) 30%, transparent)",
-              }}
+        <div className="relative mx-auto mt-8 max-w-7xl">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_12rem]">
+            <div
+              ref={eventsRef}
+              id="home-events-title"
+              className="grid gap-5 md:grid-cols-2"
             >
-              <div>
-                <span
-                  className="font-display text-[10px] tracking-[0.16em]"
-                  style={{ color: event.accent }}
-                >
-                  {event.type}
-                </span>
-                <h3 className="mt-2 font-heading text-sm leading-relaxed text-(--fg)">
-                  {event.title}
-                </h3>
-                <p className="mt-2 font-display text-[10px] tracking-widest text-(--fg-muted)">
-                  {event.date}
-                </p>
-              </div>
-              <span
-                className="shrink-0 rounded border px-3 py-2 font-display text-[10px] tracking-widest transition-colors duration-300 group-hover:text-white"
-                style={{
-                  borderColor: event.accent,
+              {events.map((event, index) => (
+                <EventCard
+                  key={event.title}
+                  image={event.image}
+                  imageAlt={event.title}
+                  title={event.title}
+                  date={event.date}
+                  location="Universidad de San Buenaventura"
+                  summary="Conoce los detalles, horarios y formas de participar en este evento."
+                  index={index}
+                  variant={event.variant}
+                />
+              ))}
+            </div>
 
-                  color: event.accent,
-                }}
-              >
-                VER MÁS
-              </span>
-            </motion.article>
-          ))}
+            <div className="flex flex-row flex-wrap items-center justify-center gap-3 lg:flex-col lg:justify-center">
+              {[
+                { id: "reunion", label: "Reunión" },
+                { id: "workshop", label: "Workshop" },
+                { id: "convocatoria", label: "Convocatoria" },
+              ].map((filter) => (
+                <Button
+                  key={`${filter.id}-${
+                    selectedEventFilter === filter.id ? "active" : "default"
+                  }`}
+                  variant={
+                    selectedEventFilter === filter.id
+                      ? "primary-active"
+                      : "primary"
+                  }
+                  size="md"
+                  className="w-full max-w-52"
+                  truncateText={false}
+                  aria-pressed={selectedEventFilter === filter.id}
+                  onClick={() => setSelectedEventFilter(filter.id)}
+                  rightIcon={
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      aria-hidden="true"
+                    >
+                      <circle cx="12" cy="12" r="8" />
+                      <path d="M12 8v4l2.5 2" />
+                    </svg>
+                  }
+                >
+                  {filter.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-5 flex justify-center lg:justify-end lg:pr-2">
+            <Button variant="secondary" size="lg" asLink href="/eventos">
+              VER MÁS
+            </Button>
+          </div>
         </div>
       </div>
     </section>

@@ -11,7 +11,7 @@ interface Props {
 
   accent?: "primary" | "secondary" | "accent"
 
-  align?: "left" | "center"
+  align?: "left" | "center" | "right"
 }
 
 const accentMap = {
@@ -34,6 +34,7 @@ export default function SectionHeader({
   const color = accentMap[accent]
 
   const centered = align === "center"
+  const rightAligned = align === "right"
 
   return (
     <motion.div
@@ -41,11 +42,11 @@ export default function SectionHeader({
       initial={{ opacity: 0, y: 20 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5 }}
-      className={centered ? "text-center" : ""}
+      className={centered ? "text-center" : rightAligned ? "text-right" : ""}
     >
       <div
-        className={`flex items-center gap-3 mb-3 ${
-          centered ? "justify-center" : ""
+        className={`mb-3 flex items-center gap-3 ${
+          centered ? "justify-center" : rightAligned ? "justify-end" : ""
         }`}
       >
         <div className="w-4 h-px" style={{ background: color }} />
@@ -55,12 +56,14 @@ export default function SectionHeader({
         >
           {label.toUpperCase()}
         </span>
-        <div
-          className="flex-1 h-px max-w-16"
-          style={{
-            background: `linear-gradient(90deg, ${color}40, transparent)`,
-          }}
-        />
+        {!rightAligned && (
+          <div
+            className="h-px max-w-16 flex-1"
+            style={{
+              background: `linear-gradient(90deg, ${color}40, transparent)`,
+            }}
+          />
+        )}
       </div>
       <h2
         className="font-display font-bold text-2xl md:text-3xl leading-tight mb-3"
@@ -73,7 +76,11 @@ export default function SectionHeader({
           className="font-body text-sm max-w-2xl leading-relaxed"
           style={{
             color: "var(--fg-muted)",
-            margin: centered ? "0 auto" : undefined,
+            margin: centered
+              ? "0 auto"
+              : rightAligned
+                ? "0 0 0 auto"
+                : undefined,
           }}
         >
           {subtitle}
