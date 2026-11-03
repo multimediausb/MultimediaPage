@@ -79,7 +79,7 @@ export default function Navbar() {
             "transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease",
         }}
       >
-        <div className="max-w-screen-xl mx-auto px-6 flex items-center justify-between h-16">
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
           {/* Logo */}
           <NavLink to="/" className="flex items-center gap-3 group">
             <div className="w-10 h-7 relative flex items-center justify-center">
@@ -90,8 +90,8 @@ export default function Navbar() {
                 style={{ filter: "drop-shadow(0 0 6px rgba(14,154,147,0.3))" }}
               />
             </div>
-            <span className="font-display font-bold text-sm tracking-widest text-[#1a1714]">
-              MEDIA<span className="text-[var(--color-primary-600)]">_</span>
+            <span className="font-display font-bold text-sm tracking-widest text-fg">
+              MEDIA<span className="text-primary-600">_</span>
               SHOW
             </span>
           </NavLink>
@@ -113,7 +113,7 @@ export default function Navbar() {
               >
                 {({ isActive }) => (
                   <>
-                    <span className="hover:text-[var(--color-primary-600)] transition-colors duration-200">
+                    <span className="hover:text-primary-600 transition-colors duration-200">
                       {link.label}
                     </span>
                     {isActive && (
@@ -144,17 +144,17 @@ export default function Navbar() {
             aria-label="Abrir menú"
           >
             <span
-              className="w-5 h-0.5 bg-[#1a1714] transition-transform duration-200"
+              className="w-5 h-0.5 bg-fg transition-transform duration-200"
               style={{
                 transform: open ? "translateY(5px) rotate(45deg)" : "none",
               }}
             />
             <span
-              className="w-5 h-0.5 bg-[#1a1714] transition-opacity duration-200"
+              className="w-5 h-0.5 bg-fg transition-opacity duration-200"
               style={{ opacity: open ? 0 : 1 }}
             />
             <span
-              className="w-5 h-0.5 bg-[#1a1714] transition-transform duration-200"
+              className="w-5 h-0.5 bg-fg transition-transform duration-200"
               style={{
                 transform: open ? "translateY(-5px) rotate(-45deg)" : "none",
               }}
