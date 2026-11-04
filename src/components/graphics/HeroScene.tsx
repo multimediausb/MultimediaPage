@@ -1,14 +1,27 @@
 import { useRef, useEffect, type RefObject } from "react"
 import * as THREE from "three"
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js"
-import MODEL_PATH from "../../assets/Models/Canon_AT-1.fbx"
-import COLOR_MAP_PATH from "../../assets/texturas/CAM0001_Textures_COL_4k.png"
-import METALNESS_MAP_PATH from "../../assets/texturas/CAM0001_Textures_METL_4k.png"
-import NORMAL_MAP_PATH from "../../assets/texturas/CAM0001_Textures_NRML_4k.png"
-import OPACITY_MAP_PATH from "../../assets/texturas/CAM0001_Textures_OPAC_4k.png"
-import ROUGHNESS_MAP_PATH from "../../assets/texturas/CAM0001_Textures_ROUGH_4k.png"
+import MODEL_PATH from "../../assets/Models/Camera Sony XDCAM 4K.fbx"
+import BODY_COLOR_MAP_PATH from "../../assets/texturas/Extra/Camera_Tela_BaseColor.png"
+import BODY_HEIGHT_MAP_PATH from "../../assets/texturas/Extra/Camera_Tela_Height.png"
+import BODY_METALNESS_MAP_PATH from "../../assets/texturas/Extra/Camera_Tela_Metallic.png"
+import BODY_NORMAL_MAP_PATH from "../../assets/texturas/Extra/Camera_Tela_Normal.png"
+import BODY_ROUGHNESS_MAP_PATH from "../../assets/texturas/Extra/Camera_Tela_Roughness.png"
+import ZOOM1_COLOR_MAP_PATH from "../../assets/texturas/Zoom1/Camera_Zoom1_BaseColor.png"
+import ZOOM1_HEIGHT_MAP_PATH from "../../assets/texturas/Zoom1/Camera_Zoom1_Height.png"
+import ZOOM1_METALNESS_MAP_PATH from "../../assets/texturas/Zoom1/Camera_Zoom1_Metallic.png"
+import ZOOM1_NORMAL_MAP_PATH from "../../assets/texturas/Zoom1/Camera_Zoom1_Normal.png"
+import ZOOM1_ROUGHNESS_MAP_PATH from "../../assets/texturas/Zoom1/Camera_Zoom1_Roughness.png"
+import ZOOM2_COLOR_MAP_PATH from "../../assets/texturas/Zoom2/Camera_Zoom2_BaseColor.png"
+import ZOOM2_HEIGHT_MAP_PATH from "../../assets/texturas/Zoom2/Camera_Zoom2_Height.png"
+import ZOOM2_METALNESS_MAP_PATH from "../../assets/texturas/Zoom2/Camera_Zoom2_Metallic.png"
+import ZOOM2_NORMAL_MAP_PATH from "../../assets/texturas/Zoom2/Camera_Zoom2_Normal.png"
+import ZOOM2_ROUGHNESS_MAP_PATH from "../../assets/texturas/Zoom2/Camera_Zoom2_Roughness.png"
 
 const MODEL_SIZE = 4
+const MODEL_OFFSET_X = -0.35
+const MODEL_OFFSET_Y = 0.25
+const MODEL_BASE_ROTATION_Y = -0.35
 
 // Mostrar el sólido texturizado
 const SHOW_SOLID = true
@@ -18,6 +31,15 @@ const DEBUG_LOG_NAMES = false
 
 interface HeroSceneProps {
   interactionRef?: RefObject<HTMLElement | null>
+}
+
+interface TextureSet {
+  colorMap: THREE.Texture
+  heightMap?: THREE.Texture
+  metalnessMap?: THREE.Texture
+  normalMap?: THREE.Texture
+  opacityMap?: THREE.Texture
+  roughnessMap?: THREE.Texture
 }
 
 export default function HeroScene({ interactionRef }: HeroSceneProps) {
@@ -60,6 +82,8 @@ export default function HeroScene({ interactionRef }: HeroSceneProps) {
 
     // Grupo que controla la rotación del modelo
     const modelRoot = new THREE.Group()
+    modelRoot.position.set(MODEL_OFFSET_X, MODEL_OFFSET_Y, 0)
+    modelRoot.rotation.y = MODEL_BASE_ROTATION_Y
     scene.add(modelRoot)
 
     let model: THREE.Group | null = null
@@ -80,26 +104,89 @@ export default function HeroScene({ interactionRef }: HeroSceneProps) {
       return texture
     }
 
-    const colorMap = loadTexture(COLOR_MAP_PATH)
-    colorMap.colorSpace = THREE.SRGBColorSpace
-    const metalnessMap = loadTexture(METALNESS_MAP_PATH)
-    const normalMap = loadTexture(NORMAL_MAP_PATH)
-    const opacityMap = loadTexture(OPACITY_MAP_PATH)
-    const roughnessMap = loadTexture(ROUGHNESS_MAP_PATH)
+    const bodyColorMap = loadTexture(BODY_COLOR_MAP_PATH)
+    bodyColorMap.colorSpace = THREE.SRGBColorSpace
+    const bodyTextureSet: TextureSet = {
+      colorMap: bodyColorMap,
+      heightMap: loadTexture(BODY_HEIGHT_MAP_PATH),
+      metalnessMap: loadTexture(BODY_METALNESS_MAP_PATH),
+      normalMap: loadTexture(BODY_NORMAL_MAP_PATH),
+      roughnessMap: loadTexture(BODY_ROUGHNESS_MAP_PATH),
+    }
 
-    const createTexturedMaterial = () => {
+    const createWheelTextureSet = (
+      colorPath: string,
+      heightPath: string,
+      metalnessPath: string,
+      normalPath: string,
+      roughnessPath: string,
+    ): TextureSet => {
+      const colorMap = loadTexture(colorPath)
+      colorMap.colorSpace = THREE.SRGBColorSpace
+
+      return {
+        colorMap,
+        heightMap: loadTexture(heightPath),
+        metalnessMap: loadTexture(metalnessPath),
+        normalMap: loadTexture(normalPath),
+        roughnessMap: loadTexture(roughnessPath),
+      }
+    }
+
+    const zoom1TextureSet = createWheelTextureSet(
+      ZOOM1_COLOR_MAP_PATH,
+      ZOOM1_HEIGHT_MAP_PATH,
+      ZOOM1_METALNESS_MAP_PATH,
+      ZOOM1_NORMAL_MAP_PATH,
+      ZOOM1_ROUGHNESS_MAP_PATH,
+    )
+    const zoom2TextureSet = createWheelTextureSet(
+      ZOOM2_COLOR_MAP_PATH,
+      ZOOM2_HEIGHT_MAP_PATH,
+      ZOOM2_METALNESS_MAP_PATH,
+      ZOOM2_NORMAL_MAP_PATH,
+      ZOOM2_ROUGHNESS_MAP_PATH,
+    )
+
+    const textureSets = [bodyTextureSet, zoom1TextureSet, zoom2TextureSet]
+
+    const getTextureSetForMesh = (mesh: THREE.Mesh) => {
+      const names: string[] = []
+      let current: THREE.Object3D | null = mesh
+
+      while (current) {
+        names.push(current.name.toLowerCase())
+        current = current.parent
+      }
+
+      const hierarchyName = names.join(" ")
+
+      if (/\bzoom[_\s-]*2\b/.test(hierarchyName)) {
+        return zoom2TextureSet
+      }
+
+      if (/\bzoom[_\s-]*1\b/.test(hierarchyName)) {
+        return zoom1TextureSet
+      }
+
+      return bodyTextureSet
+    }
+
+    const createTexturedMaterial = (textureSet: TextureSet) => {
       const material = new THREE.MeshStandardMaterial({
-        map: colorMap,
-        metalnessMap,
-        normalMap,
-        roughnessMap,
-        alphaMap: opacityMap,
+        map: textureSet.colorMap,
+        displacementMap: textureSet.heightMap,
+        metalnessMap: textureSet.metalnessMap,
+        normalMap: textureSet.normalMap,
+        roughnessMap: textureSet.roughnessMap,
+        alphaMap: textureSet.opacityMap,
         metalness: 0.85,
         roughness: 0.45,
-        transparent: true,
+        transparent: Boolean(textureSet.opacityMap),
         opacity: SHOW_SOLID ? 1 : 0,
-        alphaTest: 0.02,
+        alphaTest: textureSet.opacityMap ? 0.02 : 0,
         depthWrite: SHOW_SOLID,
+        displacementScale: textureSet.heightMap ? 0.02 : 0,
         polygonOffset: true,
         polygonOffsetFactor: 1,
         polygonOffsetUnits: 1,
@@ -137,7 +224,7 @@ export default function HeroScene({ interactionRef }: HeroSceneProps) {
         let totalObjects = 0
         let totalGroups = 0
 
-        console.group("Canon_AT-1 | Diagnóstico del FBX")
+        console.group("Camera Sony XDCAM 4K | Diagnóstico del FBX")
 
         fbx.traverse((object) => {
           totalObjects++
@@ -200,7 +287,7 @@ export default function HeroScene({ interactionRef }: HeroSceneProps) {
           // Guardar material original para la limpieza
           mesh.userData.originalMaterial = mesh.material
 
-          mesh.material = createTexturedMaterial()
+          mesh.material = createTexturedMaterial(getTextureSetForMesh(mesh))
         })
 
         modelRoot.add(fbx)
@@ -225,13 +312,7 @@ export default function HeroScene({ interactionRef }: HeroSceneProps) {
       mouseY = ((event.clientY - rect.top) / rect.height - 0.5) * 2
     }
 
-    const onMouseLeave = () => {
-      mouseX = 0
-      mouseY = 0
-    }
-
     interactionTarget.addEventListener("mousemove", onMouseMove)
-    interactionTarget.addEventListener("mouseleave", onMouseLeave)
 
     // Resize
     const onResize = () => {
@@ -253,7 +334,7 @@ export default function HeroScene({ interactionRef }: HeroSceneProps) {
     const animate = () => {
       frameId = requestAnimationFrame(animate)
 
-      const targetY = mouseX * 0.6
+      const targetY = MODEL_BASE_ROTATION_Y + mouseX * 0.75
       const targetX = mouseY * 0.3
 
       modelRoot.rotation.y += (targetY - modelRoot.rotation.y) * 0.05
@@ -270,7 +351,6 @@ export default function HeroScene({ interactionRef }: HeroSceneProps) {
       cancelAnimationFrame(frameId)
 
       interactionTarget.removeEventListener("mousemove", onMouseMove)
-      interactionTarget.removeEventListener("mouseleave", onMouseLeave)
       window.removeEventListener("resize", onResize)
 
       scene.remove(modelRoot)
@@ -279,11 +359,9 @@ export default function HeroScene({ interactionRef }: HeroSceneProps) {
         material.dispose()
       })
 
-      colorMap.dispose()
-      metalnessMap.dispose()
-      normalMap.dispose()
-      opacityMap.dispose()
-      roughnessMap.dispose()
+      textureSets.forEach((textureSet) => {
+        Object.values(textureSet).forEach((texture) => texture.dispose())
+      })
 
       if (model) {
         const geometries = new Set<THREE.BufferGeometry>()

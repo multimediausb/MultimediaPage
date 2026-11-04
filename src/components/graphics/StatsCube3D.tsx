@@ -47,7 +47,7 @@ const MOTION_CONFIG = {
 
   // Separación respecto al borde derecho de la tarjeta.
 
-  contactOffset: 5,
+  contactOffset: -40,
 }
 
 const MODEL_LENGTH = 220
@@ -409,7 +409,7 @@ export default function StatsCube3D({
 
       modelRoot.rotation.z = contactAmount * MOTION_CONFIG.contactRotation
 
-      const scale = 2 + contactAmount * MOTION_CONFIG.contactScale
+      const scale = 1.5 + contactAmount * MOTION_CONFIG.contactScale
 
       modelRoot.scale.set(scale, scale, scale)
 
