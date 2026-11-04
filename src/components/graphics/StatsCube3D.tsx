@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react"
 
 import * as THREE from "three"
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js"
+import MODEL_PATH from "../../assets/Models/WACOM V1.fbx"
 
 interface StatsCube3DProps {
   progressRef: { current: number }
@@ -47,6 +49,8 @@ const MOTION_CONFIG = {
 
   contactOffset: 5,
 }
+
+const MODEL_LENGTH = 220
 
 // =========================================================
 
@@ -136,9 +140,7 @@ export default function StatsCube3D({
       antialias: true,
     })
 
-    renderer.setPixelRatio(
-      Math.min(window.devicePixelRatio, 2),
-    )
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
     renderer.setClearColor(0x000000, 0)
 
@@ -156,59 +158,33 @@ export default function StatsCube3D({
 
     container.appendChild(renderer.domElement)
 
-    // =====================================================
+    const modelRoot = new THREE.Group()
+    scene.add(modelRoot)
 
-    // PRISMA
+    let model: THREE.Group | null = null
 
-    // =====================================================
+    const loader = new FBXLoader()
 
-    const prismLength = 180
+    loader.load(
+      MODEL_PATH,
+      (fbx) => {
+        model = fbx
 
-    const prismThickness = 16
+        const bounds = new THREE.Box3().setFromObject(fbx)
+        const center = bounds.getCenter(new THREE.Vector3())
+        const size = bounds.getSize(new THREE.Vector3())
+        const maxDimension = Math.max(size.x, size.y, size.z)
+        const scale = maxDimension > 0 ? MODEL_LENGTH / maxDimension : 1
 
-    const geometry = new THREE.BoxGeometry(
-      prismLength,
-
-      prismThickness,
-
-      prismThickness,
+        fbx.scale.setScalar(scale)
+        fbx.position.sub(center.multiplyScalar(scale))
+        modelRoot.add(fbx)
+      },
+      undefined,
+      (error) => {
+        console.error("Error al cargar el modelo WACOM:", error)
+      },
     )
-
-    const material = new THREE.MeshStandardMaterial({
-      color: 0x32c9cc,
-
-      metalness: 0.45,
-
-      roughness: 0.28,
-
-      emissive: 0x073638,
-
-      emissiveIntensity: 1.1,
-    })
-
-    const prism = new THREE.Mesh(geometry, material)
-
-    scene.add(prism)
-
-    // Bordes luminosos del prisma.
-
-    const edgesGeometry = new THREE.EdgesGeometry(geometry)
-
-    const edgesMaterial = new THREE.LineBasicMaterial({
-      color: 0x8affff,
-
-      transparent: true,
-
-      opacity: 0.95,
-    })
-
-    const edges = new THREE.LineSegments(
-      edgesGeometry,
-
-      edgesMaterial,
-    )
-
-    prism.add(edges)
 
     // =====================================================
 
@@ -335,7 +311,7 @@ export default function StatsCube3D({
 
         if (rect.width > 0 && rect.height > 0) {
           const contactScreenX =
-            rect.right + prismLength / 2 - MOTION_CONFIG.contactOffset
+            rect.right + MODEL_LENGTH / 2 - MOTION_CONFIG.contactOffset
 
           targetX = contactScreenX - width / 2
 
@@ -419,7 +395,7 @@ export default function StatsCube3D({
         y = restPosition.y
       }
 
-      prism.position.set(x, y, 0)
+      modelRoot.position.set(x, y, 0)
 
       // Efecto sutil al tocar la tarjeta.
 
@@ -431,11 +407,11 @@ export default function StatsCube3D({
             )
           : 0
 
-      prism.rotation.z = contactAmount * MOTION_CONFIG.contactRotation
+      modelRoot.rotation.z = contactAmount * MOTION_CONFIG.contactRotation
 
-      const scale = 1 + contactAmount * MOTION_CONFIG.contactScale
+      const scale = 2 + contactAmount * MOTION_CONFIG.contactScale
 
-      prism.scale.set(scale, scale, scale)
+      modelRoot.scale.set(scale, scale, scale)
 
       renderer.render(scene, camera)
     }
@@ -453,13 +429,34 @@ export default function StatsCube3D({
 
       resizeObserver.disconnect()
 
-      geometry.dispose()
+      scene.remove(modelRoot)
 
-      material.dispose()
+      if (model) {
+        const geometries = new Set<THREE.BufferGeometry>()
+        const materials = new Set<THREE.Material>()
 
-      edgesGeometry.dispose()
+        model.traverse((object) => {
+          if (!(object instanceof THREE.Mesh)) return
 
-      edgesMaterial.dispose()
+          geometries.add(object.geometry)
+
+          const meshMaterials = Array.isArray(object.material)
+            ? object.material
+            : [object.material]
+
+          meshMaterials.forEach((meshMaterial) => {
+            materials.add(meshMaterial)
+          })
+        })
+
+        geometries.forEach((modelGeometry) => {
+          modelGeometry.dispose()
+        })
+
+        materials.forEach((modelMaterial) => {
+          modelMaterial.dispose()
+        })
+      }
 
       renderer.dispose()
 

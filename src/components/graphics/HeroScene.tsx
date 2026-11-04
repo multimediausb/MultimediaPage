@@ -2,37 +2,19 @@ import { useRef, useEffect, type RefObject } from "react"
 import * as THREE from "three"
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js"
 import MODEL_PATH from "../../assets/Models/Canon_AT-1.fbx"
+import COLOR_MAP_PATH from "../../assets/texturas/CAM0001_Textures_COL_4k.png"
+import METALNESS_MAP_PATH from "../../assets/texturas/CAM0001_Textures_METL_4k.png"
+import NORMAL_MAP_PATH from "../../assets/texturas/CAM0001_Textures_NRML_4k.png"
+import OPACITY_MAP_PATH from "../../assets/texturas/CAM0001_Textures_OPAC_4k.png"
+import ROUGHNESS_MAP_PATH from "../../assets/texturas/CAM0001_Textures_ROUGH_4k.png"
 
-// Colores del wireframe
-const OUTLINE_COLORS = {
-  primary: 0x0e9a93, // Cian oscuro / nítido para fondo claro
-  accent: 0xd6780a, // Naranja
-}
-
-const OUTLINE_OPACITY = 0.9
 const MODEL_SIZE = 4
 
-// true: todas las aristas de la triangulación
-// false: solo aristas marcadas
-const FULL_WIREFRAME = true
-const EDGE_ANGLE_THRESHOLD = 20
-
-// Mostrar el sólido detrás de las líneas
-const SHOW_SOLID = false
-
-// Asignación manual de colores por nombre de Mesh
-// Las piezas que no estén en esta lista usarán el cian.
-const MESH_COLORS: Record<string, number> = {
-  "#CAM0001_Body": OUTLINE_COLORS.primary,
-  "#CAM0001_Battery_Check": OUTLINE_COLORS.accent,
-  "#CAM0001_Film_Advance": OUTLINE_COLORS.accent,
-  "#CAM0001_Shutter_Speed": OUTLINE_COLORS.accent,
-  "#CAM0001_Shutter": OUTLINE_COLORS.accent,
-  "#CAM0001_Spool": OUTLINE_COLORS.accent,
-}
+// Mostrar el sólido texturizado
+const SHOW_SOLID = true
 
 // Diagnóstico de la jerarquía del FBX
-const DEBUG_LOG_NAMES = true
+const DEBUG_LOG_NAMES = false
 
 interface HeroSceneProps {
   interactionRef?: RefObject<HTMLElement | null>
@@ -82,52 +64,49 @@ export default function HeroScene({ interactionRef }: HeroSceneProps) {
 
     let model: THREE.Group | null = null
 
-    const wireframeMaterials = new Set<THREE.Material>()
-    const wireframeGeometries = new Set<THREE.BufferGeometry>()
+    const texturedMaterials = new Set<THREE.MeshStandardMaterial>()
 
-    // Material fantasma para el sólido
-    const ghostMaterial = new THREE.MeshBasicMaterial({
-      color: 0x000000,
-      transparent: true,
-      opacity: SHOW_SOLID ? 0.35 : 0,
-      depthWrite: SHOW_SOLID,
-      polygonOffset: true,
-      polygonOffsetFactor: 1,
-      polygonOffsetUnits: 1,
-    })
+    const textureLoader = new THREE.TextureLoader()
+    const loadTexture = (path: string) => {
+      const texture = textureLoader.load(
+        path,
+        undefined,
+        undefined,
+        (error) => {
+          console.error(`Error al cargar la textura ${path}:`, error)
+        },
+      )
+      texture.flipY = false
+      return texture
+    }
 
-    // Material principal: cian
-    const primaryLineMaterial = new THREE.LineBasicMaterial({
-      color: OUTLINE_COLORS.primary,
-      transparent: true,
-      opacity: OUTLINE_OPACITY,
-      depthTest: true,
-      depthWrite: false,
-      toneMapped: false,
-    })
+    const colorMap = loadTexture(COLOR_MAP_PATH)
+    colorMap.colorSpace = THREE.SRGBColorSpace
+    const metalnessMap = loadTexture(METALNESS_MAP_PATH)
+    const normalMap = loadTexture(NORMAL_MAP_PATH)
+    const opacityMap = loadTexture(OPACITY_MAP_PATH)
+    const roughnessMap = loadTexture(ROUGHNESS_MAP_PATH)
 
-    // Material de acento: naranja
-    const accentLineMaterial = new THREE.LineBasicMaterial({
-      color: OUTLINE_COLORS.accent,
-      transparent: true,
-      opacity: OUTLINE_OPACITY,
-      depthTest: true,
-      depthWrite: false,
-      toneMapped: false,
-    })
+    const createTexturedMaterial = () => {
+      const material = new THREE.MeshStandardMaterial({
+        map: colorMap,
+        metalnessMap,
+        normalMap,
+        roughnessMap,
+        alphaMap: opacityMap,
+        metalness: 0.85,
+        roughness: 0.45,
+        transparent: true,
+        opacity: SHOW_SOLID ? 1 : 0,
+        alphaTest: 0.02,
+        depthWrite: SHOW_SOLID,
+        polygonOffset: true,
+        polygonOffsetFactor: 1,
+        polygonOffsetUnits: 1,
+      })
 
-    wireframeMaterials.add(primaryLineMaterial)
-    wireframeMaterials.add(accentLineMaterial)
-
-    // Seleccionar material por el nombre exacto de la pieza
-    const pickLineMaterial = (mesh: THREE.Mesh): THREE.LineBasicMaterial => {
-      const color = MESH_COLORS[mesh.name]
-
-      if (color === OUTLINE_COLORS.accent) {
-        return accentLineMaterial
-      }
-
-      return primaryLineMaterial
+      texturedMaterials.add(material)
+      return material
     }
 
     const loader = new FBXLoader()
@@ -195,15 +174,12 @@ export default function HeroScene({ interactionRef }: HeroSceneProps) {
           objetosTotales: totalObjects,
           grupos: totalGroups,
           meshes: meshes.length,
-          coloresDisponibles: Object.keys(OUTLINE_COLORS).length,
         })
 
         console.table(
           meshes.map((mesh, index) => {
             const meshBox = new THREE.Box3().setFromObject(mesh)
             const meshSize = meshBox.getSize(new THREE.Vector3())
-
-            const material = pickLineMaterial(mesh)
 
             return {
               indice: index,
@@ -214,51 +190,18 @@ export default function HeroScene({ interactionRef }: HeroSceneProps) {
               ancho: Number(meshSize.x.toFixed(3)),
               alto: Number(meshSize.y.toFixed(3)),
               profundidad: Number(meshSize.z.toFixed(3)),
-              color: `#${material.color.getHexString()}`,
-              asignacion: MESH_COLORS[mesh.name]
-                ? "Personalizado"
-                : "Color principal por defecto",
             }
           }),
         )
 
         console.groupEnd()
 
-        // -----------------------------------------------
-        // CREAR EL WIREFRAME DE CADA MESH
-        // -----------------------------------------------
-
-        meshes.forEach((mesh, index) => {
-          const lineGeometry = FULL_WIREFRAME
-            ? new THREE.WireframeGeometry(mesh.geometry)
-            : new THREE.EdgesGeometry(mesh.geometry, EDGE_ANGLE_THRESHOLD)
-
-          wireframeGeometries.add(lineGeometry)
-
-          const lineMaterial = pickLineMaterial(mesh)
-
-          console.log(
-            `[Wireframe ${index}]`,
-            mesh.name || `Mesh_${index}`,
-            `Color: #${lineMaterial.color.getHexString()}`,
-          )
-
-          const lines = new THREE.LineSegments(lineGeometry, lineMaterial)
-
-          lines.name = `Wireframe_${mesh.name || index}`
-          lines.renderOrder = 1
-
-          // Hereda la transformación de la malla
-          mesh.add(lines)
-
+        meshes.forEach((mesh) => {
           // Guardar material original para la limpieza
           mesh.userData.originalMaterial = mesh.material
 
-          // Ocultar el sólido si SHOW_SOLID es false
-          mesh.material = ghostMaterial
+          mesh.material = createTexturedMaterial()
         })
-
-        console.info(`Wireframe generado: ${meshes.length} mallas procesadas.`)
 
         modelRoot.add(fbx)
       },
@@ -332,15 +275,15 @@ export default function HeroScene({ interactionRef }: HeroSceneProps) {
 
       scene.remove(modelRoot)
 
-      wireframeGeometries.forEach((geometry) => {
-        geometry.dispose()
-      })
-
-      wireframeMaterials.forEach((material) => {
+      texturedMaterials.forEach((material) => {
         material.dispose()
       })
 
-      ghostMaterial.dispose()
+      colorMap.dispose()
+      metalnessMap.dispose()
+      normalMap.dispose()
+      opacityMap.dispose()
+      roughnessMap.dispose()
 
       if (model) {
         const geometries = new Set<THREE.BufferGeometry>()
