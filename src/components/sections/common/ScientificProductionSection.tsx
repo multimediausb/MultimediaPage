@@ -263,7 +263,7 @@ export default function ScientificProductionSection() {
       data-progress-section="Producción científica"
       data-progress-color="var(--color-primary-500)"
       data-progress-duration="2.4"
-      className="relative overflow-hidden py-24 theme-dark grid-primary dark-grid-bg section-transition"
+      className="relative flex min-h-screen flex-col justify-center overflow-hidden py-24 theme-dark grid-primary dark-grid-bg section-transition"
       style={{
         backgroundColor: "var(--bg)",
         color: "var(--fg)",
