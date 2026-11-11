@@ -44,6 +44,7 @@ export default function Hero() {
   const progressMarkersRef = useRef<ProgressMarker[]>([])
   const maxProgressScrollRef = useRef(1)
   const [progressColor, setProgressColor] = useState("var(--color-primary-500)")
+  const [isProgressVisible, setIsProgressVisible] = useState(true)
 
   useMotionValueEvent(progress, "change", (value) => {
     setProgressValue(Math.round(value * 100))
@@ -68,21 +69,13 @@ export default function Hero() {
           : 0
       scrollRatio.set(ratio)
 
-      // Cuando el footer entra en pantalla, empujar la barra hacia arriba para que suba con el contenido
-      const bar = barRef.current
       const footer = document.querySelector("footer")
-      if (bar && footer) {
+      if (footer) {
         const footerTop = footer.getBoundingClientRect().top
-        const barHeight = bar.offsetHeight
-        const barBottom = window.innerHeight / 2 + barHeight / 2
-        const margin = 24
-
-        if (footerTop < barBottom + margin) {
-          const shift = barBottom + margin - footerTop
-          bar.style.transform = `translateY(calc(-50% - ${shift}px))`
-        } else {
-          bar.style.transform = "translateY(0%)"
-        }
+        const shouldShowProgress = footerTop > window.innerHeight
+        setIsProgressVisible((visible) =>
+          visible === shouldShowProgress ? visible : shouldShowProgress,
+        )
       }
     }
 
@@ -333,8 +326,11 @@ export default function Hero() {
       {/* Barra de progreso vertical en el lateral derecho con margen */}
       <div
         ref={barRef}
-        className="pointer-events-none fixed right-4 sm:right-6 md:right-8 top-1/2 -translate-y-1/2 z-40 h-[50vh] min-h-[280px] max-h-[500px] w-1.5"
+        className={`pointer-events-none fixed right-4 sm:right-6 md:right-8 top-1/2 -translate-y-1/2 z-40 h-[50vh] min-h-[280px] max-h-[500px] w-1.5 transition-opacity duration-200 ${
+          isProgressVisible ? "opacity-100" : "invisible opacity-0"
+        }`}
         role="progressbar"
+        aria-hidden={!isProgressVisible}
         aria-label="Progreso de la página"
         aria-valuemin={0}
         aria-valuemax={100}
@@ -365,6 +361,7 @@ export default function Hero() {
           <button
             key={marker.label}
             type="button"
+            disabled={!isProgressVisible}
             className="group pointer-events-auto absolute left-1/2 flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full focus:outline-none"
             style={{ top: `${marker.progress}%` }}
             onClick={() => {
