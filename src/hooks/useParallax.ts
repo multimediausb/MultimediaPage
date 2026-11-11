@@ -8,13 +8,34 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
 }
 
+let globalLenis: Lenis | null = null
+
+export function getLenis() {
+  return globalLenis
+}
+
+export function scrollToTop(immediate = true) {
+  if (typeof window !== "undefined") {
+    if (globalLenis) {
+      globalLenis.scrollTo(0, { immediate })
+    }
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: immediate ? ("instant" as ScrollBehavior) : "smooth",
+    })
+  }
+}
+
 /**
  * Hook to initialize Lenis smooth scroll synchronized with GSAP ScrollTrigger
  */
 export function useSmoothScroll() {
   useEffect(() => {
-    // Let the browser restore the current URL and scroll position on reload.
-    window.history.scrollRestoration = "auto"
+    // Disable automatic browser scroll restoration so page restarts at top
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual"
+    }
 
     const lenis = new Lenis({
       duration: 1.2,
@@ -24,17 +45,29 @@ export function useSmoothScroll() {
       smoothWheel: true,
     })
 
+    globalLenis = lenis
+    ;(window as unknown as { __lenis?: Lenis }).__lenis = lenis
+
     lenis.on("scroll", ScrollTrigger.update)
 
-    gsap.ticker.add((time) => {
+    const tickerCallback = (time: number) => {
       lenis.raf(time * 1000)
-    })
+    }
 
+    gsap.ticker.add(tickerCallback)
     gsap.ticker.lagSmoothing(0)
+
+    // Ensure initial scroll position starts at top on landing page reload
+    if (window.location.pathname === "/") {
+      scrollToTop(true)
+    }
 
     return () => {
       lenis.destroy()
-      gsap.ticker.remove(lenis.raf)
+      if (globalLenis === lenis) {
+        globalLenis = null
+      }
+      gsap.ticker.remove(tickerCallback)
     }
   }, [])
 }

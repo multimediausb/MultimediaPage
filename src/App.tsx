@@ -14,7 +14,7 @@ import ProximoEvento from "./pages/ProximoEvento"
 import Miembros from "./pages/Miembros"
 import Proyectos from "./pages/Proyectos"
 import logoSrc from "@/imports/MediaShow.png"
-import { useSmoothScroll } from "./hooks/useParallax"
+import { useSmoothScroll, scrollToTop } from "./hooks/useParallax"
 
 function SmoothScrollProvider() {
   useSmoothScroll()
@@ -29,7 +29,20 @@ function HomeScrollReset() {
       return
     }
 
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" })
+    scrollToTop(true)
+
+    // Ensure reset after page transition animation / rendering settle
+    const frameId = requestAnimationFrame(() => {
+      scrollToTop(true)
+    })
+    const timeoutId = setTimeout(() => {
+      scrollToTop(true)
+    }, 60)
+
+    return () => {
+      cancelAnimationFrame(frameId)
+      clearTimeout(timeoutId)
+    }
   }, [location.pathname])
 
   return null

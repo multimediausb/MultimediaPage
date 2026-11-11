@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react"
 import HeroScene from "../../graphics/HeroScene"
 import ParticleField from "../../graphics/ParticleField"
 import Button from "../../ui/Button"
-import { useParallax } from "@/hooks/useParallax"
+import { useParallax, getLenis } from "@/hooks/useParallax"
 
 interface ProgressMarker {
   label: string
@@ -276,41 +276,53 @@ export default function Hero() {
         </motion.div>
       </section>
 
+      {/* Barra de progreso vertical en el lateral derecho con margen */}
       <div
-        className="pointer-events-none fixed inset-x-0 bottom-0 z-70 h-1.5"
+        className="pointer-events-none fixed right-4 sm:right-6 md:right-8 top-1/2 -translate-y-1/2 z-40 h-[50vh] min-h-[280px] max-h-[500px] w-1.5"
         role="progressbar"
         aria-label="Progreso de la página"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={progressValue}
       >
+        {/* Pista de fondo */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 rounded-full"
           style={{
             background:
-              "color-mix(in srgb, var(--color-neutral-900) 50%, transparent)",
+              "color-mix(in srgb, var(--color-neutral-900) 25%, transparent)",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.08)",
           }}
         />
+
+        {/* Relleno animado vertical */}
         <motion.div
-          className="absolute inset-y-0 left-0 h-full w-full origin-left transition-colors duration-300"
+          className="absolute inset-x-0 top-0 h-full w-full origin-top rounded-full transition-colors duration-300"
           style={{
-            scaleX: progress,
+            scaleY: progress,
             background: progressColor,
             boxShadow: `0 0 10px color-mix(in srgb, ${progressColor} 65%, transparent)`,
           }}
         />
-        {progressMarkers.map((marker, index) => (
+
+        {/* Marcadores de sección a lo largo de la barra vertical */}
+        {progressMarkers.map((marker) => (
           <button
             key={marker.label}
             type="button"
-            className="group pointer-events-auto absolute top-1/2 flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full"
-            style={{ left: `${marker.progress}%` }}
+            className="group pointer-events-auto absolute left-1/2 flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full focus:outline-none"
+            style={{ top: `${marker.progress}%` }}
             onClick={() => {
-              window.scrollTo({
-                top: marker.target,
-                left: 0,
-                behavior: "smooth",
-              })
+              const lenis = getLenis()
+              if (lenis) {
+                lenis.scrollTo(marker.target, { duration: 1.2 })
+              } else {
+                window.scrollTo({
+                  top: marker.target,
+                  left: 0,
+                  behavior: "smooth",
+                })
+              }
             }}
             onKeyDown={(event) => {
               if (event.key !== "Enter" && event.key !== " ") {
@@ -318,22 +330,25 @@ export default function Hero() {
               }
 
               event.preventDefault()
-              window.scrollTo({
-                top: marker.target,
-                left: 0,
-                behavior: "smooth",
-              })
+              const lenis = getLenis()
+              if (lenis) {
+                lenis.scrollTo(marker.target, { duration: 1.2 })
+              } else {
+                window.scrollTo({
+                  top: marker.target,
+                  left: 0,
+                  behavior: "smooth",
+                })
+              }
             }}
-            aria-label={`Ir al final de ${marker.label}`}
+            aria-label={`Ir a ${marker.label}`}
           >
             <span
-              className="h-2 w-2 rounded-full border border-white shadow-[0_0_0_2px_rgba(10,40,40,0.35)] transition-transform duration-200 hover:scale-150"
+              className="h-2.5 w-2.5 rounded-full border border-white shadow-[0_0_0_2px_rgba(10,40,40,0.35)] transition-transform duration-200 group-hover:scale-150"
               style={{ background: marker.color }}
             />
             <span
-              className={`pointer-events-none absolute bottom-6 hidden whitespace-nowrap rounded bg-primary-900 px-2 py-1 font-display text-[10px] tracking-wide text-white shadow-lg group-hover:block ${
-                index === 0 ? "left-0" : "left-1/2 -translate-x-1/2"
-              }`}
+              className="pointer-events-none absolute right-full mr-3 top-1/2 -translate-y-1/2 hidden whitespace-nowrap rounded bg-primary-900/90 backdrop-blur-sm px-2.5 py-1 font-display text-[10px] tracking-wide text-white shadow-lg group-hover:block"
             >
               {marker.label}
             </span>
