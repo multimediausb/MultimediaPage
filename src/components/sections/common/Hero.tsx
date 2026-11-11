@@ -1,7 +1,7 @@
 import {
   motion,
+  useMotionValue,
   useMotionValueEvent,
-  useScroll,
   useSpring,
 } from "framer-motion"
 import { useEffect, useRef, useState } from "react"
@@ -31,9 +31,10 @@ const getDocumentTop = (element: HTMLElement) => {
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement>(null)
+  const barRef = useRef<HTMLDivElement>(null)
   const sceneRef = useParallax<HTMLDivElement>(0.2, "down")
-  const { scrollYProgress } = useScroll()
-  const progress = useSpring(scrollYProgress, {
+  const scrollRatio = useMotionValue(0)
+  const progress = useSpring(scrollRatio, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001,
@@ -41,6 +42,7 @@ export default function Hero() {
   const [progressValue, setProgressValue] = useState(0)
   const [progressMarkers, setProgressMarkers] = useState<ProgressMarker[]>([])
   const progressMarkersRef = useRef<ProgressMarker[]>([])
+  const maxProgressScrollRef = useRef(1)
   const [progressColor, setProgressColor] = useState("var(--color-primary-500)")
 
   useMotionValueEvent(progress, "change", (value) => {
@@ -57,11 +59,38 @@ export default function Hero() {
     let updateFrame = 0
     let settleFrame = 0
 
+    const updateBarPositionAndScroll = () => {
+      const maxScroll = maxProgressScrollRef.current
+      const currentScroll = window.scrollY
+      const ratio =
+        maxScroll > 0
+          ? Math.min(Math.max(currentScroll / maxScroll, 0), 1)
+          : 0
+      scrollRatio.set(ratio)
+
+      // Cuando el footer entra en pantalla, empujar la barra hacia arriba para que suba con el contenido
+      const bar = barRef.current
+      const footer = document.querySelector("footer")
+      if (bar && footer) {
+        const footerTop = footer.getBoundingClientRect().top
+        const barHeight = bar.offsetHeight
+        const barBottom = window.innerHeight / 2 + barHeight / 2
+        const margin = 24
+
+        if (footerTop < barBottom + margin) {
+          const shift = barBottom + margin - footerTop
+          bar.style.transform = `translateY(calc(-50% - ${shift}px))`
+        } else {
+          bar.style.transform = "translateY(0%)"
+        }
+      }
+    }
+
     const updateMarkers = () => {
       cancelAnimationFrame(updateFrame)
 
       updateFrame = requestAnimationFrame(() => {
-        const maxScroll = Math.max(
+        const fullDocScroll = Math.max(
           document.documentElement.scrollHeight - window.innerHeight,
           1,
         )
@@ -69,7 +98,8 @@ export default function Hero() {
           document.querySelectorAll<HTMLElement>("[data-progress-section]"),
         )
 
-        const markers = sections.map((section) => {
+        // Calcular el target de cada sección
+        const rawTargets = sections.map((section) => {
           const duration = Number(section.dataset.progressDuration ?? "0")
           const sectionStart = getDocumentTop(section)
           const anchorSection = section.dataset.progressAfter
@@ -101,14 +131,31 @@ export default function Hero() {
                     (section.offsetHeight - window.innerHeight) * ratio -
                     endOffset
                   : sectionStart + duration * window.innerHeight * ratio
-          const clampedTarget = Math.min(Math.max(target, 0), maxScroll)
+          return Math.min(Math.max(target, 0), fullDocScroll)
+        })
+
+        // El último punto es el Demo Reel: el 100% de la barra termina en el target del Demo Reel
+        const lastTarget = rawTargets[rawTargets.length - 1] ?? fullDocScroll
+        const maxTarget = Math.max(lastTarget, 1)
+        maxProgressScrollRef.current = maxTarget
+
+        const markers: ProgressMarker[] = sections.map((section, index) => {
+          const clampedTarget = rawTargets[index]
+          const isFirst = index === 0
+          const isLast = index === sections.length - 1
+
+          const markerProgress = isLast
+            ? 100
+            : isFirst
+              ? 1
+              : Math.min(
+                  Math.max((clampedTarget / maxTarget) * 100, 1),
+                  99,
+                )
 
           return {
             label: section.dataset.progressSection ?? "Sección",
-            progress:
-              section.dataset.progressPoint === "start"
-                ? Math.max((clampedTarget / maxScroll) * 100, 1)
-                : (clampedTarget / maxScroll) * 100,
+            progress: markerProgress,
             target: clampedTarget,
             color: section.dataset.progressColor ?? "var(--color-primary-500)",
           }
@@ -116,13 +163,7 @@ export default function Hero() {
 
         progressMarkersRef.current = markers
         setProgressMarkers(markers)
-
-        const currentProgress = window.scrollY / maxScroll
-        const activeMarker = markers.find(
-          (marker) => currentProgress * 100 <= marker.progress,
-        )
-
-        setProgressColor(activeMarker?.color ?? "var(--color-primary-500)")
+        updateBarPositionAndScroll()
       })
     }
 
@@ -130,12 +171,25 @@ export default function Hero() {
     settleFrame = requestAnimationFrame(() => {
       settleFrame = requestAnimationFrame(updateMarkers)
     })
+
     window.addEventListener("resize", updateMarkers)
+    window.addEventListener("scroll", updateBarPositionAndScroll, {
+      passive: true,
+    })
+
+    const lenis = getLenis()
+    if (lenis) {
+      lenis.on("scroll", updateBarPositionAndScroll)
+    }
 
     return () => {
       cancelAnimationFrame(updateFrame)
       cancelAnimationFrame(settleFrame)
       window.removeEventListener("resize", updateMarkers)
+      window.removeEventListener("scroll", updateBarPositionAndScroll)
+      if (lenis) {
+        lenis.off("scroll", updateBarPositionAndScroll)
+      }
     }
   }, [])
 
@@ -278,6 +332,7 @@ export default function Hero() {
 
       {/* Barra de progreso vertical en el lateral derecho con margen */}
       <div
+        ref={barRef}
         className="pointer-events-none fixed right-4 sm:right-6 md:right-8 top-1/2 -translate-y-1/2 z-40 h-[50vh] min-h-[280px] max-h-[500px] w-1.5"
         role="progressbar"
         aria-label="Progreso de la página"
